@@ -79,9 +79,7 @@ public class ReadUnequippedMods implements IProcess {
         int modCount = ModScreen.countModsFromDots();
         LOG.info("Mod count: {}", modCount);
         for (int i = 0; i < modCount; i++) {
-          if (AppKeyHolder.isStopping) {
-            return;
-          }
+          AutomationUtil.handleKeys();
 
           Location loc = ModScreen.getLocOtherMods().get(i);
           try {

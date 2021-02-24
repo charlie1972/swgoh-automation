@@ -30,7 +30,7 @@ public class MainProcess implements IProcess {
     Settings.DebugLogs = false;
     Settings.MoveMouseDelay = 0.1F;
 
-    Key.addHotkey(Key.ESC, KeyModifier.CTRL + KeyModifier.SHIFT, new StopAppKeyHandler());
+    Key.addHotkey('q', KeyModifier.CTRL + KeyModifier.SHIFT, new StopAppKeyHandler());
     Key.addHotkey(' ', KeyModifier.CTRL + KeyModifier.SHIFT, new PauseAppKeyHandler());
 
     LOG.info("Started");

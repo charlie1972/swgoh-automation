@@ -201,7 +201,12 @@ public class AutomationUtil {
 
   public static void handleKeys() {
     handleStop();
+    boolean first = true;
     while (AppKeyHolder.isPaused) {
+      if (first) {
+        LOG.info("*** Paused ***");
+        first = false;
+      }
       handleStop();
       waitForDelay();
     }
