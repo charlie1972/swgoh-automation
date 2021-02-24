@@ -35,7 +35,7 @@ public class MainProcess implements IProcess {
 
     LOG.info("Started");
     LOG.info("Press CTRL-SHIFT-SPACE to pause");
-    LOG.info("Press CTRL-SHIFT-ESC to abort");
+    LOG.info("Press CTRL-SHIFT-Q to abort");
 
     ImagePath.add("com.charlie.swgoh.main.Main/images");
 
