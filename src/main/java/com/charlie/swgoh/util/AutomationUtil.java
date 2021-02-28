@@ -30,13 +30,13 @@ public class AutomationUtil {
   private static final java.util.regex.Pattern PATTERN_ALLY_POINTS = java.util.regex.Pattern.compile("([0-9.,]+)([KM]?)\\s*.*");
   private static final double WAIT_FOR_IMAGE_DURATION = 5.0;
 
-  private static final int MOD_STAT_CERTAINTY_THRESHOLD = 95;
+  private static final int MOD_STAT_CERTAINTY_THRESHOLD = 90;
   private static final int MOD_STAT_PASSABLE_THRESHOLD = 50;
 
   public static <T> Match findRegion(Region region, T element, String description) {
     try {
       Match match = region.find(element);
-      LOG.info("{}: {}", description, match);
+      LOG.debug("{}: {}", description, match);
       return match;
     }
     catch (FindFailed ffe) {
@@ -47,7 +47,7 @@ public class AutomationUtil {
 
   public static <T> void mouseMoveRegion(Region region, T element, String description) {
     try {
-      LOG.info( "{}: moving to {}", description, element);
+      LOG.debug( "{}: moving to {}", description, element);
       region.mouseMove(element);
     }
     catch (FindFailed ffe) {
@@ -61,7 +61,7 @@ public class AutomationUtil {
 
   public static <T> void clickRegion(Region region, T element, String description) {
     try {
-      LOG.info( "{}: clicking on {}", description, element);
+      LOG.debug( "{}: clicking on {}", description, element);
       region.click(element);
     }
     catch (FindFailed ffe) {
@@ -74,13 +74,13 @@ public class AutomationUtil {
   }
 
   public static <T> void typeText(String text, String description) {
-    LOG.info( "{}: typing \"{}\"", description, text);
+    LOG.debug( "{}: typing \"{}\"", description, text);
     BlueStacksApp.getWindow().type(text);
   }
 
   public static <T> void pasteTextRegion(Region region, T element, String text, String description) {
     try {
-      LOG.info( "{}: typing \"{}\" on {}", description, text, element);
+      LOG.debug( "{}: typing \"{}\" on {}", description, text, element);
       setClipboard(text);
       region.paste(element, text);
     }
@@ -90,10 +90,10 @@ public class AutomationUtil {
   }
 
   public static void pasteText(String text, String description) {
-    LOG.info( "{}: pasting \"{}\"", description, text);
+    LOG.debug( "{}: pasting \"{}\"", description, text);
     setClipboard(text);
     int result = BlueStacksApp.getWindow().paste(text);
-    LOG.info("Paste result: {}", result);
+    LOG.debug("Paste result: {}", result);
   }
 
   private static void setClipboard(String text) {
@@ -118,13 +118,13 @@ public class AutomationUtil {
 
   public static String readLine(Region region) {
     String text = region.textLine();
-    LOG.info("Read line in {}: {}", region, text);
+    LOG.debug("Read line in {}: {}", region, text);
     return text;
   }
 
   public static List<String> readLines(Region region) {
     List<String> lines = region.textLines();
-    LOG.info("Read lines in {}: {}", region, lines);
+    LOG.debug("Read lines in {}: {}", region, lines);
     return lines;
   }
 
@@ -158,18 +158,18 @@ public class AutomationUtil {
   }
 
   public static boolean waitForPattern(Region region, Pattern pattern, String description) {
-    LOG.info(description);
+    LOG.debug(description);
     return region.has(pattern, WAIT_FOR_IMAGE_DURATION);
   }
 
   public static boolean checkForPattern(Region region, Pattern pattern, String description) {
-    LOG.info(description);
+    LOG.debug(description);
     return region.has(pattern, 0.1);
   }
 
   public static int countPatterns(Region region, Pattern pattern, String description) {
     int count = region.findAllList(pattern).size();
-    LOG.info(description + ": {}", count);
+    LOG.debug(description + ": {}", count);
     return count;
   }
 
@@ -179,7 +179,7 @@ public class AutomationUtil {
   }
 
   public static Location waitForMultiplePatternsAndGetLocation(Region region, List<Pattern> patterns, String description) {
-    LOG.info(description);
+    LOG.debug(description);
     List<Object> objList = new ArrayList<>(patterns);
 
     long startTimeMillis = System.currentTimeMillis();
@@ -190,7 +190,7 @@ public class AutomationUtil {
               .map(Match::getTarget)
               .findFirst();
       if (optLocation.isPresent()) {
-        LOG.info("{} -- found: {}", description, optLocation.get());
+        LOG.debug("{} -- found: {}", description, optLocation.get());
         return optLocation.get();
       }
       AutomationUtil.waitFor(100L);
@@ -247,9 +247,9 @@ public class AutomationUtil {
     }
 
     List<Integer> scores = new ArrayList<>();
-    scores.add(FuzzySearch.ratio(referenceMod.getPrimaryStat().toString(), textMod.getPrimaryStat()));
+    scores.add(FuzzySearch.ratio(referenceMod.getPrimaryStat().toString(), stripSpaces(textMod.getPrimaryStat())));
     for (int i = 0; i < referenceMod.getSecondaryStats().size(); i++) {
-      scores.add(FuzzySearch.ratio(referenceMod.getSecondaryStats().get(i).toString(), textMod.getSecondaryStats().get(i)));
+      scores.add(FuzzySearch.ratio(referenceMod.getSecondaryStats().get(i).toString(), stripSpaces(textMod.getSecondaryStats().get(i))));
     }
 
     int nbPassable = (int) scores.stream().filter(score -> score >= MOD_STAT_PASSABLE_THRESHOLD).count();
@@ -260,6 +260,10 @@ public class AutomationUtil {
     boolean result = (nbPassable == referenceMod.getSecondaryStats().size() + 1) && (nbCertain >= referenceMod.getSecondaryStats().size());
     LOG.debug("Scores: {}, passable: {}, certain: {}, result: {}", scores, nbPassable, nbCertain, result);
     return result;
+  }
+
+  public static String stripSpaces(String s) {
+    return s.replace(" ", "");
   }
 
 }

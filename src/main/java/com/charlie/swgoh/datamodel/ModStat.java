@@ -1,5 +1,6 @@
 package com.charlie.swgoh.datamodel;
 
+import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.util.ModUtil;
 
 import java.util.Objects;
@@ -13,7 +14,7 @@ public class ModStat {
   private final ModStatUnit unit;
   private String text = null;
 
-  private static final Pattern PATTERN = Pattern.compile("(\\((\\d)\\)\\s+)?(\\+?\\d+\\.?\\d*)(%?\\s+[A-Za-z\\s]*).*?");
+  private static final Pattern PATTERN = Pattern.compile("(\\((\\d)\\))?(\\+?\\d+\\.?\\d*)(%?[A-Za-z]*).*?");
   private static final double TOLERANCE = 0.02;
 
   public ModStat(int rolls, double value, ModStatUnit unit) {
@@ -27,8 +28,8 @@ public class ModStat {
   }
 
   public ModStat(String str) {
-    String str2 = str.replaceAll("[^%a-zA-Z0-9\\s]", "");
-    Matcher matcher = PATTERN.matcher(str);
+    String str2 = AutomationUtil.stripSpaces(str);
+    Matcher matcher = PATTERN.matcher(str2);
     if (!matcher.matches()) {
       throw new IllegalArgumentException(str + " is an invalid mod stat");
     }

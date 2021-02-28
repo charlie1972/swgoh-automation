@@ -89,10 +89,14 @@ public class ModScreen {
 
   public static boolean checkName(String name) {
     String readName = AutomationUtil.readLine(getRegCharacterName());
-    int score = FuzzySearch.ratio(name, readName);
+    int score = FuzzySearch.ratio(prepareForMatching(name), prepareForMatching(readName));
     boolean isPassed = score > 85;
     LOG.info("Checked name: {}. Read on screen: {}. Score: {}. Passed: {}", name, readName, score, isPassed);
     return isPassed;
+  }
+
+  private static String prepareForMatching(String s) {
+    return s.replace('0', 'O');
   }
 
   public static boolean checkForMinusButton() {

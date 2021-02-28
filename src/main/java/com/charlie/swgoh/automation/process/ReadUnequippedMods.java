@@ -85,8 +85,10 @@ public class ReadUnequippedMods implements IProcess {
           try {
             Mod mod = readOtherModAtLocation(slot, set, loc);
             LOG.info("Read mod: {}", mod.toString());
-            com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
-            profile.getMods().add(jsonMod);
+            if (mod.getLevel() == 15 && mod.getDots() >= 5) {
+              com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
+              profile.getMods().add(jsonMod);
+            }
           }
           catch (RuntimeException e) {
             LOG.warn("Could not read mod for slot {}, set {}, at location #{}. {}: {}", slot, set, i, e.getClass().getName(), e.getMessage());

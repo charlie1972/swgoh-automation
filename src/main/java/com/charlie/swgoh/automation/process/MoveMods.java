@@ -97,6 +97,7 @@ public class MoveMods implements IProcess {
         AutomationUtil.handleKeys();
 
         ModProcessResult result = processMod(mod);
+        AutomationUtil.waitFor(250L);
         LOG.info("Process mod: {}", result);
         if (!ModScreen.waitForFilterAndSortButtons()) {
           throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
@@ -109,7 +110,7 @@ public class MoveMods implements IProcess {
       // If we are in a state where the last mod is not found, we have to close the mod stats first
       if (ModScreen.checkForMinusButton()) {
         AutomationUtil.click(ModScreen.getRegMinusButton().getCenter(), "Clicking on minus button");
-        AutomationUtil.waitFor(250L);
+        AutomationUtil.waitFor(500L);
       }
       AutomationUtil.click(ModScreen.getRegConfirmButton().getCenter(), "Clicking on confirm button");
       AutomationUtil.waitFor(1000L);
@@ -130,7 +131,7 @@ public class MoveMods implements IProcess {
       numberOfCharactersToProcess--;
       LOG.info("{} characters remaining", numberOfCharactersToProcess);
       ModScreen.exitModScreen();
-      AutomationUtil.waitFor(500L);
+      AutomationUtil.waitFor(1500L);
     }
 
   }
@@ -157,6 +158,7 @@ public class MoveMods implements IProcess {
     ModScreenFilter.ensureUnassignedIsUnchecked();
     ModScreenFilter.filterForMod(mod);
     ModScreenFilter.confirm();
+    AutomationUtil.waitFor(250L);
     if (!ModScreen.waitForFilterAndSortButtons()) {
       throw new ProcessException("Mod screen: buttons not found. Aborting.");
     }

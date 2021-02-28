@@ -120,7 +120,7 @@ public class CharacterModsScreen {
             .collect(Collectors.toList());
     regTitle = AutomationUtil.getRegion(98, 24, 194, 35);
     regFilterTitle = AutomationUtil.getRegion(552, 56, 177, 38);
-    regFilterOK = AutomationUtil.getRegion(1174, 649, 48, 37);
+    regFilterOK = AutomationUtil.getRegion(1227, 685, 24, 19);
   }
 
   public static Location getLocFilterButton() {
