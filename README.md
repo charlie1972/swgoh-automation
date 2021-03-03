@@ -6,7 +6,7 @@ A tool made for automating tedious tasks in Star Wars: Galaxy of Heroes
 * Windows 10
 * A screen resolution of at least 1920 x 1080
 * The latest version of Bluestacks: 4.260.0.1032
-* A working Java Runtime Environment (JRE), version 8 or later
+* A working Java Development Kit (JDK), version 8 or later
 * Maven version 3.6.3 or later
 * Bluestacks ***must*** run in the English language, with a resolution of 2560 x 1440 at 240 DPI
 
@@ -69,12 +69,14 @@ This command reads through the recommendations and moves the mods accordingly.
 
 It creates several report files so you can check what happened. These files are created in the same directory as the source HTML file:
 * processedCharacters.txt: list of all characters that have been fully and correctly processed
-* report-<timestamp>.txt: detailed report for each character and mod that has been processed
+* report-\<timestamp>.txt: detailed report for each character and mod that has been processed
 * attentionCharacters.txt: list of the characters for which one or more mods could not be processed correctly
 
 If attentionCharacters.txt is not empty, cross-check with the report to see what characters and mods had errors during the process.
 
-Performance-wise, this process can be long. On my system, it takes around 1 1/2 hour to move 480 mods across 100 characters. 
+The process can be run multiple times with the same recommendations. It relies on processedCharacters.txt to know which characters to process. If you want to start a new recommendation set, you need to delete the files first.
+
+Performance-wise, this process can take quite some time. On my system, it takes around 1 1/2 hour to move 480 mods across 100 characters. 
 
 ## During the execution
 Because this tool takes over the mouse and keyboard, you can't stop it by ordinary means.
