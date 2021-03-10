@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<TabPane fx:controller="com.charlie.swgoh.javafx.FXController"
+         xmlns:fx="http://javafx.com/fxml"
+         tabClosingPolicy="UNAVAILABLE">
+
+    <Tab text="Bronzium Daily">
+        <HBox spacing="20">
+            <padding><Insets topRightBottomLeft="20"/></padding>
+            <Button text="About" onAction="#aboutBronziumDaily"/>
+            <Button text="Run"/>
+        </HBox>
+    </Tab>
+    <Tab text="Bronzium Ally Points">
+
+    </Tab>
+    <Tab text="Read Unequipped Mods">
+
+    </Tab>
+    <Tab text="Move Mods">
+
+    </Tab>
+
+</TabPane>
