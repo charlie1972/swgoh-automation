@@ -5,7 +5,7 @@ A tool made for automating tedious tasks in Star Wars: Galaxy of Heroes
 * Star Wars: Galaxy of Heroes (obviously)
 * Windows 10
 * A screen resolution of at least 1920 x 1080
-* The latest version of Bluestacks: 4.260.0.1032
+* The latest version of Bluestacks: 4.270.0.1053
 * A working Java Development Kit (JDK), version 8 or later
 * Maven version 3.6.3 or later
 * Bluestacks ***must*** run in the English language, with a resolution of 2560 x 1440 at 240 DPI

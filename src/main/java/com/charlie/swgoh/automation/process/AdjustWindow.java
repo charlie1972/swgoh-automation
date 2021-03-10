@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.Locale;
 
 public class AdjustWindow implements IProcess {
 
@@ -64,8 +65,10 @@ public class AdjustWindow implements IProcess {
     USER_32.EnumWindows(
             (hwnd, pointer) -> {
               String className = getWindowClassName(hwnd);
-              if (className.startsWith("HwndWrapper[Bluestacks.exe")) {
+              LOG.info("ClassName: {}", className);
+              if (className.toUpperCase(Locale.ROOT).startsWith("HWNDWRAPPER[BLUESTACKS.EXE")) {
                 String windowText = getWindowText(hwnd);
+                LOG.debug("WindowText: {}", windowText);
                 if ("BlueStacks".equals(windowText)) {
                   bluestacks.setHwnd(hwnd);
                   bluestacks.setRectangle(getWindowRectangle(hwnd));
