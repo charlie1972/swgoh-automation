@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.geometry.Insets?>
-<TabPane fx:controller="com.charlie.swgoh.javafx.FXController"
-         xmlns:fx="http://javafx.com/fxml"
-         tabClosingPolicy="UNAVAILABLE">
+<TabPane prefHeight="287.0" prefWidth="672.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.charlie.swgoh.javafx.FXController">
 
     <Tab text="Bronzium Daily">
         <HBox spacing="20">
-            <padding><Insets topRightBottomLeft="20"/></padding>
-            <Button text="About" onAction="#aboutBronziumDaily"/>
-            <Button text="Run"/>
+            <padding><Insets topRightBottomLeft="20" /></padding>
+            <Button onAction="#aboutBronziumDaily" text="About" />
+            <Button text="Run" />
         </HBox>
     </Tab>
     <Tab text="Bronzium Ally Points">
