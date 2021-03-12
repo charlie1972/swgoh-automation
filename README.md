@@ -6,7 +6,7 @@ A tool made for automating tedious tasks in Star Wars: Galaxy of Heroes
 * Windows 10
 * A screen resolution of at least 1920 x 1080
 * The latest version of Bluestacks: 4.270.0.1053
-* A working Java Development Kit (JDK), version 8 or later
+* A working Java Development Kit (JDK), version 11 or later
 * Maven version 3.6.3 or later
 * Bluestacks ***must*** run in the English language, with a resolution of 2560 x 1440 at 240 DPI
 
@@ -23,7 +23,9 @@ A tool made for automating tedious tasks in Star Wars: Galaxy of Heroes
 **IMPORTANT**: the first things the tool do are:
 * put the Bluestacks window in the foreground
 * move it to the top left corner of the primary screen
-* resize it so the effective application window has a resolution of 1280 x 720 
+* resize it so the effective application window has a resolution of 1280 x 720
+
+**The tool takes over the mouse and keyboard. Interfering with either will cause malfunction. See below how to interact with it during its exectution.**
 
 ## List of commands
 ### BronziumDaily
