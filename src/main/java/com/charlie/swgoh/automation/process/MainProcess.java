@@ -51,7 +51,7 @@ public class MainProcess implements IProcess {
 
     @SuppressWarnings("unchecked")
     Class<IProcess> processClass = (Class<IProcess>) Class.forName("com.charlie.swgoh.automation.process." + args[0]);
-    IProcess process = processClass.newInstance();
+    IProcess process = processClass.getDeclaredConstructor().newInstance();
 
     String[] parameters = new String[args.length - 1];
     System.arraycopy(args, 1, parameters, 0, args.length - 1);

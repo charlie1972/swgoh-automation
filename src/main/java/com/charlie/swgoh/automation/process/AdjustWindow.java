@@ -65,7 +65,7 @@ public class AdjustWindow implements IProcess {
     USER_32.EnumWindows(
             (hwnd, pointer) -> {
               String className = getWindowClassName(hwnd);
-              LOG.info("ClassName: {}", className);
+              LOG.debug("ClassName: {}", className);
               if (className.toUpperCase(Locale.ROOT).startsWith("HWNDWRAPPER[BLUESTACKS.EXE")) {
                 String windowText = getWindowText(hwnd);
                 LOG.debug("WindowText: {}", windowText);
