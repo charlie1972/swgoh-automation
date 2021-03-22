@@ -4,61 +4,64 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane prefHeight="287.0" prefWidth="672.0" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.charlie.swgoh.javafx.FXController">
+<TabPane prefHeight="287.0" prefWidth="672.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.FXController">
 
-    <Tab text="Bronzium Daily">
-        <HBox spacing="20">
+    <Tab closable="false" text="Bronzium Daily">
+        <HBox spacing="20.0">
             <padding><Insets topRightBottomLeft="20" /></padding>
-            <Button text="About" onAction="#aboutBronziumDaily" />
-            <Button text="Run" onAction="#runBronziumDaily" />
+            <Button onAction="#aboutBronziumDaily" text="About" />
+            <Button onAction="#runBronziumDaily" text="Run" />
         </HBox>
     </Tab>
-    <Tab text="Bronzium Ally Points">
-        <VBox spacing="20">
+    <Tab closable="false" text="Bronzium Ally Points">
+        <VBox>
             <HBox spacing="20">
                 <padding><Insets topRightBottomLeft="20" /></padding>
-                <Button text="About" onAction="#aboutBronziumAllyPoints" />
-                <Button text="Run" onAction="#runBronziumAllyPoints" />
+                <Button onAction="#aboutBronziumAllyPoints" text="About" />
+                <Button onAction="#runBronziumAllyPoints" text="Run" />
             </HBox>
-            <HBox spacing="20">
-                <padding><Insets topRightBottomLeft="20" /></padding>
+         <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <padding><Insets left="20.0" right="20.0" top="20.0" /></padding>
                 <Label text="Target ally points:" />
                 <TextField fx:id="targetAllyPoints" />
             </HBox>
         </VBox>
     </Tab>
-    <Tab text="Read Unequipped Mods">
-        <VBox spacing="20">
+    <Tab closable="false" text="Read Unequipped Mods">
+        <VBox>
             <HBox spacing="20">
                 <padding><Insets topRightBottomLeft="20" /></padding>
-                <Button text="About" onAction="#aboutReadUnequippedMods" />
-                <Button text="Run" onAction="#runReadUnequippedMods" />
+                <Button onAction="#aboutReadUnequippedMods" text="About" />
+                <Button onAction="#runReadUnequippedMods" text="Run" />
             </HBox>
-            <HBox spacing="20">
-                <padding><Insets topRightBottomLeft="20" /></padding>
+         <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <padding><Insets left="20.0" right="20.0" top="20.0" /></padding>
+                <Label text="Progress file:" />
+                <TextField fx:id="progressFileName" minWidth="300" />
+                <Button onAction="#chooseProgressFile" text="..." />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <padding><Insets left="20.0" right="20.0" top="20.0" /></padding>
                 <Label text="Ally code:" />
                 <TextField fx:id="allyCode" />
             </HBox>
-            <HBox spacing="20">
-                <padding><Insets topRightBottomLeft="20" /></padding>
-                <Label text="Progress file:" />
-                <TextField fx:id="progressFileName" minWidth="300" />
-                <Button text="..." onAction="#chooseProgressFile" />
-            </HBox>
         </VBox>
     </Tab>
-    <Tab text="Move Mods">
-        <VBox spacing="20">
+    <Tab closable="false" text="Move Mods">
+        <VBox>
             <HBox spacing="20">
                 <padding><Insets topRightBottomLeft="20" /></padding>
-                <Button text="About" onAction="#aboutMoveMods" />
-                <Button text="Run" onAction="#runMoveMods" />
+                <Button onAction="#aboutMoveMods" text="About" />
+                <Button onAction="#runMoveMods" text="Run" />
             </HBox>
-            <HBox spacing="20">
-                <padding><Insets topRightBottomLeft="20" /></padding>
+         <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <padding><Insets left="20.0" right="20.0" top="20.0" /></padding>
                 <Label text="Move mods file:" />
                 <TextField fx:id="moveModsFileName" minWidth="300" />
-                <Button text="..." onAction="#chooseMoveModsFile" />
+                <Button onAction="#chooseMoveModsFile" text="..." />
             </HBox>
         </VBox>
     </Tab>
