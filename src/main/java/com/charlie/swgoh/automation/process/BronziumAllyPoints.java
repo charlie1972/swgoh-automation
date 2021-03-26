@@ -1,28 +1,32 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
+import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.screen.BronziumScreen;
 import com.charlie.swgoh.util.AutomationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BronziumAllyPoints implements IProcess {
+public class BronziumAllyPoints extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(BronziumAllyPoints.class);
 
   private int targetAllyPoints;
 
   @Override
-  public void setParameters(String[] parameters) {
+  public void setParameters(String... parameters) {
     this.targetAllyPoints = AutomationUtil.parseAllyPoints(parameters[0]);
     LOG.info("Target ally points: {}", targetAllyPoints);
   }
 
   @Override
-  public void process() {
+  public void init() {
+    BlueStacksApp.showAndAdjust();
     BronziumScreen.init();
+  }
 
+  @Override
+  public void doProcess() {
     LOG.info("Collecting bronziums with target ally points of {}", targetAllyPoints);
 
     // Check initial state
@@ -33,7 +37,7 @@ public class BronziumAllyPoints implements IProcess {
     }
 
     while (true) {
-      AutomationUtil.handleKeys();
+      AutomationUtil.handleKeys(this);
 
       AutomationUtil.mouseMove(BronziumScreen.getLocIdle(), "Move mouse to idle position");
       state = BronziumScreen.readState();
@@ -54,8 +58,10 @@ public class BronziumAllyPoints implements IProcess {
       }
       else if (state == BronziumScreen.State.OPEN_BUY_AGAIN_FINISH) {
         int allyPoints = BronziumScreen.readOpenAllyPoints();
+        LOG.info("Current ally points: {}", allyPoints);
         if (allyPoints < targetAllyPoints) {
           LOG.info("Target reached: {}", targetAllyPoints);
+          LOG.info("Finished");
           return;
         }
         AutomationUtil.click(BronziumScreen.getLocBuyAgainButton(), "Click BUY AGAIN button");

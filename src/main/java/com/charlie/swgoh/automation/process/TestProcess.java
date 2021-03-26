@@ -1,5 +1,6 @@
 package com.charlie.swgoh.automation.process;
 
+import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.screen.ModScreen;
 import org.slf4j.Logger;
@@ -10,9 +11,14 @@ public class TestProcess implements IProcess {
   private static final Logger LOG = LoggerFactory.getLogger(TestProcess.class);
 
   @Override
-  public void process() throws Exception {
-
+  public void init() {
+    BlueStacksApp.showAndAdjust();
     ModScreen.init();
+  }
+
+  @Override
+  public void process() throws Exception {
+    init();
 
     try {
       Mod mod = ModScreen.extractModStats(false);

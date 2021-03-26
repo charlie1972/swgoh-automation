@@ -1,6 +1,6 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
+import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class MoveMods implements IProcess {
+public class MoveMods extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(MoveMods.class);
 
@@ -30,17 +30,21 @@ public class MoveMods implements IProcess {
   }
 
   @Override
-  public void setParameters(String[] parameters) {
+  public void setParameters(String... parameters) {
     fileName = parameters[0];
   }
 
   @Override
-  public void process() throws Exception {
-    LOG.info("Starting moving mods");
-
+  public void init() {
+    BlueStacksApp.showAndAdjust();
     CharacterModsScreen.init();
     ModScreen.init();
     ModScreenFilter.init();
+  }
+
+  @Override
+  public void doProcess() throws Exception {
+    LOG.info("Starting moving mods");
 
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(fileName);
     String reportFile = new FileUtil.FileComponents(
@@ -70,7 +74,7 @@ public class MoveMods implements IProcess {
 
     int numberOfCharactersToProcess = modMap.size();
     for (Map.Entry<String, List<Mod>> entry : modMap.entrySet()) {
-      AutomationUtil.handleKeys();
+      AutomationUtil.handleKeys(this);
 
       if (!CharacterModsScreen.waitForCharacterModsTitle()) {
         throw new ProcessException("Character mods screen: title text not found. Aborting.");
@@ -94,8 +98,6 @@ public class MoveMods implements IProcess {
 
       boolean allModsOk = true;
       for (Mod mod : entry.getValue()) {
-        AutomationUtil.handleKeys();
-
         ModProcessResult result = processMod(mod);
         AutomationUtil.waitFor(250L);
         LOG.info("Process mod: {}", result);
@@ -133,6 +135,8 @@ public class MoveMods implements IProcess {
       ModScreen.exitModScreen();
       AutomationUtil.waitFor(1500L);
     }
+
+    LOG.info("Finished");
 
   }
 

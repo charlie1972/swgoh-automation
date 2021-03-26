@@ -1,20 +1,24 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
+import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.screen.BronziumScreen;
 import com.charlie.swgoh.util.AutomationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BronziumDaily implements IProcess {
+public class BronziumDaily extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(BronziumDaily.class);
 
   @Override
-  public void process() {
+  public void init() {
+    BlueStacksApp.showAndAdjust();
     BronziumScreen.init();
+  }
 
+  @Override
+  public void doProcess() {
     LOG.info("Collecting daily bronziums");
 
     // Check initial state
@@ -25,12 +29,13 @@ public class BronziumDaily implements IProcess {
     }
 
     while (true) {
-      AutomationUtil.handleKeys();
+      AutomationUtil.handleKeys(this);
 
       AutomationUtil.mouseMove(BronziumScreen.getLocIdle(), "Move mouse to idle position");
       state = BronziumScreen.readState();
       LOG.info("Read state: {}", state);
       if (state == BronziumScreen.State.TITLE_BUY) {
+        LOG.info("Finished");
         return;
       }
       else if (state == BronziumScreen.State.TITLE_FREE) {

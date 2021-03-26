@@ -2,6 +2,7 @@ package com.charlie.swgoh.util;
 
 import com.charlie.swgoh.automation.AppKeyHolder;
 import com.charlie.swgoh.automation.BlueStacksApp;
+import com.charlie.swgoh.automation.process.IProcess;
 import com.charlie.swgoh.datamodel.ModWithStatsInText;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
@@ -199,16 +200,21 @@ public class AutomationUtil {
     return null;
   }
 
-  public static void handleKeys() {
+  public static void handleKeys(IProcess process) {
     handleStop();
     boolean first = true;
+    boolean hasPaused = false;
     while (AppKeyHolder.isPaused) {
+      hasPaused = true;
       if (first) {
         LOG.info("*** Paused ***");
         first = false;
       }
       handleStop();
       waitForDelay();
+    }
+    if (hasPaused) {
+      process.init();
     }
   }
 
