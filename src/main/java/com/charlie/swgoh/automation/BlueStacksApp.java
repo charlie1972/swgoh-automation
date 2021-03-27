@@ -85,7 +85,7 @@ public class BlueStacksApp {
                   viewport.setRectangle(getWindowRectangle(hwnd));
                 }
               }
-              return true;
+              return bluestacks.getHwnd() == null || viewport.getHwnd() == null;
             },
             Pointer.NULL
     );

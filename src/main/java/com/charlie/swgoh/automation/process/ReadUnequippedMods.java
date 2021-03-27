@@ -44,7 +44,7 @@ public class ReadUnequippedMods extends AbstractProcess {
   }
 
   @Override
-  public void doProcess() throws Exception {
+  protected void doProcess() throws Exception {
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(fileName);
     String resultFileName = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
@@ -63,7 +63,7 @@ public class ReadUnequippedMods extends AbstractProcess {
 
     for (ModSlot slot : ModSlot.values()) {
       for (ModSet set : ModSet.values()) {
-        AutomationUtil.handleKeys(this);
+        handleKeys();
 
         if (!ModScreen.waitForFilterAndSortButtons()) {
           throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
@@ -83,7 +83,7 @@ public class ReadUnequippedMods extends AbstractProcess {
         int modCount = ModScreen.countModsFromDots();
         LOG.info("Mod count: {}", modCount);
         for (int i = 0; i < modCount; i++) {
-          AutomationUtil.handleKeys(this);
+          handleKeys();
 
           Location loc = ModScreen.getLocOtherMods().get(i);
           try {

@@ -4,7 +4,7 @@ import com.charlie.swgoh.util.AutomationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TakeScreenshot implements IProcess{
+public class TakeScreenshot extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(TakeScreenshot.class);
 
@@ -14,9 +14,7 @@ public class TakeScreenshot implements IProcess{
   }
 
   @Override
-  public void process() {
-    init();
-
+  protected void doProcess() {
     String file = AutomationUtil.takeScreenshot("D:\\Temp");
     LOG.info("Screenshot taken at: {}", file);
   }

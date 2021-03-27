@@ -200,30 +200,6 @@ public class AutomationUtil {
     return null;
   }
 
-  public static void handleKeys(IProcess process) {
-    handleStop();
-    boolean first = true;
-    boolean hasPaused = false;
-    while (AppKeyHolder.isPaused) {
-      hasPaused = true;
-      if (first) {
-        LOG.info("*** Paused ***");
-        first = false;
-      }
-      handleStop();
-      waitForDelay();
-    }
-    if (hasPaused) {
-      process.init();
-    }
-  }
-
-  private static void handleStop() {
-    if (AppKeyHolder.isStopping) {
-      throw new ProcessException("Interrupted by user");
-    }
-  }
-
   public static int parseAllyPoints(String str) {
     Matcher matcher = PATTERN_ALLY_POINTS.matcher(str);
     if (!matcher.matches()) {

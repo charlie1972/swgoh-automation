@@ -6,7 +6,7 @@ import com.charlie.swgoh.screen.ModScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestProcess implements IProcess {
+public class TestProcess extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(TestProcess.class);
 
@@ -17,8 +17,7 @@ public class TestProcess implements IProcess {
   }
 
   @Override
-  public void process() throws Exception {
-    init();
+  protected void doProcess() throws Exception {
 
     try {
       Mod mod = ModScreen.extractModStats(false);

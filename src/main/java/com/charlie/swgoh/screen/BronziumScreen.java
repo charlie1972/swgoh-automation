@@ -7,6 +7,8 @@ import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Supplier;
+
 public class BronziumScreen {
 
   private BronziumScreen() {}
@@ -73,11 +75,23 @@ public class BronziumScreen {
   }
 
   public static int readTitleAllyPoints() {
-    return AutomationUtil.parseAllyPoints(AutomationUtil.readLine(getRegTitleAllyPoints()));
+    return returnParseAllyPointsAfterRetries(() -> AutomationUtil.parseAllyPoints(AutomationUtil.readLine(getRegTitleAllyPoints())));
   }
 
   public static int readOpenAllyPoints() {
-    return AutomationUtil.parseAllyPoints(AutomationUtil.readLine(getRegOpenAllyPoints()));
+    return returnParseAllyPointsAfterRetries(() -> AutomationUtil.parseAllyPoints(AutomationUtil.readLine(getRegOpenAllyPoints())));
+  }
+
+  private static int returnParseAllyPointsAfterRetries(Supplier<Integer> supplier) {
+    for (int i = 0; i < 2; i++) {
+      try {
+        return supplier.get();
+      }
+      catch (Exception e) {
+        AutomationUtil.waitFor(1000L);
+      }
+    }
+    return supplier.get();
   }
 
   public static void init() {

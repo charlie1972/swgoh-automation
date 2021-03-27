@@ -18,7 +18,7 @@ public class BronziumDaily extends AbstractProcess {
   }
 
   @Override
-  public void doProcess() {
+  protected void doProcess() {
     LOG.info("Collecting daily bronziums");
 
     // Check initial state
@@ -29,7 +29,7 @@ public class BronziumDaily extends AbstractProcess {
     }
 
     while (true) {
-      AutomationUtil.handleKeys(this);
+      handleKeys();
 
       AutomationUtil.mouseMove(BronziumScreen.getLocIdle(), "Move mouse to idle position");
       state = BronziumScreen.readState();

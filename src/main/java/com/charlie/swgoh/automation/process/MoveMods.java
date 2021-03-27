@@ -43,7 +43,7 @@ public class MoveMods extends AbstractProcess {
   }
 
   @Override
-  public void doProcess() throws Exception {
+  protected void doProcess() throws Exception {
     LOG.info("Starting moving mods");
 
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(fileName);
@@ -74,7 +74,7 @@ public class MoveMods extends AbstractProcess {
 
     int numberOfCharactersToProcess = modMap.size();
     for (Map.Entry<String, List<Mod>> entry : modMap.entrySet()) {
-      AutomationUtil.handleKeys(this);
+      handleKeys();
 
       if (!CharacterModsScreen.waitForCharacterModsTitle()) {
         throw new ProcessException("Character mods screen: title text not found. Aborting.");

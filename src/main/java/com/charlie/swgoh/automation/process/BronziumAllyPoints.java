@@ -26,7 +26,7 @@ public class BronziumAllyPoints extends AbstractProcess {
   }
 
   @Override
-  public void doProcess() {
+  protected void doProcess() {
     LOG.info("Collecting bronziums with target ally points of {}", targetAllyPoints);
 
     // Check initial state
@@ -36,16 +36,19 @@ public class BronziumAllyPoints extends AbstractProcess {
       throw new ProcessException("Starting screen is not the bronzium one");
     }
 
+    int startAllyPoints = -1;
     while (true) {
-      AutomationUtil.handleKeys(this);
+      handleKeys();
 
       AutomationUtil.mouseMove(BronziumScreen.getLocIdle(), "Move mouse to idle position");
       state = BronziumScreen.readState();
       LOG.info("Read state: {}", state);
       if (state == BronziumScreen.State.TITLE_BUY || state == BronziumScreen.State.TITLE_FREE || state == BronziumScreen.State.TITLE_WAITING) {
         int allyPoints = BronziumScreen.readTitleAllyPoints();
-        if (allyPoints < targetAllyPoints) {
-          LOG.info("Target reached: {}", targetAllyPoints);
+        if (startAllyPoints < 0) {
+          startAllyPoints = allyPoints;
+        }
+        if (feedbackAndCheckAllyPoints(allyPoints, startAllyPoints)) {
           return;
         }
         AutomationUtil.click(BronziumScreen.getLocBronziumBuyButton(), "Clicking on BUY button");
@@ -58,16 +61,30 @@ public class BronziumAllyPoints extends AbstractProcess {
       }
       else if (state == BronziumScreen.State.OPEN_BUY_AGAIN_FINISH) {
         int allyPoints = BronziumScreen.readOpenAllyPoints();
-        LOG.info("Current ally points: {}", allyPoints);
-        if (allyPoints < targetAllyPoints) {
-          LOG.info("Target reached: {}", targetAllyPoints);
-          LOG.info("Finished");
+        if (startAllyPoints < 0) {
+          startAllyPoints = allyPoints;
+        }
+        if (feedbackAndCheckAllyPoints(allyPoints, startAllyPoints)) {
+          AutomationUtil.click(BronziumScreen.getLocFinishButton(), "Click FINISH button");
           return;
         }
         AutomationUtil.click(BronziumScreen.getLocBuyAgainButton(), "Click BUY AGAIN button");
       }
       AutomationUtil.waitFor(500L);
     }
+  }
+
+  // True: finished
+  // False: not finished
+  private boolean feedbackAndCheckAllyPoints(int allyPoints, int startAllyPoints) {
+    setMessage("Current Ally Points: " + allyPoints);
+    double progress = (double)(startAllyPoints - allyPoints) / (double)(startAllyPoints - targetAllyPoints);
+    setProgress(progress);
+    if (allyPoints < targetAllyPoints) {
+      LOG.info("Target reached: {}", targetAllyPoints);
+      return true;
+    }
+    return false;
   }
 
 }
