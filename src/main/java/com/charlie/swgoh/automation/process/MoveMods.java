@@ -73,6 +73,7 @@ public class MoveMods extends AbstractProcess {
     modMap.keySet().removeAll(alreadyProcessedCharacters);
 
     int numberOfCharactersToProcess = modMap.size();
+    int numberOfProcessedCharacters = 0;
     for (Map.Entry<String, List<Mod>> entry : modMap.entrySet()) {
       handleKeys();
 
@@ -80,9 +81,16 @@ public class MoveMods extends AbstractProcess {
         throw new ProcessException("Character mods screen: title text not found. Aborting.");
       }
 
+      numberOfProcessedCharacters++;
+      double progress = (double)(numberOfProcessedCharacters / numberOfCharactersToProcess);
+      setProgress(progress);
+
       String characterName = entry.getKey();
       FileUtil.writeToFile(reportFile, "Character: " + characterName);
-      LOG.info("Processing character: {}", characterName);
+      String message = "Processing character: " + characterName;
+      LOG.info(message);
+      setMessage(message);
+
       AutomationUtil.waitFor(250L);
       CharacterModsScreen.filterName(characterName);
       AutomationUtil.waitFor(250L);
@@ -130,8 +138,6 @@ public class MoveMods extends AbstractProcess {
         FileUtil.writeToFile(attentionCharactersFile, characterName);
       }
 
-      numberOfCharactersToProcess--;
-      LOG.info("{} characters remaining", numberOfCharactersToProcess);
       ModScreen.exitModScreen();
       AutomationUtil.waitFor(1500L);
     }

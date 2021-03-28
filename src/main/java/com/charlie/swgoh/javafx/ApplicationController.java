@@ -2,6 +2,9 @@ package com.charlie.swgoh.javafx;
 
 import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.automation.process.*;
+import com.charlie.swgoh.connector.JsonConnector;
+import com.charlie.swgoh.datamodel.json.Profile;
+import com.charlie.swgoh.datamodel.json.Progress;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class ApplicationController implements IFeedback {
 
@@ -52,11 +56,6 @@ public class ApplicationController implements IFeedback {
   private ProgressBar progress;
 
   private Stage primaryStage;
-
-  @FunctionalInterface
-  private interface RunnableWithException {
-    void run() throws Exception;
-  }
 
   private final Map<String, Runnable> runnableMap = new HashMap<>();
 
@@ -102,7 +101,7 @@ public class ApplicationController implements IFeedback {
   public void runBronziumAllyPoints() {
     String target = targetAllyPoints.getText();
 
-    AbstractProcess  process = new BronziumAllyPoints();
+    AbstractProcess process = new BronziumAllyPoints();
     process.setFeedback(this);
     process.setParameters(target);
     process.process();
@@ -116,11 +115,28 @@ public class ApplicationController implements IFeedback {
     }
   }
 
+  public void loadProgressFile() {
+    try {
+      Progress progress = JsonConnector.readProgressFromFile(progressFileName.getText());
+      allyCode.getItems().clear();
+      allyCode.getItems().addAll(
+              progress.getProfiles().stream().map(Profile::getAllyCode).collect(Collectors.toList())
+      );
+      if (allyCode.getItems().size() == 1) {
+        allyCode.setValue(allyCode.getItems().get(0));
+      }
+      setMessage("File succesfully loaded. Number of profiles: " + progress.getProfiles().size());
+    }
+    catch (Exception e) {
+      setErrorMessage("Error: " + e.getMessage());
+    }
+  }
+
   public void runReadUnequippedMods() {
     String ally = allyCode.getValue();
     String fileName = progressFileName.getText();
 
-    AbstractProcess  process = new ReadUnequippedMods();
+    AbstractProcess process = new ReadUnequippedMods();
     process.setFeedback(this);
     process.setParameters(ally, fileName);
     process.process();
@@ -137,7 +153,7 @@ public class ApplicationController implements IFeedback {
   public void runMoveMods() {
     String fileName = moveModsFileName.getText();
 
-    AbstractProcess  process = new MoveMods();
+    AbstractProcess process = new MoveMods();
     process.setFeedback(this);
     process.setParameters(fileName);
     process.process();

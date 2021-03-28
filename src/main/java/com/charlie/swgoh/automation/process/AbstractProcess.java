@@ -8,7 +8,7 @@ import com.charlie.swgoh.util.AutomationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractProcess implements IProcess {
+public abstract class AbstractProcess {
 
   private IFeedback feedback = null;
   private final Logger LOG;
@@ -17,14 +17,18 @@ public abstract class AbstractProcess implements IProcess {
     LOG = LoggerFactory.getLogger(this.getClass());
   }
 
+  public void setParameters(String... parameters) {}
+
+  public void init() {}
+
   public void setFeedback(IFeedback feedback) {
     this.feedback = feedback;
   }
 
-  @Override
   public void process() {
     Configuration.configure();
     init();
+    setMessage("");
     feedbackRunning();
     try {
       doProcess();
@@ -35,6 +39,7 @@ public abstract class AbstractProcess implements IProcess {
     }
     finally {
       feedbackIdle();
+      setProgress(0d);
     }
   }
 

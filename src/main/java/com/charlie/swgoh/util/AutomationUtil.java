@@ -1,8 +1,6 @@
 package com.charlie.swgoh.util;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
 import com.charlie.swgoh.automation.BlueStacksApp;
-import com.charlie.swgoh.automation.process.IProcess;
 import com.charlie.swgoh.datamodel.ModWithStatsInText;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;

@@ -7,14 +7,14 @@
 
 <VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.ApplicationController">
     <TabPane fx:id="tabPane" prefHeight="140.0" tabClosingPolicy="UNAVAILABLE">
-        <Tab fx:id="bronziumDailyTab" id="bronziumDailyTab" closable="false" text="Bronzium Daily">
+        <Tab id="bronziumDailyTab" fx:id="bronziumDailyTab" closable="false" text="Bronzium Daily">
             <Label alignment="CENTER" contentDisplay="TOP" maxHeight="500.0" maxWidth="1000.0" text="No parameters" textFill="GREY">
                 <font>
                     <Font size="18.0" />
                 </font>
             </Label>
         </Tab>
-        <Tab fx:id="bronziumAllyPointsTab" id="bronziumAllyPointsTab" closable="false" text="Bronzium Ally Points">
+        <Tab id="bronziumAllyPointsTab" fx:id="bronziumAllyPointsTab" closable="false" text="Bronzium Ally Points">
             <HBox alignment="CENTER_LEFT" maxHeight="10.0" spacing="10.0">
                 <padding>
                     <Insets left="20.0" right="20.0" top="20.0" />
@@ -27,7 +27,7 @@
                 </TextField>
             </HBox>
         </Tab>
-        <Tab fx:id="readUnequippedModsTab" id="readUnequippedModsTab" closable="false" text="Read Unequipped Mods">
+        <Tab id="readUnequippedModsTab" fx:id="readUnequippedModsTab" closable="false" text="Read Unequipped Mods">
             <GridPane alignment="CENTER_LEFT">
                 <columnConstraints>
                     <ColumnConstraints hgrow="NEVER" />
@@ -54,7 +54,7 @@
                     </GridPane.margin>
                     <TextField fx:id="progressFileName" minWidth="300" />
                     <Button onAction="#chooseProgressFile" text="..." />
-                    <Button mnemonicParsing="false" text="Load" />
+                    <Button mnemonicParsing="false" onAction="#loadProgressFile" text="Load" />
                 </HBox>
                 <Label text="Ally code" GridPane.rowIndex="1">
                     <GridPane.margin>
@@ -68,7 +68,7 @@
                 </ComboBox>
             </GridPane>
         </Tab>
-        <Tab fx:id="moveModsTab" id="moveModsTab" closable="false" text="Move Mods">
+        <Tab id="moveModsTab" fx:id="moveModsTab" closable="false" text="Move Mods">
             <HBox alignment="CENTER_LEFT" maxHeight="10.0" spacing="10.0">
                 <padding>
                     <Insets left="20.0" right="20.0" top="20.0" />

@@ -61,6 +61,9 @@ public class ReadUnequippedMods extends AbstractProcess {
     List<com.charlie.swgoh.datamodel.json.Mod> newMods = profile.getMods().stream().filter(mod -> mod.getCharacterID() != null).collect(Collectors.toList());
     profile.setMods(newMods);
 
+    int totalNumber = ModSlot.values().length * ModSet.values().length;
+    int currentNumber = 0;
+
     for (ModSlot slot : ModSlot.values()) {
       for (ModSet set : ModSet.values()) {
         handleKeys();
@@ -68,7 +71,13 @@ public class ReadUnequippedMods extends AbstractProcess {
         if (!ModScreen.waitForFilterAndSortButtons()) {
           throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
         }
-        LOG.info("Reading mods with slot: {} and set: {}", slot, set);
+        String message = "Reading mods with slot: " + slot + " and set: " + set;
+        LOG.info(message);
+        setMessage("Reading mods with slot: " + slot + " and set: " + set);
+        currentNumber++;
+        double progressDouble = (double)currentNumber / (double)totalNumber;
+        setProgress(progressDouble);
+
         ModScreen.enterModFilter();
         if (!ModScreenFilter.waitForTitle()) {
           throw new ProcessException("Mod screen filter: title not found. Aborting.");
@@ -88,11 +97,12 @@ public class ReadUnequippedMods extends AbstractProcess {
           Location loc = ModScreen.getLocOtherMods().get(i);
           try {
             Mod mod = readOtherModAtLocation(slot, set, loc);
-            LOG.info("Read mod: {}", mod.toString());
-            if (mod.getLevel() == 15 && mod.getDots() >= 5) {
-              com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
-              profile.getMods().add(jsonMod);
+            if (mod == null) {
+              continue;
             }
+            LOG.info("Read mod: {}", mod.toString());
+            com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
+            profile.getMods().add(jsonMod);
           }
           catch (RuntimeException e) {
             LOG.warn("Could not read mod for slot {}, set {}, at location #{}. {}: {}", slot, set, i, e.getClass().getName(), e.getMessage());
@@ -114,12 +124,21 @@ public class ReadUnequippedMods extends AbstractProcess {
     if (!ModScreen.waitForMinusButton()) {
       throw new ProcessException("Mod screen: minus button not found. Aborting.");
     }
+
+    ModScreen.LevelAndTier levelAndTier = ModScreen.extractOtherModLevelAndTier();
+    if (levelAndTier.getLevel() < 15) {
+      return null;
+    }
+    int dots = ModScreen.extractOtherModDots();
+    if (dots < 5) {
+      return null;
+    }
+
     Mod mod = ModScreen.extractModStats(false);
     mod.setCharacter(null);
     mod.setSlot(slot);
     mod.setSet(set);
-    mod.setDots(ModScreen.extractOtherModDots());
-    ModScreen.LevelAndTier levelAndTier = ModScreen.extractOtherModLevelAndTier();
+    mod.setDots(dots);
     mod.setLevel(levelAndTier.getLevel());
     mod.setTier(levelAndTier.getTier());
     return mod;

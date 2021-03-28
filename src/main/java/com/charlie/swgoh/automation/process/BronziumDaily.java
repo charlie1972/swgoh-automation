@@ -28,8 +28,13 @@ public class BronziumDaily extends AbstractProcess {
       throw new ProcessException("Starting screen is not the bronzium one");
     }
 
+    long lastFreeBronziumTimeMillis = System.currentTimeMillis();
+
     while (true) {
       handleKeys();
+
+      double progress = (double)(System.currentTimeMillis() - lastFreeBronziumTimeMillis) / (10d * 60d * 1000d);
+      setProgress(progress);
 
       AutomationUtil.mouseMove(BronziumScreen.getLocIdle(), "Move mouse to idle position");
       state = BronziumScreen.readState();
@@ -39,6 +44,7 @@ public class BronziumDaily extends AbstractProcess {
         return;
       }
       else if (state == BronziumScreen.State.TITLE_FREE) {
+        lastFreeBronziumTimeMillis = System.currentTimeMillis();
         AutomationUtil.click(BronziumScreen.getLocBronziumBuyButton(), "Click FREE bronzium button");
       }
       else if (state == BronziumScreen.State.TITLE_WAITING) {
