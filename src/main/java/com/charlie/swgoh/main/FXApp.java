@@ -1,6 +1,5 @@
 package com.charlie.swgoh.main;
 
-import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.javafx.ApplicationController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

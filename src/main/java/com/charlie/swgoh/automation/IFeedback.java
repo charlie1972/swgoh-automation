@@ -1,7 +1,5 @@
 package com.charlie.swgoh.automation;
 
-import javafx.application.Platform;
-
 public interface IFeedback {
 
   void setAllControlsDisabled(boolean disabled);

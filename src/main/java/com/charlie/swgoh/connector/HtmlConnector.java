@@ -14,7 +14,6 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -45,7 +44,7 @@ public class HtmlConnector {
 
   private static Mods getModsFromHTML(String fileName) {
     try {
-      String html = new String(Files.readAllBytes(new File(fileName).toPath()), StandardCharsets.UTF_8);
+      String html = Files.readString(new File(fileName).toPath());
       String xmlFromHtml = convertHTMLToXML(html);
       String transformedXML = transformXML(xmlFromHtml);
       return unmarshallXML(transformedXML);

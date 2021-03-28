@@ -2,9 +2,11 @@ package com.charlie.swgoh.javafx;
 
 import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.automation.process.*;
+import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.connector.JsonConnector;
 import com.charlie.swgoh.datamodel.json.Profile;
 import com.charlie.swgoh.datamodel.json.Progress;
+import com.charlie.swgoh.datamodel.xml.Mod;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -147,6 +150,17 @@ public class ApplicationController implements IFeedback {
     File moveModsFile = fileChooser.showOpenDialog(primaryStage);
     if (moveModsFile != null) {
       moveModsFileName.setText(moveModsFile.getAbsolutePath());
+    }
+  }
+
+  public void checkMoveModsFile() {
+    String fileName = moveModsFileName.getText();
+    try {
+      Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(fileName);
+      setMessage("File succesfully loaded. Number of characters: " + modMap.size());
+    }
+    catch (Exception e) {
+      setErrorMessage("Error: " + e.getMessage());
     }
   }
 

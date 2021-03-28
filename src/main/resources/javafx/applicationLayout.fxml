@@ -80,7 +80,7 @@
                     </HBox.margin>
                 </TextField>
                 <Button onAction="#chooseMoveModsFile" text="..." />
-                <Button mnemonicParsing="false" text="Check" />
+                <Button mnemonicParsing="false" onAction="#checkMoveModsFile" text="Check" />
             </HBox>
         </Tab>
 

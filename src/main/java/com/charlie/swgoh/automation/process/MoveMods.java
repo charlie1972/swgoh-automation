@@ -82,7 +82,7 @@ public class MoveMods extends AbstractProcess {
       }
 
       numberOfProcessedCharacters++;
-      double progress = (double)(numberOfProcessedCharacters / numberOfCharactersToProcess);
+      double progress = (double)numberOfProcessedCharacters / (double)numberOfCharactersToProcess;
       setProgress(progress);
 
       String characterName = entry.getKey();
