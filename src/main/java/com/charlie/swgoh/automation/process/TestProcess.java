@@ -1,18 +1,23 @@
 package com.charlie.swgoh.automation.process;
 
+import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.screen.ModScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestProcess implements IProcess {
+public class TestProcess extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(TestProcess.class);
 
   @Override
-  public void process() throws Exception {
-
+  public void init() {
+    BlueStacksApp.showAndAdjust();
     ModScreen.init();
+  }
+
+  @Override
+  protected void doProcess() throws Exception {
 
     try {
       Mod mod = ModScreen.extractModStats(false);

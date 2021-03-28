@@ -1,6 +1,5 @@
 package com.charlie.swgoh.util;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
 import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.datamodel.ModWithStatsInText;
 import com.charlie.swgoh.datamodel.xml.Mod;
@@ -197,25 +196,6 @@ public class AutomationUtil {
     }
     LOG.error("{} -- not found", description);
     return null;
-  }
-
-  public static void handleKeys() {
-    handleStop();
-    boolean first = true;
-    while (AppKeyHolder.isPaused) {
-      if (first) {
-        LOG.info("*** Paused ***");
-        first = false;
-      }
-      handleStop();
-      waitForDelay();
-    }
-  }
-
-  private static void handleStop() {
-    if (AppKeyHolder.isStopping) {
-      throw new ProcessException("Interrupted by user");
-    }
   }
 
   public static int parseAllyPoints(String str) {

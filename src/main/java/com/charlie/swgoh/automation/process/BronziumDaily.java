@@ -1,20 +1,24 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
+import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.screen.BronziumScreen;
 import com.charlie.swgoh.util.AutomationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BronziumDaily implements IProcess {
+public class BronziumDaily extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(BronziumDaily.class);
 
   @Override
-  public void process() {
+  public void init() {
+    BlueStacksApp.showAndAdjust();
     BronziumScreen.init();
+  }
 
+  @Override
+  protected void doProcess() {
     LOG.info("Collecting daily bronziums");
 
     // Check initial state
@@ -24,16 +28,23 @@ public class BronziumDaily implements IProcess {
       throw new ProcessException("Starting screen is not the bronzium one");
     }
 
+    long lastFreeBronziumTimeMillis = System.currentTimeMillis();
+
     while (true) {
-      AutomationUtil.handleKeys();
+      handleKeys();
+
+      double progress = (double)(System.currentTimeMillis() - lastFreeBronziumTimeMillis) / (10d * 60d * 1000d);
+      setProgress(progress);
 
       AutomationUtil.mouseMove(BronziumScreen.getLocIdle(), "Move mouse to idle position");
       state = BronziumScreen.readState();
       LOG.info("Read state: {}", state);
       if (state == BronziumScreen.State.TITLE_BUY) {
+        LOG.info("Finished");
         return;
       }
       else if (state == BronziumScreen.State.TITLE_FREE) {
+        lastFreeBronziumTimeMillis = System.currentTimeMillis();
         AutomationUtil.click(BronziumScreen.getLocBronziumBuyButton(), "Click FREE bronzium button");
       }
       else if (state == BronziumScreen.State.TITLE_WAITING) {

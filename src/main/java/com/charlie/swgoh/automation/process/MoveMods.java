@@ -1,6 +1,6 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
+import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class MoveMods implements IProcess {
+public class MoveMods extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(MoveMods.class);
 
@@ -30,17 +30,21 @@ public class MoveMods implements IProcess {
   }
 
   @Override
-  public void setParameters(String[] parameters) {
+  public void setParameters(String... parameters) {
     fileName = parameters[0];
   }
 
   @Override
-  public void process() throws Exception {
-    LOG.info("Starting moving mods");
-
+  public void init() {
+    BlueStacksApp.showAndAdjust();
     CharacterModsScreen.init();
     ModScreen.init();
     ModScreenFilter.init();
+  }
+
+  @Override
+  protected void doProcess() throws Exception {
+    LOG.info("Starting moving mods");
 
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(fileName);
     String reportFile = new FileUtil.FileComponents(
@@ -69,16 +73,24 @@ public class MoveMods implements IProcess {
     modMap.keySet().removeAll(alreadyProcessedCharacters);
 
     int numberOfCharactersToProcess = modMap.size();
+    int numberOfProcessedCharacters = 0;
     for (Map.Entry<String, List<Mod>> entry : modMap.entrySet()) {
-      AutomationUtil.handleKeys();
+      handleKeys();
 
       if (!CharacterModsScreen.waitForCharacterModsTitle()) {
         throw new ProcessException("Character mods screen: title text not found. Aborting.");
       }
 
+      numberOfProcessedCharacters++;
+      double progress = (double)numberOfProcessedCharacters / (double)numberOfCharactersToProcess;
+      setProgress(progress);
+
       String characterName = entry.getKey();
       FileUtil.writeToFile(reportFile, "Character: " + characterName);
-      LOG.info("Processing character: {}", characterName);
+      String message = "Processing character: " + characterName;
+      LOG.info(message);
+      setMessage(message);
+
       AutomationUtil.waitFor(250L);
       CharacterModsScreen.filterName(characterName);
       AutomationUtil.waitFor(250L);
@@ -94,8 +106,6 @@ public class MoveMods implements IProcess {
 
       boolean allModsOk = true;
       for (Mod mod : entry.getValue()) {
-        AutomationUtil.handleKeys();
-
         ModProcessResult result = processMod(mod);
         AutomationUtil.waitFor(250L);
         LOG.info("Process mod: {}", result);
@@ -128,11 +138,11 @@ public class MoveMods implements IProcess {
         FileUtil.writeToFile(attentionCharactersFile, characterName);
       }
 
-      numberOfCharactersToProcess--;
-      LOG.info("{} characters remaining", numberOfCharactersToProcess);
       ModScreen.exitModScreen();
       AutomationUtil.waitFor(1500L);
     }
+
+    LOG.info("Finished");
 
   }
 

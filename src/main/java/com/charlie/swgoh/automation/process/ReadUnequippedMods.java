@@ -1,6 +1,6 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
+import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.connector.JsonConnector;
 import com.charlie.swgoh.datamodel.ModSet;
 import com.charlie.swgoh.datamodel.ModSlot;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ReadUnequippedMods implements IProcess {
+public class ReadUnequippedMods extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(ReadUnequippedMods.class);
 
@@ -30,17 +30,21 @@ public class ReadUnequippedMods implements IProcess {
   private String fileName;
 
   @Override
-  public void setParameters(String[] parameters) {
+  public void setParameters(String... parameters) {
     allyCode = parameters[0];
     fileName = parameters[1];
   }
 
   @Override
-  public void process() throws Exception {
+  public void init() {
+    BlueStacksApp.showAndAdjust();
     CharacterModsScreen.init();
     ModScreen.init();
     ModScreenFilter.init();
+  }
 
+  @Override
+  protected void doProcess() throws Exception {
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(fileName);
     String resultFileName = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
@@ -50,21 +54,30 @@ public class ReadUnequippedMods implements IProcess {
 
     Progress progress = JsonConnector.readProgressFromFile(fileName);
     Optional<Profile> optProfile = progress.getProfiles().stream().filter(profile -> allyCode.equals(profile.getAllyCode())).findFirst();
-    if (!optProfile.isPresent()) {
+    if (optProfile.isEmpty()) {
       throw new ProcessException("Profile with ally code " + allyCode + " not found.");
     }
     Profile profile = optProfile.get();
     List<com.charlie.swgoh.datamodel.json.Mod> newMods = profile.getMods().stream().filter(mod -> mod.getCharacterID() != null).collect(Collectors.toList());
     profile.setMods(newMods);
 
+    int totalNumber = ModSlot.values().length * ModSet.values().length;
+    int currentNumber = 0;
+
     for (ModSlot slot : ModSlot.values()) {
       for (ModSet set : ModSet.values()) {
-        AutomationUtil.handleKeys();
+        handleKeys();
 
         if (!ModScreen.waitForFilterAndSortButtons()) {
           throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
         }
-        LOG.info("Reading mods with slot: {} and set: {}", slot, set);
+        String message = "Reading mods with slot: " + slot + " and set: " + set;
+        LOG.info(message);
+        setMessage("Reading mods with slot: " + slot + " and set: " + set);
+        currentNumber++;
+        double progressDouble = (double)currentNumber / (double)totalNumber;
+        setProgress(progressDouble);
+
         ModScreen.enterModFilter();
         if (!ModScreenFilter.waitForTitle()) {
           throw new ProcessException("Mod screen filter: title not found. Aborting.");
@@ -79,16 +92,17 @@ public class ReadUnequippedMods implements IProcess {
         int modCount = ModScreen.countModsFromDots();
         LOG.info("Mod count: {}", modCount);
         for (int i = 0; i < modCount; i++) {
-          AutomationUtil.handleKeys();
+          handleKeys();
 
           Location loc = ModScreen.getLocOtherMods().get(i);
           try {
             Mod mod = readOtherModAtLocation(slot, set, loc);
-            LOG.info("Read mod: {}", mod.toString());
-            if (mod.getLevel() == 15 && mod.getDots() >= 5) {
-              com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
-              profile.getMods().add(jsonMod);
+            if (mod == null) {
+              continue;
             }
+            LOG.info("Read mod: {}", mod.toString());
+            com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
+            profile.getMods().add(jsonMod);
           }
           catch (RuntimeException e) {
             LOG.warn("Could not read mod for slot {}, set {}, at location #{}. {}: {}", slot, set, i, e.getClass().getName(), e.getMessage());
@@ -100,6 +114,8 @@ public class ReadUnequippedMods implements IProcess {
     }
 
     JsonConnector.writeProgressToFile(progress, resultFileName);
+
+    LOG.info("Finished");
   }
 
   private Mod readOtherModAtLocation(ModSlot slot, ModSet set, Location loc) {
@@ -108,12 +124,21 @@ public class ReadUnequippedMods implements IProcess {
     if (!ModScreen.waitForMinusButton()) {
       throw new ProcessException("Mod screen: minus button not found. Aborting.");
     }
+
+    ModScreen.LevelAndTier levelAndTier = ModScreen.extractOtherModLevelAndTier();
+    if (levelAndTier.getLevel() < 15) {
+      return null;
+    }
+    int dots = ModScreen.extractOtherModDots();
+    if (dots < 5) {
+      return null;
+    }
+
     Mod mod = ModScreen.extractModStats(false);
     mod.setCharacter(null);
     mod.setSlot(slot);
     mod.setSet(set);
-    mod.setDots(ModScreen.extractOtherModDots());
-    ModScreen.LevelAndTier levelAndTier = ModScreen.extractOtherModLevelAndTier();
+    mod.setDots(dots);
     mod.setLevel(levelAndTier.getLevel());
     mod.setTier(levelAndTier.getTier());
     return mod;
