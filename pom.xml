@@ -13,6 +13,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
         <jaxb.version>2.3.0</jaxb.version>
+        <javafx.version>11.0.2</javafx.version>
     </properties>
 
     <dependencyManagement>
@@ -106,12 +107,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>11</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>11</version>
+            <version>${javafx.version}</version>
         </dependency>
         <!-- JUnit -->
         <dependency>
@@ -171,6 +172,7 @@
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
                 </executions>
