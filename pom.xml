@@ -186,38 +186,35 @@
                 <version>2.0.1</version>
                 <executions>
                     <execution>
-                        <id>l4j-clui</id>
+                        <id>l4j</id>
                         <phase>package</phase>
                         <goals><goal>launch4j</goal></goals>
                         <configuration>
-                            <headerType>console</headerType>
+                            <headerType>gui</headerType>
                             <outfile>target/swgoh-automation-${project.version}.exe</outfile>
                             <dontWrapJar>true</dontWrapJar>
                             <jar>target/swgoh-automation-${project.version}.jar</jar>
-                            <errTitle>encc</errTitle>
+                            <errTitle>Error</errTitle>
                             <classPath>
-                                <mainClass>com.charlie.swgoh.main.FXApp</mainClass>
-                                <addDependencies>true</addDependencies>
-                                <jarLocation>lib/</jarLocation>
-                                <preCp>anything</preCp>
+                                <mainClass>-m swgoh.automation/com.charlie.swgoh.main.FXApp</mainClass>
+                                <addDependencies>false</addDependencies>
                             </classPath>
                             <jre>
                                 <path>jre</path>
                                 <minVersion>11</minVersion>
                                 <opts>
-                                    <opt>--module-path lib</opt>
-                                    <opt>--add-modules javafx.controls,javafx.fxml</opt>
+                                    <opt>--module-path lib;swgoh-automation-${project.version}.jar</opt>
                                 </opts>
                             </jre>
                             <versionInfo>
-                                <fileVersion>1.2.3.4</fileVersion>
+                                <fileVersion>0.1.0.0</fileVersion>
                                 <txtFileVersion>txt file version?</txtFileVersion>
-                                <fileDescription>a description</fileDescription>
-                                <copyright>my copyright</copyright>
-                                <productVersion>4.3.2.1</productVersion>
-                                <txtProductVersion>txt product version</txtProductVersion>
-                                <productName>E-N-C-C</productName>
-                                <internalName>ccne</internalName>
+                                <fileDescription>Automation tool for Star Wars: Galaxy of Heroes</fileDescription>
+                                <copyright>charlie.com</copyright>
+                                <productVersion>0.1.0.0</productVersion>
+                                <txtProductVersion>0.1.0.0</txtProductVersion>
+                                <productName>ATSWGOH</productName>
+                                <internalName>swgoh-automation</internalName>
                                 <originalFilename>swgoh-automation.exe</originalFilename>
                             </versionInfo>
                         </configuration>
