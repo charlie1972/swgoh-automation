@@ -20,7 +20,7 @@ public class Configuration {
     Key.addHotkey('q', KeyModifier.CTRL + KeyModifier.SHIFT, new StopAppKeyHandler());
     Key.addHotkey(' ', KeyModifier.CTRL + KeyModifier.SHIFT, new PauseAppKeyHandler());
 
-    ImagePath.add("com.charlie.swgoh.main.FXMain/images");
+    ImagePath.add("com.charlie.swgoh.main.FXApp/images");
   }
 
 }
