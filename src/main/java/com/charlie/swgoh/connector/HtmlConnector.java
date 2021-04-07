@@ -4,8 +4,8 @@ import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.datamodel.xml.Mods;
 import com.charlie.swgoh.exception.ProcessException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;

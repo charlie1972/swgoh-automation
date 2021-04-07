@@ -2,7 +2,7 @@ package com.charlie.swgoh.connector;
 
 import com.charlie.swgoh.datamodel.ModStat;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ModStatXmlAdapter extends XmlAdapter<String, ModStat> {
 

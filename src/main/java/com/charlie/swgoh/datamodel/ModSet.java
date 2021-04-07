@@ -1,7 +1,7 @@
 package com.charlie.swgoh.datamodel;
 
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType
 public enum ModSet {
