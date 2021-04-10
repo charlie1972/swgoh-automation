@@ -16,6 +16,8 @@
         <jaxb.version>3.0.0</jaxb.version>
         <logback.version>1.3.0-alpha4</logback.version>
         <jna.version>5.8.0</jna.version>
+        <modules.for.jlink>java.base,java.compiler,java.datatransfer,java.desktop,java.instrument,java.logging,java.management,java.naming,java.prefs,java.rmi,java.scripting,java.security.jgss,java.security.sasl,java.sql,java.xml,jdk.attach,jdk.jdi,jdk.scripting.nashorn,jdk.unsupported</modules.for.jlink>
+        <executable.version>0.1.0.0</executable.version>
     </properties>
 
     <dependencyManagement>
@@ -174,6 +176,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
+                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
                     <archive>
                         <manifest>
                             <mainClass>com.charlie.swgoh.main.FXApp</mainClass>
@@ -202,6 +205,26 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>jlink</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${env.JAVA_HOME}/bin/jlink</executable>
+                            <commandlineArgs>
+                                --no-header-files --no-man-pages --compress=2 --add-modules ${modules.for.jlink} --output ${project.build.directory}/java-runtime
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
                 <version>2.0.1</version>
@@ -212,32 +235,50 @@
                         <goals><goal>launch4j</goal></goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <outfile>target/swgoh-automation-${project.version}.exe</outfile>
+                            <outfile>${project.build.directory}/swgoh-automation-${project.version}.exe</outfile>
                             <dontWrapJar>true</dontWrapJar>
-                            <jar>target/swgoh-automation-${project.version}.jar</jar>
+                            <jar>lib/swgoh-automation-${project.version}.jar</jar>
                             <errTitle>Error</errTitle>
                             <classPath>
                                 <mainClass>-m swgoh.automation/com.charlie.swgoh.main.FXApp</mainClass>
                                 <addDependencies>false</addDependencies>
                             </classPath>
                             <jre>
-                                <path>jre</path>
+                                <path>${project.build.directory}/java-runtime</path>
                                 <minVersion>11</minVersion>
                                 <opts>
-                                    <opt>--module-path lib;swgoh-automation-${project.version}.jar</opt>
+                                    <opt>--module-path lib</opt>
                                 </opts>
                             </jre>
                             <versionInfo>
-                                <fileVersion>0.1.0.0</fileVersion>
+                                <fileVersion>${executable.version}</fileVersion>
                                 <txtFileVersion>txt file version?</txtFileVersion>
                                 <fileDescription>Automation tool for Star Wars: Galaxy of Heroes</fileDescription>
                                 <copyright>charlie.com</copyright>
-                                <productVersion>0.1.0.0</productVersion>
-                                <txtProductVersion>0.1.0.0</txtProductVersion>
+                                <productVersion>${executable.version}</productVersion>
+                                <txtProductVersion>${executable.version}</txtProductVersion>
                                 <productName>ATSWGOH</productName>
                                 <internalName>swgoh-automation</internalName>
                                 <originalFilename>swgoh-automation.exe</originalFilename>
                             </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>assembly</id>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>${project.basedir}/assembly.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>
