@@ -68,9 +68,10 @@ public class MoveMods extends AbstractProcess {
     }
 
     Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(fileName);
+    FileUtil.deleteFileIfExists(attentionCharactersFile);
     List<String> alreadyProcessedCharacters = FileUtil.readFromFile(processedCharactersFile);
     LOG.info("Characters already processed: {}", alreadyProcessedCharacters);
-    modMap.keySet().removeAll(alreadyProcessedCharacters);
+    alreadyProcessedCharacters.forEach(modMap.keySet()::remove);
 
     int numberOfCharactersToProcess = modMap.size();
     int numberOfProcessedCharacters = 0;

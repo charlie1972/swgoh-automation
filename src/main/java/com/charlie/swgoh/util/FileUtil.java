@@ -51,6 +51,10 @@ public class FileUtil {
     }
   }
 
+  public static void deleteFileIfExists(String fileName) throws IOException {
+    Files.deleteIfExists(new File(fileName).toPath());
+  }
+
   public static void writeToFile(String fileName, String line) throws IOException {
     Files.write(
             new File(fileName).toPath(),

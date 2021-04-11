@@ -1,30 +1,34 @@
 package com.charlie.swgoh.datamodel;
 
+import com.charlie.swgoh.util.AutomationUtil;
+
 import java.util.stream.Stream;
 
 public enum ModStatUnit {
-  ACCURACY_PCT("%Accuracy", "% Accuracy", "Accuracy %"),
-  CRIT_AVOIDANCE_PCT("%CritAvoidance", "%CriticalAvoidance", "Critical Avoidance %"),
-  CRIT_CHANCE_PCT("%CritChance", "%CriticalChance", "Critical Chance %"),
-  CRIT_DAMAGE("%CritDamage", "%CriticalDamage", "Critical Damage %"),
-  DEFENSE_FLAT("Defense", "Defense", "Defense"),
-  DEFENSE_PCT("%Defense", "%Defense", "Defense %"),
-  HEALTH_FLAT("Health", "Health", "Health"),
-  HEALTH_PCT("%Health", "%Health", "Health %"),
-  OFFENSE_FLAT("Offense", "Offense", "Offense"),
-  OFFENSE_PCT("%Offense", "%Offense", "Offense %"),
-  POTENCY("%Potency", "%Potency", "Potency %"),
-  PROTECTION_FLAT("Protection", "Protection", "Protection"),
-  PROTECTION_PCT("%Protection", "%Protection", "Protection %"),
-  SPEED("Speed", "Speed", "Speed"),
-  TENACITY("%Tenacity", "%Tenacity", "Tenacity %");
+  ACCURACY_PCT("% Accuracy", "%Accuracy", "Accuracy %"),
+  CRIT_AVOIDANCE_PCT("% Crit Avoidance", "%CriticalAvoidance", "Critical Avoidance %"),
+  CRIT_CHANCE_PCT("% Crit Chance", "%CriticalChance", "Critical Chance %"),
+  CRIT_DAMAGE("% Crit Damage", "%CriticalDamage", "Critical Damage %"),
+  DEFENSE_FLAT(" Defense", "Defense", "Defense"),
+  DEFENSE_PCT("% Defense", "%Defense", "Defense %"),
+  HEALTH_FLAT(" Health", "Health", "Health"),
+  HEALTH_PCT("% Health", "%Health", "Health %"),
+  OFFENSE_FLAT(" Offense", "Offense", "Offense"),
+  OFFENSE_PCT("% Offense", "%Offense", "Offense %"),
+  POTENCY("% Potency", "%Potency", "Potency %"),
+  PROTECTION_FLAT(" Protection", "Protection", "Protection"),
+  PROTECTION_PCT("% Protection", "%Protection", "Protection %"),
+  SPEED(" Speed", "Speed", "Speed"),
+  TENACITY("% Tenacity", "%Tenacity", "Tenacity %");
 
+  private final String prettyText;
   private final String gameText;
   private final String optimizerXmlText;
   private final String optimizerJsonText;
 
-  ModStatUnit(String gameText, String optimizerXmlText, String optimizerJsonText) {
-    this.gameText = gameText;
+  ModStatUnit(String prettyText, String optimizerXmlText, String optimizerJsonText) {
+    this.prettyText = prettyText;
+    this.gameText = AutomationUtil.stripSpaces(prettyText);
     this.optimizerXmlText = optimizerXmlText;
     this.optimizerJsonText = optimizerJsonText;
   }
@@ -40,7 +44,7 @@ public enum ModStatUnit {
 
   @Override
   public String toString() {
-    return gameText;
+    return prettyText;
   }
 
   public String toJsonString() {
