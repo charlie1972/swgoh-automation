@@ -249,7 +249,7 @@ public class ModScreen {
     for (int iy = 0; iy < 4; iy++) {
       for (int ix = 0; ix < 4; ix++) {
         regModDots.add(
-                AutomationUtil.getRegion(76 + ix * 99, 180 + iy * 119, 14, 25)
+                AutomationUtil.getRegion(76 + ix * 99, 180 + iy * 119, 13, 25)
         );
       }
     }

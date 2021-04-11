@@ -85,10 +85,10 @@ public class ReadUnequippedMods extends AbstractProcess {
         ModScreenFilter.ensureUnassignedIsChecked();
         ModScreenFilter.filterForModSlotAndSet(slot, set);
         ModScreenFilter.confirm();
+        AutomationUtil.waitFor(750L);
         if (!ModScreen.waitForFilterAndSortButtons()) {
           throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
         }
-        AutomationUtil.waitFor(500L);
         int modCount = ModScreen.countModsFromDots();
         LOG.info("Mod count: {}", modCount);
         for (int i = 0; i < modCount; i++) {

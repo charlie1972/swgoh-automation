@@ -9,11 +9,20 @@ public class StopAppKeyHandler extends HotkeyListener {
 
   private static final Logger LOG = LoggerFactory.getLogger(StopAppKeyHandler.class);
 
+  private IFeedback feedback = null;
+
+  public StopAppKeyHandler(IFeedback feedback) {
+    this.feedback = feedback;
+  }
+
   @Override
   public void hotkeyPressed(HotkeyEvent hotkeyEvent) {
     LOG.info("************************");
     LOG.info("* Stop signal received *");
     LOG.info("************************");
+    if (feedback != null) {
+      feedback.setStatus("Stopping. Please wait...");
+    }
     AppKeyHolder.isStopping = true;
   }
 

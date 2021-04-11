@@ -168,7 +168,7 @@ public class MoveMods extends AbstractProcess {
     ModScreenFilter.ensureUnassignedIsUnchecked();
     ModScreenFilter.filterForMod(mod);
     ModScreenFilter.confirm();
-    AutomationUtil.waitFor(250L);
+    AutomationUtil.waitFor(750L);
     if (!ModScreen.waitForFilterAndSortButtons()) {
       throw new ProcessException("Mod screen: buttons not found. Aborting.");
     }

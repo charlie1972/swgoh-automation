@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractProcess {
 
+  public static final String MESSAGE_RUNNING = "Running... Press Ctrl-Shift-Space to pause. Press Ctrl-Shift-Q to stop.";
+
   private IFeedback feedback = null;
   private final Logger LOG;
 
@@ -26,7 +28,7 @@ public abstract class AbstractProcess {
   }
 
   public void process() {
-    Configuration.configure();
+    Configuration.configure(feedback);
     init();
     setMessage("");
     feedbackRunning();
@@ -77,7 +79,7 @@ public abstract class AbstractProcess {
 
   private void feedbackRunning() {
     setAllControlsDisabled(true);
-    setStatus("Running... Press Ctrl-Shift-Space to pause. Press Strl-Shift-Q to stop.");
+    setStatus(MESSAGE_RUNNING);
   }
 
   private void feedbackPause() {
