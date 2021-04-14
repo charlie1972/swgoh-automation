@@ -1,6 +1,5 @@
 package com.charlie.swgoh.automation;
 
-import com.charlie.swgoh.automation.process.AbstractProcess;
 import org.sikuli.basics.HotkeyEvent;
 import org.sikuli.basics.HotkeyListener;
 import org.slf4j.Logger;
@@ -10,7 +9,7 @@ public class PauseAppKeyHandler extends HotkeyListener {
 
   private static final Logger LOG = LoggerFactory.getLogger(PauseAppKeyHandler.class);
 
-  private IFeedback feedback = null;
+  private final IFeedback feedback;
 
   public PauseAppKeyHandler(IFeedback feedback) {
     this.feedback = feedback;
@@ -23,7 +22,7 @@ public class PauseAppKeyHandler extends HotkeyListener {
       LOG.info("* Pause signal received *");
       LOG.info("*************************");
       if (feedback != null) {
-        feedback.setStatus("Pause signal received. Please wait...");
+        feedback.setStatus(FeetbackStatus.PAUSING);
       }
       AppKeyHolder.isPaused = true;
     }
@@ -32,7 +31,7 @@ public class PauseAppKeyHandler extends HotkeyListener {
       LOG.info("* Unpause signal received *");
       LOG.info("***************************");
       if (feedback != null) {
-        feedback.setStatus(AbstractProcess.MESSAGE_RUNNING);
+        feedback.setStatus(FeetbackStatus.RUNNING);
       }
       AppKeyHolder.isPaused = false;
     }

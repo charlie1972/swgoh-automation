@@ -21,7 +21,7 @@ public class StopAppKeyHandler extends HotkeyListener {
     LOG.info("* Stop signal received *");
     LOG.info("************************");
     if (feedback != null) {
-      feedback.setStatus("Stopping. Please wait...");
+      feedback.setStatus(FeetbackStatus.STOPPING);
     }
     AppKeyHolder.isStopping = true;
   }

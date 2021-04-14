@@ -2,6 +2,7 @@ package com.charlie.swgoh.automation.process;
 
 import com.charlie.swgoh.automation.AppKeyHolder;
 import com.charlie.swgoh.automation.Configuration;
+import com.charlie.swgoh.automation.FeetbackStatus;
 import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
@@ -9,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractProcess {
-
-  public static final String MESSAGE_RUNNING = "Running... Press Ctrl-Shift-Space to pause. Press Ctrl-Shift-Q to stop.";
 
   private IFeedback feedback = null;
   private final Logger LOG;
@@ -47,7 +46,7 @@ public abstract class AbstractProcess {
 
   protected abstract void doProcess() throws Exception;
 
-  protected void setStatus(String status) {
+  protected void setStatus(FeetbackStatus status) {
     if (feedback != null) {
       feedback.setStatus(status);
     }
@@ -79,11 +78,11 @@ public abstract class AbstractProcess {
 
   private void feedbackRunning() {
     setAllControlsDisabled(true);
-    setStatus(MESSAGE_RUNNING);
+    setStatus(FeetbackStatus.RUNNING);
   }
 
   private void feedbackPause() {
-    setStatus("Paused. Press Ctrl-Shift-Space to unpause. Press Strl-Shift-Q to stop.");
+    setStatus(FeetbackStatus.PAUSED);
   }
 
   private void feedbackFinished() {
@@ -91,7 +90,7 @@ public abstract class AbstractProcess {
   }
 
   private void feedbackIdle() {
-    setStatus("Idle");
+    setStatus(FeetbackStatus.IDLE);
     setAllControlsDisabled(false);
   }
 
