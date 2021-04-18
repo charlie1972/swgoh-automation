@@ -1,5 +1,7 @@
 package com.charlie.swgoh.javafx;
 
+import com.charlie.swgoh.automation.AutomationSpeed;
+import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.automation.FeetbackStatus;
 import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.automation.process.*;
@@ -8,6 +10,7 @@ import com.charlie.swgoh.connector.JsonConnector;
 import com.charlie.swgoh.datamodel.json.Profile;
 import com.charlie.swgoh.datamodel.json.Progress;
 import com.charlie.swgoh.datamodel.xml.Mod;
+import com.charlie.swgoh.util.FileUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ApplicationController implements IFeedback {
@@ -37,6 +41,9 @@ public class ApplicationController implements IFeedback {
 
   @FXML
   private Button runButton;
+
+  @FXML
+  private ChoiceBox<String> speed;
 
   @FXML
   private TextField targetAllyPoints;
@@ -70,6 +77,27 @@ public class ApplicationController implements IFeedback {
     runnableMap.put("bronziumAllyPointsTab", this::runBronziumAllyPoints);
     runnableMap.put("readUnequippedModsTab", this::runReadUnequippedMods);
     runnableMap.put("moveModsTab", this::runMoveMods);
+  }
+
+  public void init() {
+    Configuration.setFeedback(this);
+    Configuration.loadProperties();
+    Platform.runLater(() -> {
+      if (Configuration.getWindowX() == null || Configuration.getWindowY() == null) {
+        Configuration.setWindowX(primaryStage.getX());
+        Configuration.setWindowY(primaryStage.getY());
+        Configuration.saveProperties();
+      }
+      else {
+        primaryStage.setX(Configuration.getWindowX());
+        primaryStage.setY(Configuration.getWindowY());
+      }
+
+      for (AutomationSpeed s : AutomationSpeed.values()) {
+        speed.getItems().add(s.getText());
+      }
+      speed.setValue(Configuration.getSpeed().getText());
+    });
   }
 
   public void about() {
@@ -112,11 +140,7 @@ public class ApplicationController implements IFeedback {
   }
 
   public void chooseProgressFile() {
-    FileChooser fileChooser = new FileChooser();
-    File progressFile = fileChooser.showOpenDialog(primaryStage);
-    if (progressFile != null) {
-      progressFileName.setText(progressFile.getAbsolutePath());
-    }
+    chooseFile(progressFileName::setText);
   }
 
   public void loadProgressFile() {
@@ -147,11 +171,7 @@ public class ApplicationController implements IFeedback {
   }
 
   public void chooseMoveModsFile() {
-    FileChooser fileChooser = new FileChooser();
-    File moveModsFile = fileChooser.showOpenDialog(primaryStage);
-    if (moveModsFile != null) {
-      moveModsFileName.setText(moveModsFile.getAbsolutePath());
-    }
+    chooseFile(moveModsFileName::setText);
   }
 
   public void checkMoveModsFile() {
@@ -174,8 +194,31 @@ public class ApplicationController implements IFeedback {
     process.process();
   }
 
+  private void chooseFile(Consumer<String> consumer) {
+    FileChooser fileChooser = new FileChooser();
+    String defaultDirectory = Configuration.getDefaultDirectory();
+    if (!defaultDirectory.isEmpty()) {
+      fileChooser.setInitialDirectory(new File(defaultDirectory));
+    }
+    File file = fileChooser.showOpenDialog(primaryStage);
+    if (file != null) {
+      String fullPath = file.getAbsolutePath();
+      consumer.accept(fullPath);
+      String directory = FileUtil.getFileComponents(fullPath).getDirectoryName();
+      if (!defaultDirectory.equals(directory)) {
+        Configuration.setDefaultDirectory(directory);
+        Configuration.saveProperties();
+      }
+    }
+  }
+
   public void setPrimaryStage(Stage primaryStage) {
     this.primaryStage = primaryStage;
+  }
+
+  public void onSpeedChange() {
+    Configuration.setSpeed(AutomationSpeed.fromText(speed.getValue()));
+    Configuration.saveProperties();
   }
 
   @Override

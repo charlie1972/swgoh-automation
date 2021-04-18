@@ -86,12 +86,15 @@
 
     </TabPane>
     <Separator prefWidth="200.0" />
-    <HBox spacing="20.0">
+    <HBox alignment="CENTER_LEFT" spacing="20.0">
         <padding>
             <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
         </padding>
         <Button fx:id="aboutButton" onAction="#about" text="About" />
+      <Pane HBox.hgrow="ALWAYS" />
         <Button fx:id="runButton" onAction="#run" text="Run" />
+      <Label text="Speed" />
+      <ChoiceBox fx:id="speed" onAction="#onSpeedChange" />
     </HBox>
     <Separator prefWidth="200.0" />
     <GridPane alignment="CENTER_LEFT">

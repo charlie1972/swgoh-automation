@@ -27,7 +27,7 @@ public abstract class AbstractProcess {
   }
 
   public void process() {
-    Configuration.configure(feedback);
+    Configuration.configure();
     init();
     setMessage("");
     feedbackRunning();

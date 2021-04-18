@@ -1,6 +1,7 @@
 package com.charlie.swgoh.util;
 
 import com.charlie.swgoh.automation.BlueStacksApp;
+import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.datamodel.ModWithStatsInText;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
@@ -145,6 +146,15 @@ public class AutomationUtil {
 
   public static void waitFor(Long millis) {
     try {
+      Thread.sleep((long)((double)millis * Configuration.getSpeed().getDelayMultiplier()));
+    }
+    catch (InterruptedException ignored) {
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  public static void waitForFixed(Long millis) {
+    try {
       Thread.sleep(millis);
     }
     catch (InterruptedException ignored) {
@@ -163,7 +173,7 @@ public class AutomationUtil {
 
   public static boolean checkForPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
-    return region.has(pattern, 0.1);
+    return region.has(pattern, 0.1 * Configuration.getSpeed().getDelayMultiplier());
   }
 
   public static int countPatterns(Region region, Pattern pattern, String description) {

@@ -51,7 +51,7 @@ public class BronziumDaily extends AbstractProcess {
         AutomationUtil.click(BronziumScreen.getLocBronziumBuyButton(), "Click FREE bronzium button");
       }
       else if (state == BronziumScreen.State.TITLE_WAITING) {
-        AutomationUtil.waitFor(10000L);
+        AutomationUtil.waitForFixed(10000L);
       }
       else if (state == BronziumScreen.State.OPEN_SKIP) {
         AutomationUtil.click(BronziumScreen.getLocSkipButton(), "Click SKIP button");
