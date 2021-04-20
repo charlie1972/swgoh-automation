@@ -26,13 +26,10 @@ public class FXApp extends Application {
     primaryStage.setScene(scene);
     primaryStage.setResizable(false);
 
-    primaryStage.xProperty().addListener((observable, oldValue, newValue) -> Configuration.setWindowX(primaryStage.getX()));
-    primaryStage.yProperty().addListener((observable, oldValue, newValue) -> Configuration.setWindowY(primaryStage.getY()));
-
-    primaryStage.show();
-
     controller.setPrimaryStage(primaryStage);
     controller.init();
+
+    primaryStage.show();
   }
 
   @Override

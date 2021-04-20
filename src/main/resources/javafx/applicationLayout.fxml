@@ -94,7 +94,7 @@
       <Pane HBox.hgrow="ALWAYS" />
         <Button fx:id="runButton" onAction="#run" text="Run" />
       <Label text="Speed" />
-      <ChoiceBox fx:id="speed" onAction="#onSpeedChange" />
+      <ChoiceBox fx:id="speed" onAction="#onSpeedChange" prefWidth="100.0" />
     </HBox>
     <Separator prefWidth="200.0" />
     <GridPane alignment="CENTER_LEFT">

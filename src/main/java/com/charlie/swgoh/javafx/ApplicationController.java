@@ -82,22 +82,23 @@ public class ApplicationController implements IFeedback {
   public void init() {
     Configuration.setFeedback(this);
     Configuration.loadProperties();
-    Platform.runLater(() -> {
-      if (Configuration.getWindowX() == null || Configuration.getWindowY() == null) {
-        Configuration.setWindowX(primaryStage.getX());
-        Configuration.setWindowY(primaryStage.getY());
-        Configuration.saveProperties();
-      }
-      else {
-        primaryStage.setX(Configuration.getWindowX());
-        primaryStage.setY(Configuration.getWindowY());
-      }
+    if (Configuration.getWindowX() == null || Configuration.getWindowY() == null) {
+      Configuration.setWindowX(primaryStage.getX());
+      Configuration.setWindowY(primaryStage.getY());
+      Configuration.saveProperties();
+    }
+    else {
+      primaryStage.setX(Configuration.getWindowX());
+      primaryStage.setY(Configuration.getWindowY());
+    }
 
-      for (AutomationSpeed s : AutomationSpeed.values()) {
-        speed.getItems().add(s.getText());
-      }
-      speed.setValue(Configuration.getSpeed().getText());
-    });
+    primaryStage.xProperty().addListener((observable, oldValue, newValue) -> Configuration.setWindowX(primaryStage.getX()));
+    primaryStage.yProperty().addListener((observable, oldValue, newValue) -> Configuration.setWindowY(primaryStage.getY()));
+
+    for (AutomationSpeed s : AutomationSpeed.values()) {
+      speed.getItems().add(s.getText());
+    }
+    speed.setValue(Configuration.getSpeed().getText());
   }
 
   public void about() {
@@ -205,10 +206,7 @@ public class ApplicationController implements IFeedback {
       String fullPath = file.getAbsolutePath();
       consumer.accept(fullPath);
       String directory = FileUtil.getFileComponents(fullPath).getDirectoryName();
-      if (!defaultDirectory.equals(directory)) {
-        Configuration.setDefaultDirectory(directory);
-        Configuration.saveProperties();
-      }
+      Configuration.setDefaultDirectory(directory);
     }
   }
 
@@ -218,7 +216,6 @@ public class ApplicationController implements IFeedback {
 
   public void onSpeedChange() {
     Configuration.setSpeed(AutomationSpeed.fromText(speed.getValue()));
-    Configuration.saveProperties();
   }
 
   @Override
