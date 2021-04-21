@@ -25,11 +25,11 @@ public abstract class AbstractProcess {
 
   public void process() {
     Configuration.configure();
+    BlueStacksApp.showAndAdjust();
     init();
     setMessage("");
     feedbackRunning();
     try {
-      BlueStacksApp.showAndAdjust();
       doProcess();
       feedbackFinished();
     }

@@ -121,8 +121,8 @@ public class MoveMods extends AbstractProcess {
         AutomationUtil.click(ModScreen.getRegMinusButton(), "Clicking on minus button");
         AutomationUtil.waitFor(1000L);
       }
-      if (ModScreen.checkForConfirmButton()) {
-        AutomationUtil.click(ModScreen.getRegConfirmButton(), "Clicking on confirm button");
+      if (ModScreen.checkForRevertButton()) {
+        AutomationUtil.click(ModScreen.getLocConfirmButton(), "Clicking on confirm button");
         AutomationUtil.waitFor(1000L);
       }
       else {

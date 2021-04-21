@@ -56,7 +56,7 @@ public class ModScreen {
   private static final Pattern MOD_DOT = new Pattern("mod_dot.png");
   private static final Pattern ASSIGN_MOD_REMOVE_BUTTON = new Pattern("mod_screen_assign_mod_remove.png");
   private static final Pattern ASSIGN_LOADOUT_ASSIGN_BUTTON = new Pattern("mod_screen_assign_loadout_assign.png");
-  private static final Pattern CONFIRM_BUTTON = new Pattern("mod_screen_confirm.png");
+  private static final Pattern REVERT_BUTTON = new Pattern("mod_screen_revert.png");
 
   private static Location locBackButton;
   private static Location locFilterButton;
@@ -74,9 +74,8 @@ public class ModScreen {
   private static Region regUnassignedLabel;
   private static Region regRemoveButton;
   private static Region regAssignLoadoutButton;
-  private static Region regConfirmButton;
+  private static Region regRevertButton;
   private static Region regOtherModDots;
-  private static Region regOtherModDescription;
   private static Region regOtherModLevelAndTier;
 
   public static boolean waitForFilterAndSortButtons() {
@@ -107,8 +106,8 @@ public class ModScreen {
     return AutomationUtil.checkForPattern(getRegUnassignedLabel(), UNASSIGNED_LABEL, "Checking for unassigned label");
   }
 
-  public static boolean checkForConfirmButton() {
-    return AutomationUtil.waitForPattern(getRegConfirmButton(), CONFIRM_BUTTON, "Checking for confirm button");
+  public static boolean checkForRevertButton() {
+    return AutomationUtil.waitForPattern(getRegRevertButton(), REVERT_BUTTON, "Checking for revert button");
   }
 
   public static StateAfterModMoveOrder waitAndGetStateAfterModMoveOrder() {
@@ -257,7 +256,7 @@ public class ModScreen {
     regUnassignedLabel = AutomationUtil.getRegion(793, 110, 155, 30);
     regRemoveButton = AutomationUtil.getRegion(673, 452, 119, 42);
     regAssignLoadoutButton = AutomationUtil.getRegion(659, 554, 94, 38);
-    regConfirmButton = AutomationUtil.getRegion(1018, 565, 124, 43);
+    regRevertButton = AutomationUtil.getRegion(854, 568, 100, 36);
     regOtherModDots = AutomationUtil.getRegion(852, 458, 84, 12);
     regOtherModLevelAndTier = AutomationUtil.getRegion(870, 528, 48, 18);
   }
@@ -326,8 +325,8 @@ public class ModScreen {
     return regAssignLoadoutButton;
   }
 
-  public static Region getRegConfirmButton() {
-    return regConfirmButton;
+  public static Region getRegRevertButton() {
+    return regRevertButton;
   }
 
   public static Region getRegOtherModDots() {
