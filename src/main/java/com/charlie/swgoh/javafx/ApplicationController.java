@@ -85,7 +85,6 @@ public class ApplicationController implements IFeedback {
     if (Configuration.getWindowX() == null || Configuration.getWindowY() == null) {
       Configuration.setWindowX(primaryStage.getX());
       Configuration.setWindowY(primaryStage.getY());
-      Configuration.saveProperties();
     }
     else {
       primaryStage.setX(Configuration.getWindowX());

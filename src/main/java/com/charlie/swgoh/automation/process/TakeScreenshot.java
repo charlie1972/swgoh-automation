@@ -1,6 +1,5 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.util.AutomationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ public class TakeScreenshot extends AbstractProcess {
 
   @Override
   public void init() {
-    BlueStacksApp.showAndAdjust();
   }
 
   @Override

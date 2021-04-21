@@ -1,6 +1,5 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.connector.JsonConnector;
 import com.charlie.swgoh.datamodel.ModSet;
 import com.charlie.swgoh.datamodel.ModSlot;
@@ -37,7 +36,6 @@ public class ReadUnequippedMods extends AbstractProcess {
 
   @Override
   public void init() {
-    BlueStacksApp.showAndAdjust();
     CharacterModsScreen.init();
     ModScreen.init();
     ModScreenFilter.init();

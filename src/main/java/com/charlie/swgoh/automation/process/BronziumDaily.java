@@ -1,6 +1,5 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.screen.BronziumScreen;
 import com.charlie.swgoh.util.AutomationUtil;
@@ -13,7 +12,6 @@ public class BronziumDaily extends AbstractProcess {
 
   @Override
   public void init() {
-    BlueStacksApp.showAndAdjust();
     BronziumScreen.init();
   }
 

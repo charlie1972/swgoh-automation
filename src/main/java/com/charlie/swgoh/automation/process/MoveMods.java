@@ -1,6 +1,5 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
@@ -36,7 +35,6 @@ public class MoveMods extends AbstractProcess {
 
   @Override
   public void init() {
-    BlueStacksApp.showAndAdjust();
     CharacterModsScreen.init();
     ModScreen.init();
     ModScreenFilter.init();
@@ -108,7 +106,7 @@ public class MoveMods extends AbstractProcess {
       boolean allModsOk = true;
       for (Mod mod : entry.getValue()) {
         ModProcessResult result = processMod(mod);
-        AutomationUtil.waitFor(250L);
+        AutomationUtil.waitFor(500L);
         LOG.info("Process mod: {}", result);
         if (!ModScreen.waitForFilterAndSortButtons()) {
           throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
@@ -117,14 +115,19 @@ public class MoveMods extends AbstractProcess {
         FileUtil.writeToFile(reportFile, mod.toString() + " => " + result);
       }
 
-      AutomationUtil.waitFor(500L);
+      AutomationUtil.waitFor(750L);
       // If we are in a state where the last mod is not found, we have to close the mod stats first
       if (ModScreen.checkForMinusButton()) {
-        AutomationUtil.click(ModScreen.getRegMinusButton().getCenter(), "Clicking on minus button");
-        AutomationUtil.waitFor(500L);
+        AutomationUtil.click(ModScreen.getRegMinusButton(), "Clicking on minus button");
+        AutomationUtil.waitFor(1000L);
       }
-      AutomationUtil.click(ModScreen.getRegConfirmButton().getCenter(), "Clicking on confirm button");
-      AutomationUtil.waitFor(1000L);
+      if (ModScreen.checkForConfirmButton()) {
+        AutomationUtil.click(ModScreen.getRegConfirmButton(), "Clicking on confirm button");
+        AutomationUtil.waitFor(1000L);
+      }
+      else {
+        throw new ProcessException("Mod screen: confirm button not found. Aborting.");
+      }
 
       if (!ModScreen.waitForFilterAndSortButtons()) {
         throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");

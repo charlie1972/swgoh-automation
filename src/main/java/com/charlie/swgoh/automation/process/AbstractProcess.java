@@ -1,9 +1,6 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.AppKeyHolder;
-import com.charlie.swgoh.automation.Configuration;
-import com.charlie.swgoh.automation.FeetbackStatus;
-import com.charlie.swgoh.automation.IFeedback;
+import com.charlie.swgoh.automation.*;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
 import org.slf4j.Logger;
@@ -32,6 +29,7 @@ public abstract class AbstractProcess {
     setMessage("");
     feedbackRunning();
     try {
+      BlueStacksApp.showAndAdjust();
       doProcess();
       feedbackFinished();
     }

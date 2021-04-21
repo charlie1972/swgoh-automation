@@ -31,7 +31,7 @@ public class Configuration {
     Settings.ActionLogs = false;
     Settings.InfoLogs = false;
     Settings.DebugLogs = false;
-    Settings.MoveMouseDelay = 0.1F * (float)Configuration.getSpeed().getDelayMultiplier();
+    Settings.MoveMouseDelay = 0.15F * (float)Configuration.getSpeed().getDelayMultiplier();
 
     Key.removeHotkey('q', KeyModifier.CTRL + KeyModifier.SHIFT);
     Key.addHotkey('q', KeyModifier.CTRL + KeyModifier.SHIFT, new StopAppKeyHandler(feedback));
