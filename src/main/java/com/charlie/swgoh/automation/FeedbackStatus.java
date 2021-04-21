@@ -1,6 +1,6 @@
 package com.charlie.swgoh.automation;
 
-public enum FeetbackStatus {
+public enum FeedbackStatus {
 
   IDLE("Idle"),
   RUNNING("Running... Press Ctrl-Shift-Space to pause. Press Ctrl-Shift-Q to stop."),
@@ -10,7 +10,7 @@ public enum FeetbackStatus {
 
   private final String text;
 
-  FeetbackStatus(String text) {
+  FeedbackStatus(String text) {
     this.text = text;
   }
 

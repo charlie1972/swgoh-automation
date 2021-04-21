@@ -22,7 +22,7 @@ public class PauseAppKeyHandler extends HotkeyListener {
       LOG.info("* Pause signal received *");
       LOG.info("*************************");
       if (feedback != null) {
-        feedback.setStatus(FeetbackStatus.PAUSING);
+        feedback.setStatus(FeedbackStatus.PAUSING);
       }
       AppKeyHolder.isPaused = true;
     }
@@ -31,7 +31,7 @@ public class PauseAppKeyHandler extends HotkeyListener {
       LOG.info("* Unpause signal received *");
       LOG.info("***************************");
       if (feedback != null) {
-        feedback.setStatus(FeetbackStatus.RUNNING);
+        feedback.setStatus(FeedbackStatus.RUNNING);
       }
       AppKeyHolder.isPaused = false;
     }

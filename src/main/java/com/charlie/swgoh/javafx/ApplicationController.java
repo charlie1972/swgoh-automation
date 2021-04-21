@@ -2,7 +2,7 @@ package com.charlie.swgoh.javafx;
 
 import com.charlie.swgoh.automation.AutomationSpeed;
 import com.charlie.swgoh.automation.Configuration;
-import com.charlie.swgoh.automation.FeetbackStatus;
+import com.charlie.swgoh.automation.FeedbackStatus;
 import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.automation.process.*;
 import com.charlie.swgoh.connector.HtmlConnector;
@@ -218,7 +218,7 @@ public class ApplicationController implements IFeedback {
   }
 
   @Override
-  public void setStatus(FeetbackStatus feetbackStatus) {
+  public void setStatus(FeedbackStatus feetbackStatus) {
     Platform.runLater(() -> status.setText(feetbackStatus.toString()));
   }
 

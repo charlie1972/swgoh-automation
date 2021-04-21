@@ -4,7 +4,7 @@ public interface IFeedback {
 
   void setAllControlsDisabled(boolean disabled);
 
-  void setStatus(FeetbackStatus status);
+  void setStatus(FeedbackStatus status);
 
   void setMessage(String message);
 

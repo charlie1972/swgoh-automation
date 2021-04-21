@@ -44,7 +44,7 @@ public abstract class AbstractProcess {
 
   protected abstract void doProcess() throws Exception;
 
-  protected void setStatus(FeetbackStatus status) {
+  protected void setStatus(FeedbackStatus status) {
     if (feedback != null) {
       feedback.setStatus(status);
     }
@@ -76,11 +76,11 @@ public abstract class AbstractProcess {
 
   private void feedbackRunning() {
     setAllControlsDisabled(true);
-    setStatus(FeetbackStatus.RUNNING);
+    setStatus(FeedbackStatus.RUNNING);
   }
 
   private void feedbackPause() {
-    setStatus(FeetbackStatus.PAUSED);
+    setStatus(FeedbackStatus.PAUSED);
   }
 
   private void feedbackFinished() {
@@ -88,7 +88,7 @@ public abstract class AbstractProcess {
   }
 
   private void feedbackIdle() {
-    setStatus(FeetbackStatus.IDLE);
+    setStatus(FeedbackStatus.IDLE);
     setAllControlsDisabled(false);
   }
 
