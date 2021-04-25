@@ -5,31 +5,42 @@ import jakarta.xml.bind.annotation.XmlEnumValue;
 public enum ModSlot {
 
   @XmlEnumValue("square")
-  SQUARE("square"),
+  SQUARE("square", "TRANSMITTER"),
 
   @XmlEnumValue("arrow")
-  ARROW("arrow"),
+  ARROW("arrow", "RECEIVER"),
 
   @XmlEnumValue("diamond")
-  DIAMOND("diamond"),
+  DIAMOND("diamond", "PROCESSOR"),
 
   @XmlEnumValue("triangle")
-  TRIANGLE("triangle"),
+  TRIANGLE("triangle", "HOLO-ARRAY"),
 
   @XmlEnumValue("circle")
-  CIRCLE("circle"),
+  CIRCLE("circle", "DATA-BUS"),
 
   @XmlEnumValue("cross")
-  CROSS("cross");
+  CROSS("cross", "MULTIPLEXER");
 
-  private final String jsonString;
+  private final String shape;
+  private final String name;
 
-  ModSlot(String jsonString) {
-    this.jsonString = jsonString;
+  ModSlot(String shape, String name) {
+    this.shape = shape;
+    this.name = name;
   }
 
   public String toJsonString() {
-    return jsonString;
+    return shape;
+  }
+
+  public static ModSlot fromName(String theName) {
+    for (ModSlot modSlot : ModSlot.values()) {
+      if (modSlot.name.equals(theName)) {
+        return modSlot;
+      }
+    }
+    return null;
   }
 
 }

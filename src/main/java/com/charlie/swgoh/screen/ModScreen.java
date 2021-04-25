@@ -1,23 +1,19 @@
 package com.charlie.swgoh.screen;
 
 import com.charlie.swgoh.automation.BlueStacksApp;
-import com.charlie.swgoh.datamodel.ModSlot;
-import com.charlie.swgoh.datamodel.ModStat;
-import com.charlie.swgoh.datamodel.ModTier;
-import com.charlie.swgoh.datamodel.ModWithStatsInText;
+import com.charlie.swgoh.datamodel.*;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
-import org.sikuli.script.FindFailed;
-import org.sikuli.script.Location;
-import org.sikuli.script.Pattern;
-import org.sikuli.script.Region;
+import org.sikuli.script.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ModScreen {
 
@@ -30,25 +26,49 @@ public class ModScreen {
     FILTER_AND_SORT_BUTTONS
   }
 
-  public static class LevelAndTier {
-    private final int level;
+  public static class DotsTierSetAndSlot {
+    private final int dots;
     private final ModTier tier;
+    private final ModSet set;
+    private final ModSlot slot;
 
-    public LevelAndTier(String levelAsString, String tierAsString) {
-      this.level = Integer.parseInt(levelAsString);
-      this.tier = ModTier.valueOf(tierAsString);
+    public DotsTierSetAndSlot(int dots, ModTier tier, ModSet set, ModSlot slot) {
+      this.dots = dots;
+      this.tier = tier;
+      this.set = set;
+      this.slot = slot;
     }
 
-    public int getLevel() {
-      return level;
+    public int getDots() {
+      return dots;
     }
 
     public ModTier getTier() {
       return tier;
     }
+
+    public ModSet getSet() {
+      return set;
+    }
+
+    public ModSlot getSlot() {
+      return slot;
+    }
   }
 
   private static final Logger LOG = LoggerFactory.getLogger(ModScreen.class);
+
+  private static final java.util.regex.Pattern REGEX_MOD_DESCRIPTION = java.util.regex.Pattern.compile("^MK\\s+([IV]{1,3})-([A-E])\\s+([A-Z ]+)\\s+([A-Z\\-]+?)$");
+
+  private static final Map<String, Integer> ROMAN_NUMERALS_TO_INTEGER_MAP = new HashMap<>();
+  static {
+    ROMAN_NUMERALS_TO_INTEGER_MAP.put("I", 1);
+    ROMAN_NUMERALS_TO_INTEGER_MAP.put("II", 2);
+    ROMAN_NUMERALS_TO_INTEGER_MAP.put("III", 3);
+    ROMAN_NUMERALS_TO_INTEGER_MAP.put("IV", 4);
+    ROMAN_NUMERALS_TO_INTEGER_MAP.put("V", 5);
+    ROMAN_NUMERALS_TO_INTEGER_MAP.put("VI", 6);
+  }
 
   private static final Pattern FILTER_AND_SORT_BUTTONS = new Pattern("mod_screen_filter_and_sort_buttons.png");
   private static final Pattern MINUS_BUTTON = new Pattern("mod_screen_minus_button.png");
@@ -57,6 +77,7 @@ public class ModScreen {
   private static final Pattern ASSIGN_MOD_REMOVE_BUTTON = new Pattern("mod_screen_assign_mod_remove.png");
   private static final Pattern ASSIGN_LOADOUT_ASSIGN_BUTTON = new Pattern("mod_screen_assign_loadout_assign.png");
   private static final Pattern REVERT_BUTTON = new Pattern("mod_screen_revert.png");
+  private static final Pattern SCROLL_BAR_SINGLE_LINE = new Pattern("mod_screen_single_line_scroll.png");
 
   private static Location locBackButton;
   private static Location locFilterButton;
@@ -70,13 +91,16 @@ public class ModScreen {
   private static List<Region> regOtherModSecondaryStats;
   private static Region regFilterAndSortButtons;
   private static List<Region> regModDots;
+  private static Region regBelowFirstModDot;
   private static Region regMinusButton;
   private static Region regUnassignedLabel;
   private static Region regRemoveButton;
   private static Region regAssignLoadoutButton;
   private static Region regRevertButton;
   private static Region regOtherModDots;
+  private static Region regOtherModSetAndSlot;
   private static Region regOtherModLevelAndTier;
+  private static Region regModScrollbar;
 
   public static boolean waitForFilterAndSortButtons() {
     return AutomationUtil.waitForPattern(getRegFilterAndSortButtons(), FILTER_AND_SORT_BUTTONS, "Waiting for filter and sort buttons");
@@ -176,7 +200,6 @@ public class ModScreen {
     mod.setPrimaryStat(primaryStat);
     mod.setSecondaryStats(secondaryStats);
 
-    LOG.info("Extracted mod stats: {}", mod);
     return mod;
   }
 
@@ -189,21 +212,88 @@ public class ModScreen {
     return getRegModDots().size();
   }
 
-  public static int extractOtherModDots() {
-    return AutomationUtil.countPatterns(getRegOtherModDots(), MOD_DOT, "Counting the number of dots in the other mod detail");
+  public static DotsTierSetAndSlot extractOtherModDotsTierSetAndSlot() {
+    String text = AutomationUtil.readLine(getRegOtherModSetAndSlot());
+    Matcher matcher = REGEX_MOD_DESCRIPTION.matcher(text);
+    if (!matcher.matches()) {
+      LOG.warn("Unable to parse tier, set and slot from: {}", text);
+      return null;
+    }
+    String dotsAsString = matcher.group(1);
+    Integer dots = ROMAN_NUMERALS_TO_INTEGER_MAP.get(dotsAsString);
+    String tierAsString = matcher.group(2);
+    ModTier tier = ModTier.valueOf(tierAsString);
+    String setAsString = matcher.group(3);
+    ModSet set = ModSet.fromString(setAsString);
+    String slotAsString = matcher.group(4);
+    ModSlot slot = ModSlot.fromName(slotAsString);
+    if (Stream.of(dots, tier, set, slot).anyMatch(Objects::isNull)) {
+      return null;
+    }
+    return new DotsTierSetAndSlot(dots, tier, set, slot);
   }
 
-  public static LevelAndTier extractOtherModLevelAndTier() {
+  public static int extractOtherModLevel() {
     String text = AutomationUtil.readLine(getRegOtherModLevelAndTier());
     int pos = text.indexOf("-");
     if (pos >= 0) {
       String levelAsString = text.substring(0, pos).trim();
-      String tierAsString = text.substring(pos + 1, pos + 2).trim();
-      return new LevelAndTier(levelAsString, tierAsString);
+      try {
+        return Integer.parseInt(levelAsString);
+      }
+      catch (NumberFormatException e) {
+        throw new ProcessException("Could not extract the mod level from: " + text);      }
     }
     else {
-      throw new ProcessException("Could not extract the mod tier from: " + text);
+      throw new ProcessException("Could not extract the mod level from: " + text);
     }
+  }
+
+  public static boolean dragOtherModsListOneLineUp() {
+    AutomationUtil.mouseMove(ModScreen.getLocOtherMods().get(12), "Move mouse to 1st mod of 4th line");
+    BlueStacksApp.getWindow().mouseDown(Button.LEFT);
+    int mouseY = ModScreen.getLocOtherMods().get(12).getY();
+    boolean isOK = false;
+    while (mouseY > ModScreen.getLocOtherMods().get(0).getY()) {
+      BlueStacksApp.getWindow().mouseMove(0, -11);
+      mouseY -= 11;
+      if (AutomationUtil.checkForPattern(ModScreen.getRegBelowFirstModDot(), MOD_DOT, "Check if dot is just below for top left mod")) {
+        isOK = true;
+        break;
+      }
+    }
+    if (!isOK) {
+      throw new ProcessException("Could not scroll up the mod list");
+    }
+    isOK = false;
+    while (mouseY > ModScreen.getLocOtherMods().get(0).getY()) {
+      BlueStacksApp.getWindow().mouseMove(0, -5);
+      mouseY -= 5;
+      if (AutomationUtil.checkForPattern(ModScreen.getRegModDots().get(0), MOD_DOT, "Check if dot is correctly placed for top left mod")) {
+        isOK = true;
+        break;
+      }
+    }
+    if (!isOK) {
+      throw new ProcessException("Could not scroll up the mod list");
+    }
+    BlueStacksApp.getWindow().mouseUp();
+    AutomationUtil.waitFor(750L);
+
+    return AutomationUtil.checkForPattern(ModScreen.getRegModDots().get(0), MOD_DOT, "Check if drag has been correctly performed");
+  }
+
+  public static double computeModProgress() {
+    List<Match> matches = getRegModScrollbar().findAllList(SCROLL_BAR_SINGLE_LINE).stream().sorted(Comparator.comparing(Match::getY)).collect(Collectors.toList());
+    if (matches.size() == 1) {
+      return 1d;
+    }
+    int topHighlightY = matches.get(0).getY();
+    int bottomHightlightY = matches.get(matches.size() - 1).getY();
+    int highlightedScrollHeight = bottomHightlightY - topHighlightY;
+    int effectiveScrollbarHeight = getRegModScrollbar().getH() - highlightedScrollHeight;
+    int effectiveHighlightPos = topHighlightY - getRegModScrollbar().getY();
+    return (double)effectiveHighlightPos / (double)effectiveScrollbarHeight;
   }
 
   // Init
@@ -252,13 +342,16 @@ public class ModScreen {
         );
       }
     }
+    regBelowFirstModDot = AutomationUtil.getRegion(76, 205, 13, 22);
     regMinusButton = AutomationUtil.getRegion(1161, 92, 85, 84);
     regUnassignedLabel = AutomationUtil.getRegion(793, 110, 155, 30);
     regRemoveButton = AutomationUtil.getRegion(673, 452, 119, 42);
     regAssignLoadoutButton = AutomationUtil.getRegion(659, 554, 94, 38);
     regRevertButton = AutomationUtil.getRegion(854, 568, 100, 36);
     regOtherModDots = AutomationUtil.getRegion(852, 458, 84, 12);
+    regOtherModSetAndSlot = AutomationUtil.getRegion(793, 420, 424, 26);
     regOtherModLevelAndTier = AutomationUtil.getRegion(870, 528, 48, 18);
+    regModScrollbar = AutomationUtil.getRegion(470, 182, 4, 432);
   }
 
   public static Location getLocBackButton() {
@@ -305,6 +398,10 @@ public class ModScreen {
     return regFilterAndSortButtons;
   }
 
+  public static Region getRegBelowFirstModDot() {
+    return regBelowFirstModDot;
+  }
+
   public static List<Region> getRegModDots() {
     return regModDots;
   }
@@ -333,8 +430,16 @@ public class ModScreen {
     return regOtherModDots;
   }
 
+  public static Region getRegOtherModSetAndSlot() {
+    return regOtherModSetAndSlot;
+  }
+
   public static Region getRegOtherModLevelAndTier() {
     return regOtherModLevelAndTier;
+  }
+
+  public static Region getRegModScrollbar() {
+    return regModScrollbar;
   }
 
 }

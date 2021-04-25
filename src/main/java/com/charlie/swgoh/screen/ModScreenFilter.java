@@ -1,9 +1,9 @@
 package com.charlie.swgoh.screen;
 
-import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.datamodel.ModSet;
 import com.charlie.swgoh.datamodel.ModSlot;
 import com.charlie.swgoh.datamodel.ModStatUnit;
+import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.util.AutomationUtil;
 import org.sikuli.script.Location;
 import org.sikuli.script.Pattern;
@@ -11,7 +11,8 @@ import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ModScreenFilter {
 
@@ -51,8 +52,12 @@ public class ModScreenFilter {
     }
   }
 
-  public static void filterForModSlotAndSet(ModSlot slot, ModSet set) {
+  public static void clickDefault() {
     AutomationUtil.click(getLocDefault(), "Clicking on default button");
+  }
+
+  public static void filterForModSlotAndSet(ModSlot slot, ModSet set) {
+    clickDefault();
     AutomationUtil.click(getLocSlots().get(slot), "Clicking on slot: " + slot);
     AutomationUtil.click(getLocSets().get(set), "Clicking on set: " + set);
   }

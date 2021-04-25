@@ -1,8 +1,6 @@
 package com.charlie.swgoh.automation.process;
 
 import com.charlie.swgoh.connector.JsonConnector;
-import com.charlie.swgoh.datamodel.ModSet;
-import com.charlie.swgoh.datamodel.ModSlot;
 import com.charlie.swgoh.datamodel.json.Profile;
 import com.charlie.swgoh.datamodel.json.Progress;
 import com.charlie.swgoh.datamodel.xml.Mod;
@@ -59,86 +57,98 @@ public class ReadUnequippedMods extends AbstractProcess {
     List<com.charlie.swgoh.datamodel.json.Mod> newMods = profile.getMods().stream().filter(mod -> mod.getCharacterID() != null).collect(Collectors.toList());
     profile.setMods(newMods);
 
-    int totalNumber = ModSlot.values().length * ModSet.values().length;
-    int currentNumber = 0;
+    handleKeys();
 
-    for (ModSlot slot : ModSlot.values()) {
-      for (ModSet set : ModSet.values()) {
+    if (!ModScreen.waitForFilterAndSortButtons()) {
+      throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
+    }
+    LOG.info("Reading mods");
+
+    ModScreen.enterModFilter();
+    if (!ModScreenFilter.waitForTitle()) {
+      throw new ProcessException("Mod screen filter: title not found. Aborting.");
+    }
+    ModScreenFilter.ensureUnassignedIsChecked();
+    ModScreenFilter.clickDefault();
+    ModScreenFilter.confirm();
+    AutomationUtil.waitFor(1000L);
+    if (!ModScreen.waitForFilterAndSortButtons()) {
+      throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
+    }
+    ModScreen.dragOtherModsToTop();
+    AutomationUtil.waitFor(1000L);
+
+    int startModIndex = 0;
+    int lineNumber = 0;
+    boolean isContinue;
+    do {
+      int modCount = ModScreen.countModsFromDots();
+      LOG.info("Visible mod count: {}", modCount);
+      double p = ModScreen.computeModProgress();
+      System.out.println(p);
+      setProgress(p);
+      for (int i = startModIndex; i < modCount; i++) {
         handleKeys();
 
-        if (!ModScreen.waitForFilterAndSortButtons()) {
-          throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
+        if (i % 4 == 0) {
+          lineNumber++;
+          setMessage("Reading mods, line #" + lineNumber);
         }
-        String message = "Reading mods with slot: " + slot + " and set: " + set;
-        LOG.info(message);
-        setMessage("Reading mods with slot: " + slot + " and set: " + set);
-        currentNumber++;
-        double progressDouble = (double)currentNumber / (double)totalNumber;
-        setProgress(progressDouble);
-
-        ModScreen.enterModFilter();
-        if (!ModScreenFilter.waitForTitle()) {
-          throw new ProcessException("Mod screen filter: title not found. Aborting.");
-        }
-        ModScreenFilter.ensureUnassignedIsChecked();
-        ModScreenFilter.filterForModSlotAndSet(slot, set);
-        ModScreenFilter.confirm();
-        AutomationUtil.waitFor(750L);
-        if (!ModScreen.waitForFilterAndSortButtons()) {
-          throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
-        }
-        int modCount = ModScreen.countModsFromDots();
-        LOG.info("Mod count: {}", modCount);
-        for (int i = 0; i < modCount; i++) {
-          handleKeys();
-
-          Location loc = ModScreen.getLocOtherMods().get(i);
-          try {
-            Mod mod = readOtherModAtLocation(slot, set, loc);
-            if (mod == null) {
-              continue;
-            }
-            LOG.info("Read mod: {}", mod.toString());
-            com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
-            profile.getMods().add(jsonMod);
+        Location loc = ModScreen.getLocOtherMods().get(i);
+        try {
+          Mod mod = readOtherModAtLocation(loc);
+          if (mod == null) {
+            continue;
           }
-          catch (RuntimeException e) {
-            LOG.warn("Could not read mod for slot {}, set {}, at location #{}. {}: {}", slot, set, i, e.getClass().getName(), e.getMessage());
-            String file = AutomationUtil.takeScreenshot(fileComponents.getDirectoryName());
-            LOG.warn("Screenshot taken: {}", file);
-          }
+          LOG.info("Read mod: {}", mod.toString());
+          com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
+          profile.getMods().add(jsonMod);
+        }
+        catch (RuntimeException e) {
+          LOG.warn("Could not read mod for location #{}. {}: {}", i, e.getClass().getName(), e.getMessage());
+          String file = AutomationUtil.takeScreenshot(fileComponents.getDirectoryName());
+          LOG.warn("Screenshot taken: {}", file);
         }
       }
+      if (modCount < 16) {
+        isContinue = false;
+      }
+      else {
+        startModIndex = 12;
+        isContinue = ModScreen.dragOtherModsListOneLineUp();
+      }
     }
+    while (isContinue);
 
     JsonConnector.writeProgressToFile(progress, resultFileName);
 
     LOG.info("Finished");
   }
 
-  private Mod readOtherModAtLocation(ModSlot slot, ModSet set, Location loc) {
+  private Mod readOtherModAtLocation(Location loc) {
     AutomationUtil.click(loc, "Clicking on other mod");
     AutomationUtil.waitFor(250L);
     if (!ModScreen.waitForMinusButton()) {
       throw new ProcessException("Mod screen: minus button not found. Aborting.");
     }
 
-    ModScreen.LevelAndTier levelAndTier = ModScreen.extractOtherModLevelAndTier();
-    if (levelAndTier.getLevel() < 15) {
+    int level = ModScreen.extractOtherModLevel();
+    if (level < 15) {
       return null;
     }
-    int dots = ModScreen.extractOtherModDots();
-    if (dots < 5) {
+
+    ModScreen.DotsTierSetAndSlot dotsTierSetAndSlot = ModScreen.extractOtherModDotsTierSetAndSlot();
+    if (dotsTierSetAndSlot == null || dotsTierSetAndSlot.getDots() < 5) {
       return null;
     }
 
     Mod mod = ModScreen.extractModStats(false);
     mod.setCharacter(null);
-    mod.setSlot(slot);
-    mod.setSet(set);
-    mod.setDots(dots);
-    mod.setLevel(levelAndTier.getLevel());
-    mod.setTier(levelAndTier.getTier());
+    mod.setSlot(dotsTierSetAndSlot.getSlot());
+    mod.setSet(dotsTierSetAndSlot.getSet());
+    mod.setDots(dotsTierSetAndSlot.getDots());
+    mod.setLevel(level);
+    mod.setTier(dotsTierSetAndSlot.getTier());
     return mod;
   }
 

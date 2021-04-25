@@ -38,6 +38,7 @@ public class Configuration {
     Key.removeHotkey(' ', KeyModifier.CTRL + KeyModifier.SHIFT);
     Key.addHotkey(' ', KeyModifier.CTRL + KeyModifier.SHIFT, new PauseAppKeyHandler(feedback));
 
+    ImagePath.reset();
     ImagePath.add("com.charlie.swgoh.main.FXApp/images");
   }
 

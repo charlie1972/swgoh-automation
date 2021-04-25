@@ -15,7 +15,7 @@ public class TestProcess extends AbstractProcess {
 
   @Override
   protected void doProcess() throws Exception {
-    ModScreen.getRegRevertButton().highlight(10d);
+    ModScreen.computeModProgress();
   }
 
 }
