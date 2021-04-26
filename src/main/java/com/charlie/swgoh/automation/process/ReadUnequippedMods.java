@@ -54,15 +54,17 @@ public class ReadUnequippedMods extends AbstractProcess {
       throw new ProcessException("Profile with ally code " + allyCode + " not found.");
     }
     Profile profile = optProfile.get();
-    List<com.charlie.swgoh.datamodel.json.Mod> newMods = profile.getMods().stream().filter(mod -> mod.getCharacterID() != null).collect(Collectors.toList());
-    profile.setMods(newMods);
+    List<com.charlie.swgoh.datamodel.json.Mod> assignedMods = profile.getMods().stream().filter(mod -> mod.getCharacterID() != null).collect(Collectors.toList());
+    profile.setMods(assignedMods);
 
     handleKeys();
 
     if (!ModScreen.waitForFilterAndSortButtons()) {
       throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
     }
-    LOG.info("Reading mods");
+    String message = "Reading mods";
+    LOG.info(message);
+    setMessage(message);
 
     ModScreen.enterModFilter();
     if (!ModScreenFilter.waitForTitle()) {
@@ -79,28 +81,24 @@ public class ReadUnequippedMods extends AbstractProcess {
     AutomationUtil.waitFor(1000L);
 
     int startModIndex = 0;
-    int lineNumber = 0;
+    int modNumber = 0;
     boolean isContinue;
     do {
       int modCount = ModScreen.countModsFromDots();
       LOG.info("Visible mod count: {}", modCount);
-      double p = ModScreen.computeModProgress();
-      System.out.println(p);
-      setProgress(p);
+      setProgress(ModScreen.computeModProgress());
       for (int i = startModIndex; i < modCount; i++) {
         handleKeys();
 
-        if (i % 4 == 0) {
-          lineNumber++;
-          setMessage("Reading mods, line #" + lineNumber);
-        }
         Location loc = ModScreen.getLocOtherMods().get(i);
         try {
+          modNumber++;
+          setMessage("Reading mod #" + modNumber);
           Mod mod = readOtherModAtLocation(loc);
           if (mod == null) {
             continue;
           }
-          LOG.info("Read mod: {}", mod.toString());
+          LOG.info("Read mod: {}", mod);
           com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
           profile.getMods().add(jsonMod);
         }

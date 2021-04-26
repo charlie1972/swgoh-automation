@@ -59,6 +59,26 @@ public class AutomationUtil {
     mouseMoveRegion(BlueStacksApp.getWindow(), element, description);
   }
 
+  public static void mouseMove(int xoff, int yoff, String description) {
+    LOG.debug("Move mouse xoff={}, yoff={}: {}", xoff, yoff, description);
+    BlueStacksApp.getWindow().mouseMove(xoff, yoff);
+  }
+
+  public static void mouseDown(int buttons, String description) {
+    LOG.debug("Mouse down (buttons={}): {}", buttons, description);
+    BlueStacksApp.getWindow().mouseDown(buttons);
+  }
+
+  public static void mouseUp(String description) {
+    LOG.debug("Mouse up: {}", description);
+    BlueStacksApp.getWindow().mouseUp();
+  }
+
+  public static <T> void dragDrop(T fromElement, T toElement, String description) throws FindFailed {
+    LOG.debug("Drag drop from={}, to={}: {}", fromElement, toElement, description);
+    BlueStacksApp.getWindow().dragDrop(fromElement, toElement);
+  }
+
   public static <T> void clickRegion(Region region, T element, String description) {
     try {
       LOG.debug( "{}: clicking on {}", description, element);

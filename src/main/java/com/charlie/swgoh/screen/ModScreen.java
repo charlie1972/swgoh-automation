@@ -166,9 +166,10 @@ public class ModScreen {
 
   public static void dragOtherModsToTop() {
     try {
-      BlueStacksApp.getWindow().dragDrop(
+      AutomationUtil.dragDrop(
               getLocOtherMods().get(0),
-              getLocOtherMods().get(8)
+              getLocOtherMods().get(8),
+              "Dragging mods to top"
       );
     }
     catch (FindFailed ffe) {
@@ -251,41 +252,48 @@ public class ModScreen {
 
   public static boolean dragOtherModsListOneLineUp() {
     AutomationUtil.mouseMove(ModScreen.getLocOtherMods().get(12), "Move mouse to 1st mod of 4th line");
-    BlueStacksApp.getWindow().mouseDown(Button.LEFT);
+    AutomationUtil.mouseDown(Button.LEFT, "Start drag");
     int mouseY = ModScreen.getLocOtherMods().get(12).getY();
+    int movement = -22;
+    int halfwayY = (ModScreen.getLocOtherMods().get(12).getY() + ModScreen.getLocOtherMods().get(8).getY()) / 2;
+    while (mouseY > halfwayY) {
+      AutomationUtil.mouseMove(0, movement, "Move up: fast");
+      mouseY += movement;
+    }
+    movement = -11;
     boolean isOK = false;
     while (mouseY > ModScreen.getLocOtherMods().get(0).getY()) {
-      BlueStacksApp.getWindow().mouseMove(0, -11);
-      mouseY -= 11;
+      AutomationUtil.mouseMove(0, movement, "Move up: medium");
+      mouseY += movement;
       if (AutomationUtil.checkForPattern(ModScreen.getRegBelowFirstModDot(), MOD_DOT, "Check if dot is just below for top left mod")) {
         isOK = true;
         break;
       }
     }
-    if (!isOK) {
-      throw new ProcessException("Could not scroll up the mod list");
-    }
-    isOK = false;
-    while (mouseY > ModScreen.getLocOtherMods().get(0).getY()) {
-      BlueStacksApp.getWindow().mouseMove(0, -5);
-      mouseY -= 5;
-      if (AutomationUtil.checkForPattern(ModScreen.getRegModDots().get(0), MOD_DOT, "Check if dot is correctly placed for top left mod")) {
-        isOK = true;
-        break;
+    if (isOK) {
+      movement = -5;
+      isOK = false;
+      while (mouseY > ModScreen.getLocOtherMods().get(0).getY()) {
+        AutomationUtil.mouseMove(0, movement, "Move up: slow");
+        mouseY += movement;
+        if (AutomationUtil.checkForPattern(ModScreen.getRegModDots().get(0), MOD_DOT, "Check if dot is correctly placed for top left mod")) {
+          isOK = true;
+          break;
+        }
       }
     }
     if (!isOK) {
       throw new ProcessException("Could not scroll up the mod list");
     }
-    BlueStacksApp.getWindow().mouseUp();
-    AutomationUtil.waitFor(750L);
+    AutomationUtil.mouseUp("End drag");
+    AutomationUtil.waitFor(500L);
 
     return AutomationUtil.checkForPattern(ModScreen.getRegModDots().get(0), MOD_DOT, "Check if drag has been correctly performed");
   }
 
   public static double computeModProgress() {
     List<Match> matches = getRegModScrollbar().findAllList(SCROLL_BAR_SINGLE_LINE).stream().sorted(Comparator.comparing(Match::getY)).collect(Collectors.toList());
-    if (matches.size() == 1) {
+    if (matches.size() < 2) {
       return 1d;
     }
     int topHighlightY = matches.get(0).getY();
