@@ -34,9 +34,6 @@ public class ReadUnequippedMods extends AbstractProcess {
 
   @Override
   public void init() {
-    CharacterModsScreen.init();
-    ModScreen.init();
-    ModScreenFilter.init();
   }
 
   @Override
@@ -90,7 +87,7 @@ public class ReadUnequippedMods extends AbstractProcess {
       for (int i = startModIndex; i < modCount; i++) {
         handleKeys();
 
-        Location loc = ModScreen.getLocOtherMods().get(i);
+        Location loc = ModScreen.LL_OTHER_MODS.get(i);
         try {
           modNumber++;
           setMessage("Reading mod #" + modNumber);

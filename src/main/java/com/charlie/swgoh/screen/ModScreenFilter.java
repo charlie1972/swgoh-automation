@@ -1,5 +1,6 @@
 package com.charlie.swgoh.screen;
 
+import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.datamodel.ModSet;
 import com.charlie.swgoh.datamodel.ModSlot;
 import com.charlie.swgoh.datamodel.ModStatUnit;
@@ -20,160 +21,115 @@ public class ModScreenFilter {
 
   private static final Logger LOG = LoggerFactory.getLogger(ModScreenFilter.class);
 
-  private static final long DELAY = 1000L;
-  private static final Pattern TITLE = new Pattern("mod_screen_filter_title.png");
-  private static final Pattern UNASSIGNED_CHECKBOX_UNCHECKED = new Pattern("mod_screen_filter_unassigned_unchecked.png");
+  // Image patterns
+  static {
+    Configuration.configureImagePath();
+  }
+  private static final Pattern P_TITLE = new Pattern("mod_screen_filter_title.png");
+  private static final Pattern P_UNASSIGNED_CHECKBOX_UNCHECKED = new Pattern("mod_screen_filter_unassigned_unchecked.png");
 
-  private static Location locUnassignedCheckbox;
-  private static Location locConfirm;
-  private static Location locDefault;
-  private static Map<ModSlot, Location> locSlots;
-  private static Map<ModSet, Location> locSets;
-  private static Map<ModStatUnit, Location> locPrimaryStats;
-  private static Map<ModStatUnit, Location> locSecondaryStats;
-  private static Region regTitle;
-  private static Region regUnassignedCheckbox;
+  // Locations
+  public static final Location L_UNASSIGNED_CHECKBOX = new Location(252, 151);
+  public static final Location L_CONFIRM = new Location(853, 634);
+  public static final Location L_DEFAULT = new Location(422, 634);
+  public static final Map<ModSlot, Location> LM_SLOTS = new LinkedHashMap<>();
+  static {
+    LM_SLOTS.put(ModSlot.SQUARE, new Location(405, 216));
+    LM_SLOTS.put(ModSlot.ARROW, new Location(460, 216));
+    LM_SLOTS.put(ModSlot.DIAMOND, new Location(515, 216));
+    LM_SLOTS.put(ModSlot.TRIANGLE, new Location(570, 216));
+    LM_SLOTS.put(ModSlot.CIRCLE, new Location(625, 216));
+    LM_SLOTS.put(ModSlot.CROSS, new Location(680, 216));
+  }
+  public static final Map<ModSet, Location> LM_SETS = new LinkedHashMap<>();
+  static {
+    LM_SETS.put(ModSet.HEALTH, new Location(405, 277));
+    LM_SETS.put(ModSet.DEFENSE, new Location(460, 277));
+    LM_SETS.put(ModSet.CRIT_DAMAGE, new Location(515, 277));
+    LM_SETS.put(ModSet.CRIT_CHANCE, new Location(570, 277));
+    LM_SETS.put(ModSet.TENACITY, new Location(625, 277));
+    LM_SETS.put(ModSet.OFFENSE, new Location(680, 277));
+    LM_SETS.put(ModSet.POTENCY, new Location(735, 277));
+    LM_SETS.put(ModSet.SPEED, new Location(790, 277));
+  }
+  public static final Map<ModStatUnit, Location> LM_PRIMARY_STATS = new LinkedHashMap<>();
+  static {
+    LM_PRIMARY_STATS.put(ModStatUnit.ACCURACY_PCT, new Location(433, 338));
+    LM_PRIMARY_STATS.put(ModStatUnit.OFFENSE_PCT, new Location(433, 398));
+    LM_PRIMARY_STATS.put(ModStatUnit.CRIT_AVOIDANCE_PCT, new Location(545, 338));
+    LM_PRIMARY_STATS.put(ModStatUnit.POTENCY, new Location(545, 398));
+    LM_PRIMARY_STATS.put(ModStatUnit.CRIT_CHANCE_PCT, new Location(657, 338));
+    LM_PRIMARY_STATS.put(ModStatUnit.PROTECTION_PCT, new Location(657, 398));
+    LM_PRIMARY_STATS.put(ModStatUnit.CRIT_DAMAGE, new Location(769, 338));
+    LM_PRIMARY_STATS.put(ModStatUnit.SPEED, new Location(769, 398));
+    LM_PRIMARY_STATS.put(ModStatUnit.DEFENSE_PCT, new Location(881, 338));
+    LM_PRIMARY_STATS.put(ModStatUnit.TENACITY, new Location(881, 398));
+    LM_PRIMARY_STATS.put(ModStatUnit.HEALTH_PCT, new Location(993, 338));
+  }
+  public static final Map<ModStatUnit, Location> LM_SECONDARY_STATS = new LinkedHashMap<>();
+  static {
+    LM_SECONDARY_STATS.put(ModStatUnit.CRIT_CHANCE_PCT, new Location(433, 510));
+    LM_SECONDARY_STATS.put(ModStatUnit.OFFENSE_PCT, new Location(433, 565));
+    LM_SECONDARY_STATS.put(ModStatUnit.DEFENSE_FLAT, new Location(545, 510));
+    LM_SECONDARY_STATS.put(ModStatUnit.POTENCY, new Location(545, 565));
+    LM_SECONDARY_STATS.put(ModStatUnit.DEFENSE_PCT, new Location(657, 510));
+    LM_SECONDARY_STATS.put(ModStatUnit.PROTECTION_FLAT, new Location(657, 565));
+    LM_SECONDARY_STATS.put(ModStatUnit.HEALTH_FLAT, new Location(769, 510));
+    LM_SECONDARY_STATS.put(ModStatUnit.PROTECTION_PCT, new Location(769, 565));
+    LM_SECONDARY_STATS.put(ModStatUnit.HEALTH_PCT, new Location(881, 510));
+    LM_SECONDARY_STATS.put(ModStatUnit.SPEED, new Location(881, 565));
+    LM_SECONDARY_STATS.put(ModStatUnit.OFFENSE_FLAT, new Location(993, 510));
+    LM_SECONDARY_STATS.put(ModStatUnit.TENACITY, new Location(993, 565));
+  }
+
+  // Regions
+  public static final Region R_TITLE = new Region(540, 51, 202, 48);
+  public static final Region R_UNASSIGNED_CHECKBOX = new Region(220, 120, 64, 64);
 
   public static boolean waitForTitle() {
-    return AutomationUtil.waitForPattern(getRegTitle(), TITLE, "Waiting for title");
+    return AutomationUtil.waitForPattern(R_TITLE, P_TITLE, "Waiting for title");
   }
 
   public static void ensureUnassignedIsUnchecked() {
-    if (!AutomationUtil.checkForPattern(getRegUnassignedCheckbox(), UNASSIGNED_CHECKBOX_UNCHECKED, "Checking if the unassigned checkbox is unchecked")) {
+    if (!AutomationUtil.checkForPattern(R_UNASSIGNED_CHECKBOX, P_UNASSIGNED_CHECKBOX_UNCHECKED, "Checking if the unassigned checkbox is unchecked")) {
       // If pattern not found => click on the checkbox
-      AutomationUtil.click(getLocUnassignedCheckbox(), "Unchecking the unassigned checkbox");
+      AutomationUtil.click(L_UNASSIGNED_CHECKBOX, "Unchecking the unassigned checkbox");
     }
   }
 
   public static void ensureUnassignedIsChecked() {
-    if (AutomationUtil.checkForPattern(getRegUnassignedCheckbox(), UNASSIGNED_CHECKBOX_UNCHECKED, "Checking if the unassigned checkbox is checked")) {
+    if (AutomationUtil.checkForPattern(R_UNASSIGNED_CHECKBOX, P_UNASSIGNED_CHECKBOX_UNCHECKED, "Checking if the unassigned checkbox is checked")) {
       // If pattern found => click on the checkbox
-      AutomationUtil.click(getLocUnassignedCheckbox(), "Checking the unassigned checkbox");
+      AutomationUtil.click(L_UNASSIGNED_CHECKBOX, "Checking the unassigned checkbox");
     }
   }
 
   public static void clickDefault() {
-    AutomationUtil.click(getLocDefault(), "Clicking on default button");
+    AutomationUtil.click(L_DEFAULT, "Clicking on default button");
   }
 
   public static void filterForModSlotAndSet(ModSlot slot, ModSet set) {
     clickDefault();
-    AutomationUtil.click(getLocSlots().get(slot), "Clicking on slot: " + slot);
-    AutomationUtil.click(getLocSets().get(set), "Clicking on set: " + set);
+    AutomationUtil.click(LM_SLOTS.get(slot), "Clicking on slot: " + slot);
+    AutomationUtil.click(LM_SETS.get(set), "Clicking on set: " + set);
   }
 
   public static void filterForMod(Mod mod) {
     filterForModSlotAndSet(mod.getSlot(), mod.getSet());
 
     ModStatUnit primaryStatUnit = mod.getPrimaryStat().getUnit();
-    AutomationUtil.click(getLocPrimaryStats().get(primaryStatUnit), "Clicking on primary stat: " + primaryStatUnit);
+    AutomationUtil.click(LM_PRIMARY_STATS.get(primaryStatUnit), "Clicking on primary stat: " + primaryStatUnit);
 
     mod.getSecondaryStats().stream()
-            .sorted((stat1, stat2) -> getLocSecondaryStats().get(stat2.getUnit()).compareTo(getLocSecondaryStats().get(stat1.getUnit())))
+            .sorted((stat1, stat2) -> LM_SECONDARY_STATS.get(stat2.getUnit()).compareTo(LM_SECONDARY_STATS.get(stat1.getUnit())))
             .forEach(modStat -> {
                       ModStatUnit secondaryStatUnit = modStat.getUnit();
-                      AutomationUtil.click(getLocSecondaryStats().get(secondaryStatUnit), "Clicking on secondary stat: " + secondaryStatUnit);
+                      AutomationUtil.click(LM_SECONDARY_STATS.get(secondaryStatUnit), "Clicking on secondary stat: " + secondaryStatUnit);
             });
   }
 
   public static void confirm() {
-    AutomationUtil.click(getLocConfirm(), "Clicking on confirm button");
-  }
-
-  // Init
-
-  public static void init() {
-    locUnassignedCheckbox = AutomationUtil.getLocation(252, 151);
-    locConfirm = AutomationUtil.getLocation(853, 634);
-    locDefault = AutomationUtil.getLocation(422, 634);
-
-    locSlots = new LinkedHashMap<>();
-    locSlots.put(ModSlot.SQUARE, AutomationUtil.getLocation(405, 216));
-    locSlots.put(ModSlot.ARROW, AutomationUtil.getLocation(460, 216));
-    locSlots.put(ModSlot.DIAMOND, AutomationUtil.getLocation(515, 216));
-    locSlots.put(ModSlot.TRIANGLE, AutomationUtil.getLocation(570, 216));
-    locSlots.put(ModSlot.CIRCLE, AutomationUtil.getLocation(625, 216));
-    locSlots.put(ModSlot.CROSS, AutomationUtil.getLocation(680, 216));
-
-    locSets = new LinkedHashMap<>();
-    locSets.put(ModSet.HEALTH, AutomationUtil.getLocation(405, 277));
-    locSets.put(ModSet.DEFENSE, AutomationUtil.getLocation(460, 277));
-    locSets.put(ModSet.CRIT_DAMAGE, AutomationUtil.getLocation(515, 277));
-    locSets.put(ModSet.CRIT_CHANCE, AutomationUtil.getLocation(570, 277));
-    locSets.put(ModSet.TENACITY, AutomationUtil.getLocation(625, 277));
-    locSets.put(ModSet.OFFENSE, AutomationUtil.getLocation(680, 277));
-    locSets.put(ModSet.POTENCY, AutomationUtil.getLocation(735, 277));
-    locSets.put(ModSet.SPEED, AutomationUtil.getLocation(790, 277));
-
-    locPrimaryStats = new LinkedHashMap<>();
-    locPrimaryStats.put(ModStatUnit.ACCURACY_PCT, AutomationUtil.getLocation(433, 338));
-    locPrimaryStats.put(ModStatUnit.OFFENSE_PCT, AutomationUtil.getLocation(433, 398));
-    locPrimaryStats.put(ModStatUnit.CRIT_AVOIDANCE_PCT, AutomationUtil.getLocation(545, 338));
-    locPrimaryStats.put(ModStatUnit.POTENCY, AutomationUtil.getLocation(545, 398));
-    locPrimaryStats.put(ModStatUnit.CRIT_CHANCE_PCT, AutomationUtil.getLocation(657, 338));
-    locPrimaryStats.put(ModStatUnit.PROTECTION_PCT, AutomationUtil.getLocation(657, 398));
-    locPrimaryStats.put(ModStatUnit.CRIT_DAMAGE, AutomationUtil.getLocation(769, 338));
-    locPrimaryStats.put(ModStatUnit.SPEED, AutomationUtil.getLocation(769, 398));
-    locPrimaryStats.put(ModStatUnit.DEFENSE_PCT, AutomationUtil.getLocation(881, 338));
-    locPrimaryStats.put(ModStatUnit.TENACITY, AutomationUtil.getLocation(881, 398));
-    locPrimaryStats.put(ModStatUnit.HEALTH_PCT, AutomationUtil.getLocation(993, 338));
-
-    locSecondaryStats = new LinkedHashMap<>();
-    locSecondaryStats.put(ModStatUnit.CRIT_CHANCE_PCT, AutomationUtil.getLocation(433, 510));
-    locSecondaryStats.put(ModStatUnit.OFFENSE_PCT, AutomationUtil.getLocation(433, 565));
-    locSecondaryStats.put(ModStatUnit.DEFENSE_FLAT, AutomationUtil.getLocation(545, 510));
-    locSecondaryStats.put(ModStatUnit.POTENCY, AutomationUtil.getLocation(545, 565));
-    locSecondaryStats.put(ModStatUnit.DEFENSE_PCT, AutomationUtil.getLocation(657, 510));
-    locSecondaryStats.put(ModStatUnit.PROTECTION_FLAT, AutomationUtil.getLocation(657, 565));
-    locSecondaryStats.put(ModStatUnit.HEALTH_FLAT, AutomationUtil.getLocation(769, 510));
-    locSecondaryStats.put(ModStatUnit.PROTECTION_PCT, AutomationUtil.getLocation(769, 565));
-    locSecondaryStats.put(ModStatUnit.HEALTH_PCT, AutomationUtil.getLocation(881, 510));
-    locSecondaryStats.put(ModStatUnit.SPEED, AutomationUtil.getLocation(881, 565));
-    locSecondaryStats.put(ModStatUnit.OFFENSE_FLAT, AutomationUtil.getLocation(993, 510));
-    locSecondaryStats.put(ModStatUnit.TENACITY, AutomationUtil.getLocation(993, 565));
-
-    regTitle = AutomationUtil.getRegion(540, 51, 202, 48);
-    regUnassignedCheckbox = AutomationUtil.getRegion(220, 120, 64, 64);
-  }
-
-  // Locations
-
-  public static Location getLocUnassignedCheckbox() {
-    return locUnassignedCheckbox;
-  }
-
-  public static Location getLocConfirm() {
-    return locConfirm;
-  }
-
-  public static Location getLocDefault() {
-    return locDefault;
-  }
-
-  public static Map<ModSlot, Location> getLocSlots() {
-    return locSlots;
-  }
-
-  public static Map<ModSet, Location> getLocSets() {
-    return locSets;
-  }
-
-  public static Map<ModStatUnit, Location> getLocPrimaryStats() {
-    return locPrimaryStats;
-  }
-
-  public static Map<ModStatUnit, Location> getLocSecondaryStats() {
-    return locSecondaryStats;
-  }
-
-  // Regions
-
-  public static Region getRegTitle() {
-    return regTitle;
-  }
-
-  public static Region getRegUnassignedCheckbox() {
-    return regUnassignedCheckbox;
+    AutomationUtil.click(L_CONFIRM, "Clicking on confirm button");
   }
 
 }

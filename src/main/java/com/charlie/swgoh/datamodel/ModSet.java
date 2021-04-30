@@ -1,6 +1,6 @@
 package com.charlie.swgoh.datamodel;
 
-import com.charlie.swgoh.util.AutomationUtil;
+import com.charlie.swgoh.util.StringUtil;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
@@ -45,7 +45,7 @@ public enum ModSet {
     if (s == null) {
       return null;
     }
-    String stripped = AutomationUtil.stripSpaces(s);
+    String stripped = StringUtil.stripSpaces(s);
     for (ModSet modSet : ModSet.values()) {
       if (modSet.text.equalsIgnoreCase(stripped)) {
         return modSet;

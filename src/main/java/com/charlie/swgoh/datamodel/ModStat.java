@@ -1,7 +1,7 @@
 package com.charlie.swgoh.datamodel;
 
-import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.util.ModUtil;
+import com.charlie.swgoh.util.StringUtil;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -27,15 +27,15 @@ public class ModStat {
     this(rolls, Double.parseDouble(value), unit);
   }
 
-  public ModStat(String str) {
-    String str2 = AutomationUtil.stripSpaces(str);
+  public ModStat(String str, InputType inputType) {
+    String str2 = StringUtil.stripSpaces(str);
     Matcher matcher = PATTERN.matcher(str2);
     if (!matcher.matches()) {
       throw new IllegalArgumentException(str + " is an invalid mod stat");
     }
     this.rolls = (matcher.group(1) == null || matcher.group(1).isEmpty()) ? 0 : Integer.parseInt(matcher.group(2));
     this.value = Double.parseDouble(matcher.group(3));
-    this.unit = ModStatUnit.fromString(matcher.group(4));
+    this.unit = ModStatUnit.fromString(matcher.group(4), inputType);
   }
 
   public int getRolls() {

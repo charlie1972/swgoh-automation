@@ -8,6 +8,7 @@ import com.charlie.swgoh.screen.ModScreen;
 import com.charlie.swgoh.screen.ModScreenFilter;
 import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.util.FileUtil;
+import com.charlie.swgoh.util.ModUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +36,6 @@ public class MoveMods extends AbstractProcess {
 
   @Override
   public void init() {
-    CharacterModsScreen.init();
-    ModScreen.init();
-    ModScreenFilter.init();
   }
 
   @Override
@@ -118,11 +116,11 @@ public class MoveMods extends AbstractProcess {
       AutomationUtil.waitFor(750L);
       // If we are in a state where the last mod is not found, we have to close the mod stats first
       if (ModScreen.checkForMinusButton()) {
-        AutomationUtil.click(ModScreen.getRegMinusButton(), "Clicking on minus button");
+        AutomationUtil.click(ModScreen.R_MINUS_BUTTON, "Clicking on minus button");
         AutomationUtil.waitFor(1000L);
       }
       if (ModScreen.checkForRevertButton()) {
-        AutomationUtil.click(ModScreen.getLocConfirmButton(), "Clicking on confirm button");
+        AutomationUtil.click(ModScreen.L_CONFIRM_BUTTON, "Clicking on confirm button");
         AutomationUtil.waitFor(1000L);
       }
       else {
@@ -155,12 +153,12 @@ public class MoveMods extends AbstractProcess {
     AutomationUtil.waitFor(250L);
 
     // Check if the required mod is already assigned
-    AutomationUtil.click(ModScreen.getLocCharModMap().get(mod.getSlot()), "Clicking on character mod with slot " + mod.getSlot());
+    AutomationUtil.click(ModScreen.LM_CHAR_MOD_MAP.get(mod.getSlot()), "Clicking on character mod with slot " + mod.getSlot());
     if (!ModScreen.waitForMinusButton()) {
       throw new ProcessException("Mod screen: minus button not found. Aborting.");
     }
     AutomationUtil.waitFor(250L);
-    if (!ModScreen.checkForUnassignedLabel() && AutomationUtil.matchMods(mod, ModScreen.extractModText(true))) {
+    if (!ModScreen.checkForUnassignedLabel() && ModUtil.matchMods(mod, ModScreen.extractModText(true))) {
       return ModProcessResult.ALREADY_ASSIGNED;
     }
 
@@ -186,12 +184,12 @@ public class MoveMods extends AbstractProcess {
       LOG.error("No mod after filter!!");
     }
     for (int i = 0; i < modCount; i++) {
-      AutomationUtil.click(ModScreen.getLocOtherMods().get(i), "Clicking on mod #" + i);
+      AutomationUtil.click(ModScreen.LL_OTHER_MODS.get(i), "Clicking on mod #" + i);
       if (!ModScreen.waitForMinusButton()) {
         throw new ProcessException("Mod screen: minus button not found. Aborting.");
       }
       AutomationUtil.waitFor(250L);
-      if (AutomationUtil.matchMods(mod, ModScreen.extractModText(false))) {
+      if (ModUtil.matchMods(mod, ModScreen.extractModText(false))) {
         foundMod = true;
         foundModIndex = i;
         break;
@@ -199,17 +197,17 @@ public class MoveMods extends AbstractProcess {
     }
     if (foundMod) {
       LOG.info("Mod found in index {}", foundModIndex);
-      AutomationUtil.click(ModScreen.getLocOtherMods().get(foundModIndex), "Clicking again on found mod #" + foundModIndex + " to assign it");
+      AutomationUtil.click(ModScreen.LL_OTHER_MODS.get(foundModIndex), "Clicking again on found mod #" + foundModIndex + " to assign it");
       AutomationUtil.waitFor(750L);
       ModScreen.StateAfterModMoveOrder status = ModScreen.waitAndGetStateAfterModMoveOrder();
       if (status == ModScreen.StateAfterModMoveOrder.NONE) {
         throw new ProcessException("Could not assign the mod; aborting");
       }
       if (status == ModScreen.StateAfterModMoveOrder.ASSIGN_LOADOUT_BUTTON) {
-        AutomationUtil.click(ModScreen.getRegAssignLoadoutButton().getCenter(), "Clicking on assign button");
+        AutomationUtil.click(ModScreen.R_ASSIGN_LOADOUT_BUTTON.getCenter(), "Clicking on assign button");
       }
       if (status == ModScreen.StateAfterModMoveOrder.REMOVE_BUTTON) {
-        AutomationUtil.click(ModScreen.getRegRemoveButton().getCenter(), "Clicking on remove button");
+        AutomationUtil.click(ModScreen.R_REMOVE_BUTTON.getCenter(), "Clicking on remove button");
       }
       // Last case is the mod has been assigned without dialog box, returning immediately
       LOG.info("Mod has been assigned without dialog box");

@@ -14,6 +14,7 @@ import com.charlie.swgoh.util.FileUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -35,6 +36,9 @@ public class ApplicationController implements IFeedback {
 
   @FXML
   private TabPane tabPane;
+
+  @FXML
+  private HBox controls;
 
   @FXML
   private Button aboutButton;
@@ -249,8 +253,7 @@ public class ApplicationController implements IFeedback {
   public void setAllControlsDisabled(boolean disabled) {
     Platform.runLater(() -> {
       tabPane.setDisable(disabled);
-      aboutButton.setDisable(disabled);
-      runButton.setDisable(disabled);
+      controls.setDisable(disabled);
     });
   }
 

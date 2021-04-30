@@ -10,7 +10,6 @@ public class TestProcess extends AbstractProcess {
 
   @Override
   public void init() {
-    ModScreen.init();
   }
 
   @Override
