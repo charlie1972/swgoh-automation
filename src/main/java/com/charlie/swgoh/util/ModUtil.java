@@ -1,8 +1,10 @@
 package com.charlie.swgoh.util;
 
+import com.charlie.swgoh.datamodel.ModStat;
 import com.charlie.swgoh.datamodel.ModWithStatsInText;
 import com.charlie.swgoh.datamodel.json.Mod;
 import com.charlie.swgoh.exception.ProcessException;
+import com.charlie.swgoh.screen.ModScreen;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 public class ModUtil {
 

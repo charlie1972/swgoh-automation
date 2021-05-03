@@ -1,5 +1,6 @@
 package com.charlie.swgoh.automation.process;
 
+import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
@@ -8,7 +9,7 @@ import com.charlie.swgoh.screen.ModScreen;
 import com.charlie.swgoh.screen.ModScreenFilter;
 import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.util.FileUtil;
-import com.charlie.swgoh.util.ModUtil;
+import org.sikuli.script.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,7 @@ public class MoveMods extends AbstractProcess {
   private static final Logger LOG = LoggerFactory.getLogger(MoveMods.class);
 
   private String fileName;
+  private boolean isDryRun;
 
   private enum ModProcessResult {
     ALREADY_ASSIGNED,
@@ -32,6 +34,7 @@ public class MoveMods extends AbstractProcess {
   @Override
   public void setParameters(String... parameters) {
     fileName = parameters[0];
+    isDryRun = Boolean.parseBoolean(parameters[1]);
   }
 
   @Override
@@ -59,15 +62,15 @@ public class MoveMods extends AbstractProcess {
             "txt"
     ).toString();
 
-    if (!CharacterModsScreen.waitForCharacterModsTitle()) {
-      throw new ProcessException("Character mods screen: title text not found. Aborting.");
-    }
-
     Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(fileName);
     FileUtil.deleteFileIfExists(attentionCharactersFile);
     List<String> alreadyProcessedCharacters = FileUtil.readFromFile(processedCharactersFile);
     LOG.info("Characters already processed: {}", alreadyProcessedCharacters);
     alreadyProcessedCharacters.forEach(modMap.keySet()::remove);
+
+    if (!CharacterModsScreen.waitForCharacterModsTitle()) {
+      throw new ProcessException("Character mods screen: title text not found. Aborting.");
+    }
 
     int numberOfCharactersToProcess = modMap.size();
     int numberOfProcessedCharacters = 0;
@@ -99,8 +102,6 @@ public class MoveMods extends AbstractProcess {
         throw new ProcessException("Mod screen: name on screen doesn't match " + characterName + ". Aborting.");
       }
 
-      ModScreen.dragOtherModsToTop();
-
       boolean allModsOk = true;
       for (Mod mod : entry.getValue()) {
         ModProcessResult result = processMod(mod);
@@ -113,18 +114,28 @@ public class MoveMods extends AbstractProcess {
         FileUtil.writeToFile(reportFile, mod.toString() + " => " + result);
       }
 
+      // Finalizing
       AutomationUtil.waitFor(750L);
-      // If we are in a state where the last mod is not found, we have to close the mod stats first
+      // There are cases where the mod stats panels are open, we have to close them first
       if (ModScreen.checkForMinusButton()) {
         AutomationUtil.click(ModScreen.R_MINUS_BUTTON, "Clicking on minus button");
         AutomationUtil.waitFor(1000L);
       }
+      // Confirm or revert if the buttons are present
+      // Otherwise do nothing, the character's mods have not been changed
       if (ModScreen.checkForRevertButton()) {
-        AutomationUtil.click(ModScreen.L_CONFIRM_BUTTON, "Clicking on confirm button");
+        if (!isDryRun) {
+          AutomationUtil.click(ModScreen.L_CONFIRM_BUTTON, "Clicking on confirm button");
+        }
+        else {
+          AutomationUtil.click(ModScreen.R_REVERT_BUTTON, "Clicking on revert button");
+          AutomationUtil.waitFor(1000L);
+          if (!ModScreen.checkForDialogBoxOk()) {
+            throw new ProcessException("Mod screen: dialog box OK not found. Aborting.");
+          }
+          AutomationUtil.click(ModScreen.R_DIALOG_BOX_OK, "Clicking on dialog box OK");
+        }
         AutomationUtil.waitFor(1000L);
-      }
-      else {
-        throw new ProcessException("Mod screen: confirm button not found. Aborting.");
       }
 
       if (!ModScreen.waitForFilterAndSortButtons()) {
@@ -158,7 +169,7 @@ public class MoveMods extends AbstractProcess {
       throw new ProcessException("Mod screen: minus button not found. Aborting.");
     }
     AutomationUtil.waitFor(250L);
-    if (!ModScreen.checkForUnassignedLabel() && ModUtil.matchMods(mod, ModScreen.extractModText(true))) {
+    if (!ModScreen.checkForUnassignedLabel() && ModScreen.matchMods(mod, true)) {
       return ModProcessResult.ALREADY_ASSIGNED;
     }
 
@@ -174,30 +185,21 @@ public class MoveMods extends AbstractProcess {
     if (!ModScreen.waitForFilterAndSortButtons()) {
       throw new ProcessException("Mod screen: buttons not found. Aborting.");
     }
+
+    // Iterate through the mods
     boolean foundMod = false;
-    int foundModIndex = -1;
-    int modCount = ModScreen.countModsFromDots();
-    if (modCount != 0) {
-      LOG.info("Number of mods found after filter: {}", modCount);
-    }
-    else {
-      LOG.error("No mod after filter!!");
-    }
-    for (int i = 0; i < modCount; i++) {
-      AutomationUtil.click(ModScreen.LL_OTHER_MODS.get(i), "Clicking on mod #" + i);
-      if (!ModScreen.waitForMinusButton()) {
-        throw new ProcessException("Mod screen: minus button not found. Aborting.");
-      }
-      AutomationUtil.waitFor(250L);
-      if (ModUtil.matchMods(mod, ModScreen.extractModText(false))) {
+    int foundIndex = -1;
+    for (Integer index : ModScreen.readOtherModLocations()) {
+      if (ModScreen.matchMods(mod, false)) {
         foundMod = true;
-        foundModIndex = i;
+        foundIndex = index;
         break;
       }
     }
+
     if (foundMod) {
-      LOG.info("Mod found in index {}", foundModIndex);
-      AutomationUtil.click(ModScreen.LL_OTHER_MODS.get(foundModIndex), "Clicking again on found mod #" + foundModIndex + " to assign it");
+      LOG.info("Mod found at index {}", foundIndex);
+      AutomationUtil.click(ModScreen.LL_OTHER_MODS.get(foundIndex), "Clicking again on found mod at index " + foundIndex + " to assign it");
       AutomationUtil.waitFor(750L);
       ModScreen.StateAfterModMoveOrder status = ModScreen.waitAndGetStateAfterModMoveOrder();
       if (status == ModScreen.StateAfterModMoveOrder.NONE) {

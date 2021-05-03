@@ -5,7 +5,6 @@ import com.charlie.swgoh.datamodel.json.Profile;
 import com.charlie.swgoh.datamodel.json.Progress;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
-import com.charlie.swgoh.screen.CharacterModsScreen;
 import com.charlie.swgoh.screen.ModScreen;
 import com.charlie.swgoh.screen.ModScreenFilter;
 import com.charlie.swgoh.util.AutomationUtil;
@@ -77,74 +76,30 @@ public class ReadUnequippedMods extends AbstractProcess {
     ModScreen.dragOtherModsToTop();
     AutomationUtil.waitFor(1000L);
 
-    int startModIndex = 0;
     int modNumber = 0;
-    boolean isContinue;
-    do {
-      int modCount = ModScreen.countModsFromDots();
-      LOG.info("Visible mod count: {}", modCount);
+    for (Integer index : ModScreen.readOtherModLocations()) {
+      handleKeys();
+      modNumber++;
+      setMessage("Reading mod #" + modNumber);
       setProgress(ModScreen.computeModProgress());
-      for (int i = startModIndex; i < modCount; i++) {
-        handleKeys();
-
-        Location loc = ModScreen.LL_OTHER_MODS.get(i);
-        try {
-          modNumber++;
-          setMessage("Reading mod #" + modNumber);
-          Mod mod = readOtherModAtLocation(loc);
-          if (mod == null) {
-            continue;
-          }
-          LOG.info("Read mod: {}", mod);
-          com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
-          profile.getMods().add(jsonMod);
-        }
-        catch (RuntimeException e) {
-          LOG.warn("Could not read mod for location #{}. {}: {}", i, e.getClass().getName(), e.getMessage());
-          String file = AutomationUtil.takeScreenshot(fileComponents.getDirectoryName());
-          LOG.warn("Screenshot taken: {}", file);
-        }
+      Mod mod = null;
+      try {
+        mod = ModScreen.readOtherMod();
+        LOG.info("Parsed mod: {}", mod);
       }
-      if (modCount < 16) {
-        isContinue = false;
+      catch (RuntimeException e) {
+        LOG.warn("Error reading mod at index {}. Exception is {}: {}", index, e.getClass().getName(), e.getMessage());
       }
-      else {
-        startModIndex = 12;
-        isContinue = ModScreen.dragOtherModsListOneLineUp();
+      if (mod == null) {
+        continue;
       }
+      com.charlie.swgoh.datamodel.json.Mod jsonMod = ModUtil.convertToJsonMod(mod);
+      profile.getMods().add(jsonMod);
     }
-    while (isContinue);
 
     JsonConnector.writeProgressToFile(progress, resultFileName);
 
     LOG.info("Finished");
-  }
-
-  private Mod readOtherModAtLocation(Location loc) {
-    AutomationUtil.click(loc, "Clicking on other mod");
-    AutomationUtil.waitFor(250L);
-    if (!ModScreen.waitForMinusButton()) {
-      throw new ProcessException("Mod screen: minus button not found. Aborting.");
-    }
-
-    int level = ModScreen.extractOtherModLevel();
-    if (level < 15) {
-      return null;
-    }
-
-    ModScreen.DotsTierSetAndSlot dotsTierSetAndSlot = ModScreen.extractOtherModDotsTierSetAndSlot();
-    if (dotsTierSetAndSlot == null || dotsTierSetAndSlot.getDots() < 5) {
-      return null;
-    }
-
-    Mod mod = ModScreen.extractModStats(false);
-    mod.setCharacter(null);
-    mod.setSlot(dotsTierSetAndSlot.getSlot());
-    mod.setSet(dotsTierSetAndSlot.getSet());
-    mod.setDots(dotsTierSetAndSlot.getDots());
-    mod.setLevel(level);
-    mod.setTier(dotsTierSetAndSlot.getTier());
-    return mod;
   }
 
 }

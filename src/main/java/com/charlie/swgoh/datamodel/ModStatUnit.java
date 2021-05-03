@@ -34,8 +34,15 @@ public enum ModStatUnit {
   }
 
   public static ModStatUnit fromString(String text, InputType inputType) {
+    // First, try strict matching
     for (ModStatUnit modStatUnit : ModStatUnit.values()) {
       if (inputType.getModStatUnitText().apply(modStatUnit).equals(text)) {
+        return modStatUnit;
+      }
+    }
+    // If it fails, try fuzzy matching
+    for (ModStatUnit modStatUnit : ModStatUnit.values()) {
+      if (StringUtil.fuzzyMatch(inputType.getModStatUnitText().apply(modStatUnit), text)) {
         return modStatUnit;
       }
     }

@@ -63,7 +63,7 @@ public class ModStat {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ModStat other = (ModStat) o;
-    return (Math.abs(value - other.value) < TOLERANCE) && (unit == other.unit);
+    return (unit == other.unit) && (rolls == other.rolls) && (Math.abs(value - other.value) < TOLERANCE);
   }
 
   @Override

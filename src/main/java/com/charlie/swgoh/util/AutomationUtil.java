@@ -2,22 +2,14 @@ package com.charlie.swgoh.util;
 
 import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.automation.Configuration;
-import com.charlie.swgoh.datamodel.ModWithStatsInText;
-import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
-import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.sikuli.script.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
 
 public class AutomationUtil {
 

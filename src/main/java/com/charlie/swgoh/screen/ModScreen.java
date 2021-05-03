@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,6 +58,60 @@ public class ModScreen {
     }
   }
 
+  private static class ModLocationIterator implements Iterator<Integer> {
+    // Index pointing to the mod
+    private int modIndex;
+    // Number of visible mods
+    private int modCount;
+
+    public ModLocationIterator() {
+      modIndex = 0;
+      modCount = countModsFromDots();
+    }
+
+    @Override
+    public boolean hasNext() {
+      if (modIndex < modCount) {
+        return true;
+      }
+      if (modCount < 16) {
+        return false;
+      }
+      else {
+        // Scroll to next line
+        if (dragOtherModsListOneLineUp()) {
+          // If there are more mods
+          modCount = countModsFromDots();
+          modIndex = 12;
+          return true;
+        }
+        else {
+          // If no more mods
+          return false;
+        }
+      }
+    }
+
+    @Override
+    public Integer next() {
+      int index = modIndex;
+      AutomationUtil.click(LL_OTHER_MODS.get(index), "Clicking on other mod at index " + index);
+      AutomationUtil.waitFor(250L);
+      if (!ModScreen.waitForMinusButton()) {
+        throw new ProcessException("Mod screen: minus button not found. Aborting.");
+      }
+      modIndex++;
+      return index;
+    }
+  }
+
+  private static class ModLocationIterable implements Iterable<Integer> {
+    @Override
+    public Iterator<Integer> iterator() {
+      return new ModLocationIterator();
+    }
+  }
+
   private static final Logger LOG = LoggerFactory.getLogger(ModScreen.class);
 
   // Regex
@@ -84,6 +139,7 @@ public class ModScreen {
   private static final Pattern P_ASSIGN_LOADOUT_ASSIGN_BUTTON = new Pattern("mod_screen_assign_loadout_assign.png");
   private static final Pattern P_REVERT_BUTTON = new Pattern("mod_screen_revert.png");
   private static final Pattern P_SCROLL_BAR_SINGLE_LINE = new Pattern("mod_screen_single_line_scroll.png");
+  private static final Pattern P_DIALOG_BOX_OK = new Pattern("mod_screen_dialog_box_ok.png"); // For dry-run
 
   // Locations
   public static final Location L_BACK_BUTTON = new Location(44, 44);
@@ -111,6 +167,8 @@ public class ModScreen {
 
   // Regions
   public static final Region R_CHARACTER_NAME = new Region(172, 18, 500, 30);
+  public static final Region R_CHARACTER_MOD_SET_AND_SLOT = new Region(793, 112, 370, 26);
+  public static final Region R_CHARACTER_MOD_LEVEL_AND_TIER = new Region(870, 221, 48, 18);
   public static final Region R_CHARACTER_MOD_PRIMARY_STAT = new Region(991, 171, 200, 25);
   public static final List<Region> RL_CHARACTER_MOD_SECONDARY_STATS = Arrays.asList(
           new Region(991, 224, 200, 25),
@@ -118,6 +176,18 @@ public class ModScreen {
           new Region(991, 271, 200, 25),
           new Region(991, 295, 200, 25)
   );
+  public static final Supplier<DotsTierSetAndSlot> RS_CHARACTER_MOD_SET_AND_SLOT = () -> extractModDotsTierSetAndSlot(true);
+  public static final Supplier<String> RS_CHARACTER_MOD_PRIMARY_STAT_STRING = () -> AutomationUtil.readLine(R_CHARACTER_MOD_PRIMARY_STAT);
+  public static final List<Supplier<String>> RSL_CHARACTER_MOD_SECONDARY_STAT_STRINGS = RL_CHARACTER_MOD_SECONDARY_STATS
+          .stream()
+          .<Supplier<String>>map(
+                  region -> (
+                          () -> AutomationUtil.readLine(region)
+                  )
+          )
+          .collect(Collectors.toList());
+  public static final Region R_OTHER_MOD_SET_AND_SLOT = new Region(793, 420, 424, 26);
+  public static final Region R_OTHER_MOD_LEVEL_AND_TIER = new Region(870, 528, 48, 18);
   public static final Region R_OTHER_MOD_PRIMARY_STAT = new Region(991, 478, 200, 25);
   public static final List<Region> RL_OTHER_MOD_SECONDARY_STATS = Arrays.asList(
           new Region(991, 531, 200, 25),
@@ -125,6 +195,16 @@ public class ModScreen {
           new Region(991, 578, 200, 25),
           new Region(991, 602, 200, 25)
   );
+  public static final Supplier<DotsTierSetAndSlot> RS_OTHER_MOD_SET_AND_SLOT = () -> extractModDotsTierSetAndSlot(false);
+  public static final Supplier<String> RS_OTHER_MOD_PRIMARY_STAT_STRING = () -> AutomationUtil.readLine(R_OTHER_MOD_PRIMARY_STAT);
+  public static final List<Supplier<String>> RSL_OTHER_MOD_SECONDARY_STAT_STRINGS = RL_OTHER_MOD_SECONDARY_STATS
+          .stream()
+          .<Supplier<String>>map(
+                  region -> (
+                          () -> AutomationUtil.readLine(region)
+                  )
+          )
+          .collect(Collectors.toList());
   public static final Region R_FILTER_AND_SORT_BUTTONS = new Region(50, 104, 443, 75);
   public static final List<Region> RL_MOD_DOTS = new ArrayList<>(16);
   static {
@@ -142,10 +222,8 @@ public class ModScreen {
   public static final Region R_REMOVE_BUTTON = new Region(673, 452, 119, 42);
   public static final Region R_ASSIGN_LOADOUT_BUTTON = new Region(659, 554, 94, 38);
   public static final Region R_REVERT_BUTTON = new Region(854, 568, 100, 36);
-  public static final Region R_OTHER_MOD_DOTS = new Region(852, 458, 84, 12);
-  public static final Region R_OTHER_MOD_SET_AND_SLOT = new Region(793, 420, 424, 26);
-  public static final Region R_OTHER_MOD_LEVEL_AND_TIER = new Region(870, 528, 48, 18);
   public static final Region R_MOD_SCROLLBAR = new Region(470, 182, 4, 432);
+  public static final Region R_DIALOG_BOX_OK = new Region(767, 439, 51, 43); // For dry-run
 
   public static boolean waitForFilterAndSortButtons() {
     return AutomationUtil.waitForPattern(R_FILTER_AND_SORT_BUTTONS, P_FILTER_AND_SORT_BUTTONS, "Waiting for filter and sort buttons");
@@ -172,7 +250,11 @@ public class ModScreen {
   }
 
   public static boolean checkForRevertButton() {
-    return AutomationUtil.waitForPattern(R_REVERT_BUTTON, P_REVERT_BUTTON, "Checking for revert button");
+    return AutomationUtil.checkForPattern(R_REVERT_BUTTON, P_REVERT_BUTTON, "Checking for revert button");
+  }
+
+  public static boolean checkForDialogBoxOk() {
+    return AutomationUtil.checkForPattern(R_DIALOG_BOX_OK, P_DIALOG_BOX_OK, "Checking for OK button in dialog box");
   }
 
   public static StateAfterModMoveOrder waitAndGetStateAfterModMoveOrder() {
@@ -203,6 +285,10 @@ public class ModScreen {
 
   public static void exitModScreen() {
     AutomationUtil.click(L_BACK_BUTTON, "Clicking on back button");
+  }
+
+  public static Iterable<Integer> readOtherModLocations() {
+    return new ModLocationIterable();
   }
 
   public static void dragOtherModsToTop() {
@@ -254,8 +340,8 @@ public class ModScreen {
     return RL_MOD_DOTS.size();
   }
 
-  public static DotsTierSetAndSlot extractOtherModDotsTierSetAndSlot() {
-    String text = AutomationUtil.readLine(R_OTHER_MOD_SET_AND_SLOT);
+  public static DotsTierSetAndSlot extractModDotsTierSetAndSlot(boolean isCharacter) {
+    String text = AutomationUtil.readLine(isCharacter ? R_CHARACTER_MOD_SET_AND_SLOT : R_OTHER_MOD_SET_AND_SLOT);
     Matcher matcher = REGEX_MOD_DESCRIPTION.matcher(text);
     if (!matcher.matches()) {
       LOG.warn("Unable to parse tier, set and slot from: {}", text);
@@ -275,8 +361,8 @@ public class ModScreen {
     return new DotsTierSetAndSlot(dots, tier, set, slot);
   }
 
-  public static int extractOtherModLevel() {
-    String text = AutomationUtil.readLine(R_OTHER_MOD_LEVEL_AND_TIER);
+  public static int extractModLevel(boolean isCharacter) {
+    String text = AutomationUtil.readLine(isCharacter ? R_CHARACTER_MOD_LEVEL_AND_TIER : R_OTHER_MOD_LEVEL_AND_TIER);
     int pos = text.indexOf("-");
     if (pos >= 0) {
       String levelAsString = text.substring(0, pos).trim();
@@ -346,6 +432,68 @@ public class ModScreen {
     int effectiveScrollbarHeight = AutomationUtil.getShiftedRegion(R_MOD_SCROLLBAR).getH() - highlightedScrollHeight;
     int effectiveHighlightPos = topHighlightY - AutomationUtil.getShiftedRegion(R_MOD_SCROLLBAR).getY();
     return (double)effectiveHighlightPos / (double)effectiveScrollbarHeight;
+  }
+
+  private static boolean fuzzyModStatTextMatch(ModStat referenceModStat, String otherModStatText) {
+    String referenceModStatString = StringUtil.stripSpaces(referenceModStat.toString());
+    String otherModStatTextStripped = StringUtil.stripSpaces(otherModStatText);
+    int score = FuzzySearch.ratio(referenceModStatString, otherModStatTextStripped);
+    boolean result = (score >= StringUtil.MOD_STAT_MATCH_THRESHOLD);
+    LOG.debug("Matching mod: {} with text: \"{}\", score:{}, result: {}", referenceModStat, otherModStatText, score, result);
+    return result;
+  }
+
+  public static boolean matchMods(com.charlie.swgoh.datamodel.xml.Mod referenceMod, boolean isCharacter) {
+    Supplier<ModScreen.DotsTierSetAndSlot> dotsTierSetAndSlotSupplier = isCharacter ? RS_CHARACTER_MOD_SET_AND_SLOT : RS_OTHER_MOD_SET_AND_SLOT;
+    Supplier<String> primaryModStatTextSupplier = isCharacter ? RS_CHARACTER_MOD_PRIMARY_STAT_STRING : RS_OTHER_MOD_PRIMARY_STAT_STRING;
+    List<Supplier<String>> secondaryModStatTextSuppliers = isCharacter ? RSL_CHARACTER_MOD_SECONDARY_STAT_STRINGS : RSL_OTHER_MOD_SECONDARY_STAT_STRINGS;
+
+    if (referenceMod.getSecondaryStats().size() != secondaryModStatTextSuppliers.size()) {
+      return false;
+    }
+    ModScreen.DotsTierSetAndSlot dotsTierSetAndSlot = dotsTierSetAndSlotSupplier.get();
+    if (
+            dotsTierSetAndSlot == null
+                    || dotsTierSetAndSlot.getDots() != referenceMod.getDots()
+                    || dotsTierSetAndSlot.getSlot() != referenceMod.getSlot()
+                    || dotsTierSetAndSlot.getTier() != referenceMod.getTier()
+                    || dotsTierSetAndSlot.getSet() != referenceMod.getSet()
+    ) {
+      return false;
+    }
+    String primaryStatText = primaryModStatTextSupplier.get();
+    if (!fuzzyModStatTextMatch(referenceMod.getPrimaryStat(), primaryStatText)) {
+      return false;
+    }
+    for (int i = 0; i < referenceMod.getSecondaryStats().size(); i++) {
+      String secondaryStatText = secondaryModStatTextSuppliers.get(i).get();
+      if (!fuzzyModStatTextMatch(referenceMod.getSecondaryStats().get(i), secondaryStatText)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public static Mod readOtherMod() {
+    int level = extractModLevel(false);
+    if (level < 15) {
+      return null;
+    }
+
+    DotsTierSetAndSlot dotsTierSetAndSlot = extractModDotsTierSetAndSlot(false);
+    if (dotsTierSetAndSlot == null || dotsTierSetAndSlot.getDots() < 5) {
+      return null;
+    }
+
+    Mod mod = extractModStats(false);
+    mod.setCharacter(null);
+    mod.setSlot(dotsTierSetAndSlot.getSlot());
+    mod.setSet(dotsTierSetAndSlot.getSet());
+    mod.setDots(dotsTierSetAndSlot.getDots());
+    mod.setLevel(level);
+    mod.setTier(dotsTierSetAndSlot.getTier());
+    return mod;
   }
 
 }

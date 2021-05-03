@@ -62,6 +62,9 @@ public class ApplicationController implements IFeedback {
   private TextField moveModsFileName;
 
   @FXML
+  private CheckBox dryRun;
+
+  @FXML
   private Label status;
 
   @FXML
@@ -182,7 +185,8 @@ public class ApplicationController implements IFeedback {
     String fileName = moveModsFileName.getText();
     try {
       Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(fileName);
-      setMessage("File succesfully loaded. Number of characters: " + modMap.size());
+      Integer numberOfMods = modMap.values().stream().map(List::size).reduce(0, Integer::sum);
+      setMessage("File succesfully loaded. Number of characters: " + modMap.size() + ", number of mods to move: " + numberOfMods);
     }
     catch (Exception e) {
       setErrorMessage("Error: " + e.getMessage());
@@ -191,10 +195,11 @@ public class ApplicationController implements IFeedback {
 
   public void runMoveMods() {
     String fileName = moveModsFileName.getText();
+    boolean bDryRun = dryRun.isSelected();
 
     AbstractProcess process = new MoveMods();
     process.setFeedback(this);
-    process.setParameters(fileName);
+    process.setParameters(fileName, String.valueOf(bDryRun));
     process.process();
   }
 
