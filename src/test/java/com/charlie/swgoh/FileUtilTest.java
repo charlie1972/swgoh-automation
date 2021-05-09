@@ -27,6 +27,18 @@ public class FileUtilTest {
     Assertions.assertEquals("12", components3.getFileName());
     Assertions.assertEquals("html", components3.getExtension());
     Assertions.assertTrue(components3.toString().endsWith(file3));
+
+    String file4 = "C:\\Temp\\directory.with.separator\\12.html";
+    FileUtil.FileComponents components4 = FileUtil.getFileComponents(file4);
+    Assertions.assertEquals("12", components4.getFileName());
+    Assertions.assertEquals("html", components4.getExtension());
+    Assertions.assertTrue(components4.toString().endsWith(file4));
+
+    String file5 = "C:\\Temp\\directory.with.separator\\12";
+    FileUtil.FileComponents components5 = FileUtil.getFileComponents(file5);
+    Assertions.assertEquals("12", components5.getFileName());
+    Assertions.assertEquals("", components5.getExtension());
+    Assertions.assertTrue(components5.toString().endsWith(file5));
   }
 
 }

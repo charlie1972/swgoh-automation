@@ -9,11 +9,6 @@ public class TestProcess extends AbstractProcess {
   private static final Logger LOG = LoggerFactory.getLogger(TestProcess.class);
 
   @Override
-  public void init() {
-    ModScreen.init();
-  }
-
-  @Override
   protected void doProcess() throws Exception {
     while (ModScreen.dragOtherModsListOneLineUp()) {
       System.out.println(ModScreen.computeModProgress());

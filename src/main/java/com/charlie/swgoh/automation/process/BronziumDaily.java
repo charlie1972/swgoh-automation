@@ -11,11 +11,6 @@ public class BronziumDaily extends AbstractProcess {
   private static final Logger LOG = LoggerFactory.getLogger(BronziumDaily.class);
 
   @Override
-  public void init() {
-    BronziumScreen.init();
-  }
-
-  @Override
   protected void doProcess() {
     LOG.info("Collecting daily bronziums");
 
@@ -36,7 +31,7 @@ public class BronziumDaily extends AbstractProcess {
       setProgress(progress);
       setMessage("Number of bronziums opened during this run: " + numberOfOpenedBronziums);
 
-      AutomationUtil.mouseMove(BronziumScreen.getLocIdle(), "Move mouse to idle position");
+      AutomationUtil.mouseMove(BronziumScreen.L_IDLE, "Move mouse to idle position");
       state = BronziumScreen.readState();
       LOG.info("Read state: {}", state);
       if (state == BronziumScreen.State.TITLE_BUY) {
@@ -46,19 +41,19 @@ public class BronziumDaily extends AbstractProcess {
       else if (state == BronziumScreen.State.TITLE_FREE) {
         lastFreeBronziumTimeMillis = System.currentTimeMillis();
         numberOfOpenedBronziums++;
-        AutomationUtil.click(BronziumScreen.getLocBronziumBuyButton(), "Click FREE bronzium button");
+        AutomationUtil.click(BronziumScreen.L_BRONZIUM_BUY_BUTTON, "Click FREE bronzium button");
       }
       else if (state == BronziumScreen.State.TITLE_WAITING) {
         AutomationUtil.waitForFixed(10000L);
       }
       else if (state == BronziumScreen.State.OPEN_SKIP) {
-        AutomationUtil.click(BronziumScreen.getLocSkipButton(), "Click SKIP button");
+        AutomationUtil.click(BronziumScreen.L_SKIP_BUTTON, "Click SKIP button");
       }
       else if (state == BronziumScreen.State.OPEN_CONTINUE) {
-        AutomationUtil.click(BronziumScreen.getLocContinueButton(), "Click CONTINUE button");
+        AutomationUtil.click(BronziumScreen.L_CONTINUE_BUTTON, "Click CONTINUE button");
       }
       else if (state == BronziumScreen.State.OPEN_BUY_AGAIN_FINISH) {
-        AutomationUtil.click(BronziumScreen.getLocFinishButton(), "Click FINISH button");
+        AutomationUtil.click(BronziumScreen.L_FINISH_BUTTON, "Click FINISH button");
       }
       AutomationUtil.waitFor(500L);
     }

@@ -14,6 +14,7 @@ import com.charlie.swgoh.util.FileUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -37,6 +38,9 @@ public class ApplicationController implements IFeedback {
   private TabPane tabPane;
 
   @FXML
+  private HBox controls;
+
+  @FXML
   private Button aboutButton;
 
   @FXML
@@ -56,6 +60,9 @@ public class ApplicationController implements IFeedback {
 
   @FXML
   private TextField moveModsFileName;
+
+  @FXML
+  private CheckBox dryRun;
 
   @FXML
   private Label status;
@@ -178,7 +185,8 @@ public class ApplicationController implements IFeedback {
     String fileName = moveModsFileName.getText();
     try {
       Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(fileName);
-      setMessage("File succesfully loaded. Number of characters: " + modMap.size());
+      Integer numberOfMods = modMap.values().stream().map(List::size).reduce(0, Integer::sum);
+      setMessage("File succesfully loaded. Number of characters: " + modMap.size() + ", number of mods to move: " + numberOfMods);
     }
     catch (Exception e) {
       setErrorMessage("Error: " + e.getMessage());
@@ -187,10 +195,11 @@ public class ApplicationController implements IFeedback {
 
   public void runMoveMods() {
     String fileName = moveModsFileName.getText();
+    boolean bDryRun = dryRun.isSelected();
 
     AbstractProcess process = new MoveMods();
     process.setFeedback(this);
-    process.setParameters(fileName);
+    process.setParameters(fileName, String.valueOf(bDryRun));
     process.process();
   }
 
@@ -249,8 +258,7 @@ public class ApplicationController implements IFeedback {
   public void setAllControlsDisabled(boolean disabled) {
     Platform.runLater(() -> {
       tabPane.setDisable(disabled);
-      aboutButton.setDisable(disabled);
-      runButton.setDisable(disabled);
+      controls.setDisable(disabled);
     });
   }
 

@@ -14,13 +14,8 @@ public class BronziumAllyPoints extends AbstractProcess {
 
   @Override
   public void setParameters(String... parameters) {
-    this.targetAllyPoints = AutomationUtil.parseAllyPoints(parameters[0]);
+    this.targetAllyPoints = BronziumScreen.parseAllyPoints(parameters[0]);
     LOG.info("Target ally points: {}", targetAllyPoints);
-  }
-
-  @Override
-  public void init() {
-    BronziumScreen.init();
   }
 
   @Override
@@ -38,7 +33,7 @@ public class BronziumAllyPoints extends AbstractProcess {
     while (true) {
       handleKeys();
 
-      AutomationUtil.mouseMove(BronziumScreen.getLocIdle(), "Move mouse to idle position");
+      AutomationUtil.mouseMove(BronziumScreen.L_IDLE, "Move mouse to idle position");
       state = BronziumScreen.readState();
       LOG.info("Read state: {}", state);
       if (state == BronziumScreen.State.TITLE_BUY || state == BronziumScreen.State.TITLE_FREE || state == BronziumScreen.State.TITLE_WAITING) {
@@ -49,13 +44,13 @@ public class BronziumAllyPoints extends AbstractProcess {
         if (feedbackAndCheckAllyPoints(allyPoints, startAllyPoints)) {
           return;
         }
-        AutomationUtil.click(BronziumScreen.getLocBronziumBuyButton(), "Clicking on BUY button");
+        AutomationUtil.click(BronziumScreen.L_BRONZIUM_BUY_BUTTON, "Clicking on BUY button");
       }
       else if (state == BronziumScreen.State.OPEN_SKIP) {
-        AutomationUtil.click(BronziumScreen.getLocSkipButton(), "Click SKIP button");
+        AutomationUtil.click(BronziumScreen.L_SKIP_BUTTON, "Click SKIP button");
       }
       else if (state == BronziumScreen.State.OPEN_CONTINUE) {
-        AutomationUtil.click(BronziumScreen.getLocContinueButton(), "Click CONTINUE button");
+        AutomationUtil.click(BronziumScreen.L_CONTINUE_BUTTON, "Click CONTINUE button");
       }
       else if (state == BronziumScreen.State.OPEN_BUY_AGAIN_FINISH) {
         int allyPoints = BronziumScreen.readOpenAllyPoints();
@@ -63,10 +58,10 @@ public class BronziumAllyPoints extends AbstractProcess {
           startAllyPoints = allyPoints;
         }
         if (feedbackAndCheckAllyPoints(allyPoints, startAllyPoints)) {
-          AutomationUtil.click(BronziumScreen.getLocFinishButton(), "Click FINISH button");
+          AutomationUtil.click(BronziumScreen.L_FINISH_BUTTON, "Click FINISH button");
           return;
         }
-        AutomationUtil.click(BronziumScreen.getLocBuyAgainButton(), "Click BUY AGAIN button");
+        AutomationUtil.click(BronziumScreen.L_BUY_AGAIN_BUTTON, "Click BUY AGAIN button");
       }
       AutomationUtil.waitFor(500L);
     }

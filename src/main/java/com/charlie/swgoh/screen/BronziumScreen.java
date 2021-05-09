@@ -1,5 +1,7 @@
 package com.charlie.swgoh.screen;
 
+import com.charlie.swgoh.automation.Configuration;
+import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
 import org.sikuli.script.Location;
 import org.sikuli.script.Pattern;
@@ -8,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
 
 public class BronziumScreen {
 
@@ -25,61 +28,68 @@ public class BronziumScreen {
 
   private static final Logger LOG = LoggerFactory.getLogger(BronziumScreen.class);
 
-  private static final Pattern TITLE = new Pattern("bronzium_title.png");
-  private static final Pattern FREE_TEXT = new Pattern("bronzium_free_text.png");
-  private static final Pattern FREE_BUTTON = new Pattern("bronzium_free_button.png");
-  private static final Pattern BUY_AGAIN = new Pattern("bronzium_buy_again.png");
-  private static final Pattern SKIP = new Pattern("bronzium_skip.png");
-  private static final Pattern CONTINUE = new Pattern("bronzium_continue.png");
-  private static final Pattern FINISH = new Pattern("bronzium_finish.png");
+  // Regex
+  private static final java.util.regex.Pattern REGEX_ALLY_POINTS = java.util.regex.Pattern.compile("([0-9.,]+)([KM]?)\\s*.*");
 
-  private static Location locIdle;
-  private static Location locBronziumBuyButton;
-  private static Location locSkipButton;
-  private static Location locContinueButton;
-  private static Location locBuyAgainButton;
-  private static Location locFinishButton;
-  private static Region regTitle;
-  private static Region regFreeText;
-  private static Region regFreeButton;
-  private static Region regBuyAgain;
-  private static Region regSkip;
-  private static Region regContinue;
-  private static Region regFinish;
-  private static Region regTitleAllyPoints;
-  private static Region regOpenAllyPoints;
+  // Image patterns
+  static {
+    Configuration.configureImagePath();
+  }
+  private static final Pattern P_TITLE = new Pattern("bronzium_title.png");
+  private static final Pattern P_FREE_TEXT = new Pattern("bronzium_free_text.png");
+  private static final Pattern P_FREE_BUTTON = new Pattern("bronzium_free_button.png");
+  private static final Pattern P_BUY_AGAIN = new Pattern("bronzium_buy_again.png");
+  private static final Pattern P_SKIP = new Pattern("bronzium_skip.png");
+  private static final Pattern P_CONTINUE = new Pattern("bronzium_continue.png");
+  private static final Pattern P_FINISH = new Pattern("bronzium_finish.png");
+
+  // Locations
+  public static final Location L_IDLE = new Location(995, 670);
+  public static final Location L_BRONZIUM_BUY_BUTTON = new Location(1000, 650);
+  public static final Location L_SKIP_BUTTON = new Location(1030, 670);
+  public static final Location L_CONTINUE_BUTTON = L_SKIP_BUTTON;
+  public static final Location L_BUY_AGAIN_BUTTON = new Location(960, 670);
+  public static final Location L_FINISH_BUTTON = L_SKIP_BUTTON;
+
+  // Regions
+  public static final Region R_TITLE = new Region(972, 108, 266, 38);
+  public static final Region R_FREE_TEXT = new Region(1010, 583, 94, 33);
+  public static final Region R_FREE_BUTTON = new Region(1072, 637, 67, 35);
+  public static final Region R_BUY_AGAIN = new Region(746, 653, 130, 35);
+  public static final Region R_SKIP = new Region(1100, 652, 65, 36);
+  public static final Region R_CONTINUE = new Region(1070, 653, 125, 35);
+  public static final Region R_FINISH = new Region(1089, 653, 86, 35);
+  public static final Region R_TITLE_ALLY_POINTS = new Region(827, 31, 82, 26);
+  public static final Region R_OPEN_ALLY_POINTS = new Region(1149, 26, 129, 34);
 
   public static State readState() {
-    if (AutomationUtil.checkForPattern(getRegTitle(), TITLE, "Checking for title")) {
-      if (AutomationUtil.checkForPattern(getRegFreeText(), FREE_TEXT, "Checking for Free text")) {
+    if (AutomationUtil.checkForPattern(R_TITLE, P_TITLE, "Checking for title")) {
+      if (AutomationUtil.checkForPattern(R_FREE_TEXT, P_FREE_TEXT, "Checking for Free text")) {
         return State.TITLE_WAITING;
       }
-      if (AutomationUtil.checkForPattern(getRegFreeButton(), FREE_BUTTON, "Checking for FREE button")) {
+      if (AutomationUtil.checkForPattern(R_FREE_BUTTON, P_FREE_BUTTON, "Checking for FREE button")) {
         return State.TITLE_FREE;
       }
       return State.TITLE_BUY;
     }
-    if (AutomationUtil.checkForPattern(getRegSkip(), SKIP, "Checking for SKIP")) {
+    if (AutomationUtil.checkForPattern(R_SKIP, P_SKIP, "Checking for SKIP")) {
       return State.OPEN_SKIP;
     }
-    if (AutomationUtil.checkForPattern(getRegContinue(), CONTINUE, "Checking for CONTINUE")) {
+    if (AutomationUtil.checkForPattern(R_CONTINUE, P_CONTINUE, "Checking for CONTINUE")) {
       return State.OPEN_CONTINUE;
     }
-    if (AutomationUtil.checkForPattern(getRegSkip(), SKIP, "Checking for SKIP")) {
-      return State.OPEN_SKIP;
-    }
-    if (AutomationUtil.checkForPattern(getRegBuyAgain(), BUY_AGAIN, "Checking for BUY AGAIN")) {
+    if (AutomationUtil.checkForPattern(R_BUY_AGAIN, P_BUY_AGAIN, "Checking for BUY AGAIN")) {
       return State.OPEN_BUY_AGAIN_FINISH;
     }
     return State.UNKNOWN;
   }
 
   public static int readTitleAllyPoints() {
-    return returnParseAllyPointsAfterRetries(() -> AutomationUtil.parseAllyPoints(AutomationUtil.readLine(getRegTitleAllyPoints())));
+    return returnParseAllyPointsAfterRetries(() -> parseAllyPoints(AutomationUtil.readLine(R_TITLE_ALLY_POINTS)));
   }
 
   public static int readOpenAllyPoints() {
-    return returnParseAllyPointsAfterRetries(() -> AutomationUtil.parseAllyPoints(AutomationUtil.readLine(getRegOpenAllyPoints())));
+    return returnParseAllyPointsAfterRetries(() -> parseAllyPoints(AutomationUtil.readLine(R_OPEN_ALLY_POINTS)));
   }
 
   private static int returnParseAllyPointsAfterRetries(Supplier<Integer> supplier) {
@@ -94,82 +104,25 @@ public class BronziumScreen {
     return supplier.get();
   }
 
-  public static void init() {
-    locIdle = AutomationUtil.getLocation(995, 670);
-    locBronziumBuyButton = AutomationUtil.getLocation(1000, 650);
-    locSkipButton = AutomationUtil.getLocation(1030, 670);
-    locContinueButton = locSkipButton;
-    locBuyAgainButton = AutomationUtil.getLocation(960, 670);
-    locFinishButton = locSkipButton;
-
-    regTitle = AutomationUtil.getRegion(972, 108, 266, 38);
-    regFreeText = AutomationUtil.getRegion(1010, 583, 94, 33);
-    regFreeButton = AutomationUtil.getRegion(1072, 637, 67, 35);
-    regBuyAgain = AutomationUtil.getRegion(746, 653, 130, 35);
-    regSkip = AutomationUtil.getRegion(1100, 652, 65, 36);
-    regContinue = AutomationUtil.getRegion(1070, 653, 125, 35);
-    regFinish = AutomationUtil.getRegion(1089, 653, 86, 35);
-    regTitleAllyPoints = AutomationUtil.getRegion(827, 31, 82, 26);
-    regOpenAllyPoints = AutomationUtil.getRegion(1149, 26, 129, 34);
+  public static int parseAllyPoints(String str) {
+    Matcher matcher = REGEX_ALLY_POINTS.matcher(str);
+    if (!matcher.matches()) {
+      throw new ProcessException("Unable to parse value: " + str);
+    }
+    double number = Double.parseDouble(matcher.group(1).replace(",", ""));
+    if (matcher.group(2).isEmpty()) {
+      return (int)number;
+    }
+    else {
+      String multiplier = matcher.group(2);
+      if ("K".equals(multiplier)) {
+        return (int)(1000.0 * number);
+      }
+      if ("M".equals(multiplier)) {
+        return (int)(1000000.0 * number);
+      }
+      throw new ProcessException("Unrecognized multiplier: " + multiplier);
+    }
   }
 
-  public static Location getLocIdle() {
-    return locIdle;
-  }
-
-  public static Location getLocBronziumBuyButton() {
-    return locBronziumBuyButton;
-  }
-
-  public static Location getLocSkipButton() {
-    return locSkipButton;
-  }
-
-  public static Location getLocContinueButton() {
-    return locContinueButton;
-  }
-
-  public static Location getLocBuyAgainButton() {
-    return locBuyAgainButton;
-  }
-
-  public static Location getLocFinishButton() {
-    return locFinishButton;
-  }
-
-  public static Region getRegTitle() {
-    return regTitle;
-  }
-
-  public static Region getRegFreeText() {
-    return regFreeText;
-  }
-
-  public static Region getRegFreeButton() {
-    return regFreeButton;
-  }
-
-  public static Region getRegBuyAgain() {
-    return regBuyAgain;
-  }
-
-  public static Region getRegSkip() {
-    return regSkip;
-  }
-
-  public static Region getRegContinue() {
-    return regContinue;
-  }
-
-  public static Region getRegFinish() {
-    return regFinish;
-  }
-
-  public static Region getRegTitleAllyPoints() {
-    return regTitleAllyPoints;
-  }
-
-  public static Region getRegOpenAllyPoints() {
-    return regOpenAllyPoints;
-  }
 }

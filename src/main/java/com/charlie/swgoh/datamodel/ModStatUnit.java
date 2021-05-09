@@ -1,6 +1,6 @@
 package com.charlie.swgoh.datamodel;
 
-import com.charlie.swgoh.util.AutomationUtil;
+import com.charlie.swgoh.util.StringUtil;
 
 import java.util.stream.Stream;
 
@@ -28,18 +28,25 @@ public enum ModStatUnit {
 
   ModStatUnit(String prettyText, String optimizerXmlText, String optimizerJsonText) {
     this.prettyText = prettyText;
-    this.gameText = AutomationUtil.stripSpaces(prettyText);
+    this.gameText = StringUtil.stripSpaces(prettyText);
     this.optimizerXmlText = optimizerXmlText;
     this.optimizerJsonText = optimizerJsonText;
   }
 
-  public static ModStatUnit fromString(String text) {
-    return Stream.of(ModStatUnit.values())
-            .filter(modStatUnit -> Stream.of(modStatUnit.gameText, modStatUnit.optimizerXmlText).anyMatch(
-                    modStatUnitText -> matches(modStatUnitText, text)
-            ))
-            .findFirst()
-            .orElse(null);
+  public static ModStatUnit fromString(String text, InputType inputType) {
+    // First, try strict matching
+    for (ModStatUnit modStatUnit : ModStatUnit.values()) {
+      if (inputType.getModStatUnitText().apply(modStatUnit).equals(text)) {
+        return modStatUnit;
+      }
+    }
+    // If it fails, try fuzzy matching
+    for (ModStatUnit modStatUnit : ModStatUnit.values()) {
+      if (StringUtil.fuzzyMatch(inputType.getModStatUnitText().apply(modStatUnit), text)) {
+        return modStatUnit;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -49,6 +56,14 @@ public enum ModStatUnit {
 
   public String toJsonString() {
     return optimizerJsonText;
+  }
+
+  public String getGameText() {
+    return gameText;
+  }
+
+  public String getOptimizerXmlText() {
+    return optimizerXmlText;
   }
 
   private static boolean matches(String text1, String text2) {

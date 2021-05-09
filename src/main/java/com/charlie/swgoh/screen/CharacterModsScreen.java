@@ -1,5 +1,6 @@
 package com.charlie.swgoh.screen;
 
+import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -21,46 +22,55 @@ public class CharacterModsScreen {
 
   private static final Logger LOG = LoggerFactory.getLogger(CharacterModsScreen.class);
 
-  private static final Pattern TITLE_TEXT = new Pattern("character_mods_screen_title.png");
-  private static final Pattern FILTER_TITLE_TEXT = new Pattern("character_mods_screen_filter_title.png");
-  private static final Pattern FILTER_TITLE_OK = new Pattern("character_mods_screen_filter_ok.png");
-
-  private static final Map<String, String> nameSubstitution = new HashMap<>();
+  // Image patterns
   static {
-    nameSubstitution.put("Chirrut Îmwe", "Chirrut");
-    nameSubstitution.put("Padmé Amidala", "Amidala");
+    Configuration.configureImagePath();
+  }
+  private static final Pattern P_TITLE_TEXT = new Pattern("character_mods_screen_title.png");
+  private static final Pattern P_FILTER_TITLE_TEXT = new Pattern("character_mods_screen_filter_title.png");
+  private static final Pattern P_FILTER_TITLE_OK = new Pattern("character_mods_screen_filter_ok.png");
+
+  private static final Map<String, String> NAME_SUBSTITUTION_MAP = new HashMap<>();
+  static {
+    NAME_SUBSTITUTION_MAP.put("Chirrut Îmwe", "Chirrut");
+    NAME_SUBSTITUTION_MAP.put("Padmé Amidala", "Amidala");
   }
 
-  private static Location locFilterButton;
-  private static Location locFilterAllCheckbox;
-  private static Location locFilterTextZone;
-  private static List<Region> regCharacterNames;
-  private static Region regTitle;
-  private static Region regFilterTitle;
-  private static Region regFilterOK;
+  // Locations
+  public static final Location L_FILTER_BUTTON = new Location(320, 150);
+  public static final Location L_FILTER_ALL_CHECKBOX = new Location(470, 225);
+  public static final Location L_FILTER_TEXT_ZONE = new Location(640, 150);
+
+  // Regions
+  public static final List<Region> RL_CHARACTER_NAMES = IntStream.range(0, 6)
+          .mapToObj(position -> new Region(151 + position * 190, 212, 96, 59))
+          .collect(Collectors.toList());
+  public static final Region R_TITLE = new Region(98, 24, 194, 35);
+  public static final Region R_FILTER_TITLE = new Region(552, 56, 177, 38);
+  public static final Region R_FILTER_OK = new Region(1227, 685, 24, 19);
 
   public static boolean waitForCharacterModsTitle() {
-    return AutomationUtil.waitForPattern(getRegTitle(), TITLE_TEXT, "Waiting for title text");
+    return AutomationUtil.waitForPattern(R_TITLE, P_TITLE_TEXT, "Waiting for title text");
   }
 
   public static boolean waitForCharacterModsFilterTitle() {
-    return AutomationUtil.waitForPattern(getRegFilterTitle(), FILTER_TITLE_TEXT, "Waiting for filter title text");
+    return AutomationUtil.waitForPattern(R_FILTER_TITLE, P_FILTER_TITLE_TEXT, "Waiting for filter title text");
   }
 
   public static boolean waitForCharacterModsFilterOK() {
-    return AutomationUtil.waitForPattern(getRegFilterOK(), FILTER_TITLE_OK, "Waiting for filter OK");
+    return AutomationUtil.waitForPattern(R_FILTER_OK, P_FILTER_TITLE_OK, "Waiting for filter OK");
   }
 
   public static void filterName(String name) {
-    String nameToFilter = nameSubstitution.getOrDefault(name, name);
+    String nameToFilter = NAME_SUBSTITUTION_MAP.getOrDefault(name, name);
 
-    AutomationUtil.click(getLocFilterButton(), "Clicking on filter button");
+    AutomationUtil.click(L_FILTER_BUTTON, "Clicking on filter button");
     if (!waitForCharacterModsFilterTitle()) {
       LOG.error("Character mod screen filter: title text not found. Aborting.");
       throw new ProcessException("Character mod screen filter: title text not found. Aborting.");
     }
-    AutomationUtil.click(getLocFilterAllCheckbox(), "Clicking on ALL checkbox");
-    AutomationUtil.click(getLocFilterTextZone(), "Clicking on filter text zone");
+    AutomationUtil.click(L_FILTER_ALL_CHECKBOX, "Clicking on ALL checkbox");
+    AutomationUtil.click(L_FILTER_TEXT_ZONE, "Clicking on filter text zone");
     if (!waitForCharacterModsFilterOK()) {
       LOG.error("Character mod screen filter: OK button not found. Aborting.");
       throw new ProcessException("Character mod screen filter: OK button not found. Aborting.");
@@ -75,7 +85,7 @@ public class CharacterModsScreen {
   }
 
   public static String readCharacterName(int position) {
-    List<String> strings = AutomationUtil.readLines(getRegCharacterNames().get(position));
+    List<String> strings = AutomationUtil.readLines(RL_CHARACTER_NAMES.get(position));
     return String.join(" ", strings);
   }
 
@@ -103,52 +113,11 @@ public class CharacterModsScreen {
     }
     if (position >= 0) {
       LOG.info("Found character {} at position {}", name, position);
-      AutomationUtil.click(getRegCharacterNames().get(position).getCenter(), "Clicking on character at position " + position);
+      AutomationUtil.click(RL_CHARACTER_NAMES.get(position).getCenter(), "Clicking on character at position " + position);
     }
     else {
       throw new ProcessException("Character " + name + " not found. Aborting.");
     }
-  }
-
-  public static void init() {
-    locFilterButton = AutomationUtil.getLocation(320, 150);
-    locFilterAllCheckbox = AutomationUtil.getLocation(470, 225);
-    locFilterTextZone = AutomationUtil.getLocation(640, 150);
-
-    regCharacterNames = IntStream.range(0, 6)
-            .mapToObj(position -> AutomationUtil.getRegion(151 + position * 190, 212, 96, 59))
-            .collect(Collectors.toList());
-    regTitle = AutomationUtil.getRegion(98, 24, 194, 35);
-    regFilterTitle = AutomationUtil.getRegion(552, 56, 177, 38);
-    regFilterOK = AutomationUtil.getRegion(1227, 685, 24, 19);
-  }
-
-  public static Location getLocFilterButton() {
-    return locFilterButton;
-  }
-
-  public static Location getLocFilterAllCheckbox() {
-    return locFilterAllCheckbox;
-  }
-
-  public static Location getLocFilterTextZone() {
-    return locFilterTextZone;
-  }
-
-  public static List<Region> getRegCharacterNames() {
-    return regCharacterNames;
-  }
-
-  public static Region getRegTitle() {
-    return regTitle;
-  }
-
-  public static Region getRegFilterTitle() {
-    return regFilterTitle;
-  }
-
-  public static Region getRegFilterOK() {
-    return regFilterOK;
   }
 
 }

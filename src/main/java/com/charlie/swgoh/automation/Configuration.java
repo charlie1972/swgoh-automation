@@ -17,29 +17,36 @@ public class Configuration {
   private static final String WINDOW_X = "windowX";
   private static final String WINDOW_Y = "windowY";
 
+  private static final String IMAGE_PATH = Configuration.class.getName() + "/images";
+
   private static String defaultDirectory;
   private static AutomationSpeed speed;
   private static Double windowX;
   private static Double windowY;
 
+  private static boolean isInitialized = false;
+
   private static IFeedback feedback;
 
   private Configuration() {}
 
+  public static void configureImagePath() {
+    ImagePath.add(IMAGE_PATH);
+  }
+
   public static void configure() {
-    Debug.off();
-    Settings.ActionLogs = false;
-    Settings.InfoLogs = false;
-    Settings.DebugLogs = false;
-    Settings.MoveMouseDelay = 0.12F * (float)Configuration.getSpeed().getDelayMultiplier();
+    if (!isInitialized) {
+      Debug.off();
+      Settings.ActionLogs = false;
+      Settings.InfoLogs = false;
+      Settings.DebugLogs = false;
 
-    Key.removeHotkey('q', KeyModifier.CTRL + KeyModifier.SHIFT);
-    Key.addHotkey('q', KeyModifier.CTRL + KeyModifier.SHIFT, new StopAppKeyHandler(feedback));
-    Key.removeHotkey(' ', KeyModifier.CTRL + KeyModifier.SHIFT);
-    Key.addHotkey(' ', KeyModifier.CTRL + KeyModifier.SHIFT, new PauseAppKeyHandler(feedback));
+      Key.addHotkey('q', KeyModifier.CTRL + KeyModifier.SHIFT, new StopAppKeyHandler(feedback));
+      Key.addHotkey(' ', KeyModifier.CTRL + KeyModifier.SHIFT, new PauseAppKeyHandler(feedback));
 
-    ImagePath.reset();
-    ImagePath.add("com.charlie.swgoh.main.FXApp/images");
+      isInitialized = true;
+    }
+    Settings.MoveMouseDelay = 0.12F * (float) Configuration.getSpeed().getDelayMultiplier();
   }
 
   public static void setFeedback(IFeedback feedback) {

@@ -75,9 +75,20 @@ public class FileUtil {
   }
 
   public static FileComponents getFileComponents(String fullFileName) {
-    int pos = fullFileName.lastIndexOf(EXTENSION_SEPARATOR);
-    String fileNameWithoutExtension = pos < 0 ? fullFileName : fullFileName.substring(0, pos);
-    String extension = pos < 0 ? "" : fullFileName.substring(pos + 1);
+    int extPos = fullFileName.lastIndexOf(EXTENSION_SEPARATOR);
+    int dirPos = fullFileName.lastIndexOf(File.separatorChar);
+
+    String fileNameWithoutExtension;
+    String extension;
+
+    if (extPos < 0 || dirPos >= 0 && extPos < dirPos) {
+      fileNameWithoutExtension = fullFileName;
+      extension = "";
+    }
+    else {
+      fileNameWithoutExtension = fullFileName.substring(0, extPos);
+      extension = fullFileName.substring(extPos + 1);
+    }
 
     Path path = Paths.get(fileNameWithoutExtension);
     Path absolutePath = path.toAbsolutePath();

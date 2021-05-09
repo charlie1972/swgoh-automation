@@ -1,5 +1,6 @@
 package com.charlie.swgoh;
 
+import com.charlie.swgoh.datamodel.InputType;
 import com.charlie.swgoh.datamodel.ModStat;
 import com.charlie.swgoh.datamodel.ModStatUnit;
 import org.junit.jupiter.api.Test;
@@ -78,7 +79,7 @@ public class ModTest {
               // Test toString()
               assertEquals(modStatData.text, new ModStat(modStatData.rolls, modStatData.value, modStatData.unit).toString());
               // Test parsing constructor
-              assertEquals(new ModStat(modStatData.rolls, modStatData.value, modStatData.unit), new ModStat(modStatData.text));
+              assertEquals(new ModStat(modStatData.rolls, modStatData.value, modStatData.unit), new ModStat(modStatData.text, InputType.GAME));
             }
     );
 
