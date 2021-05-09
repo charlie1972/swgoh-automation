@@ -10,7 +10,6 @@ import com.charlie.swgoh.screen.ModScreenFilter;
 import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.util.FileUtil;
 import com.charlie.swgoh.util.ModUtil;
-import org.sikuli.script.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +28,6 @@ public class ReadUnequippedMods extends AbstractProcess {
   public void setParameters(String... parameters) {
     allyCode = parameters[0];
     fileName = parameters[1];
-  }
-
-  @Override
-  public void init() {
   }
 
   @Override
@@ -67,7 +62,7 @@ public class ReadUnequippedMods extends AbstractProcess {
       throw new ProcessException("Mod screen filter: title not found. Aborting.");
     }
     ModScreenFilter.ensureUnassignedIsChecked();
-    ModScreenFilter.clickDefault();
+    ModScreenFilter.clickDefaultAndEnsureAnySlotIsOnTop();
     ModScreenFilter.confirm();
     AutomationUtil.waitFor(1000L);
     if (!ModScreen.waitForFilterAndSortButtons()) {

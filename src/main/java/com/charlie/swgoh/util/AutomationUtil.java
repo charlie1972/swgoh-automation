@@ -62,9 +62,14 @@ public class AutomationUtil {
     BlueStacksApp.getWindow().mouseUp();
   }
 
-  public static void dragDrop(Location fromLocation, Location toLocation, String description) throws FindFailed {
-    LOG.debug("Drag drop from={}, to={}: {}", fromLocation, toLocation, description);
-    BlueStacksApp.getWindow().dragDrop(getShiftedLocation(fromLocation), getShiftedLocation(toLocation));
+  public static void dragDrop(Location fromLocation, Location toLocation, String description) {
+    try {
+      LOG.debug("Drag drop from={}, to={}: {}", fromLocation, toLocation, description);
+      BlueStacksApp.getWindow().dragDrop(getShiftedLocation(fromLocation), getShiftedLocation(toLocation));
+    }
+    catch (FindFailed ffe) {
+      throw new ProcessException(description);
+    }
   }
 
   public static void click(Location location, String description) {

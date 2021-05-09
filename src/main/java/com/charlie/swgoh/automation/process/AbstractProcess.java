@@ -17,8 +17,6 @@ public abstract class AbstractProcess {
 
   public void setParameters(String... parameters) {}
 
-  public void init() {}
-
   public void setFeedback(IFeedback feedback) {
     this.feedback = feedback;
   }
@@ -26,7 +24,6 @@ public abstract class AbstractProcess {
   public void process() {
     Configuration.configure();
     BlueStacksApp.showAndAdjust();
-    init();
     setMessage("");
     feedbackRunning();
     try {
@@ -107,7 +104,7 @@ public abstract class AbstractProcess {
       AutomationUtil.waitForDelay();
     }
     if (hasPaused) {
-      init();
+      BlueStacksApp.showAndAdjust();
       feedbackRunning();
     }
   }

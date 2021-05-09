@@ -1,6 +1,5 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
@@ -9,7 +8,6 @@ import com.charlie.swgoh.screen.ModScreen;
 import com.charlie.swgoh.screen.ModScreenFilter;
 import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.util.FileUtil;
-import org.sikuli.script.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MoveMods extends AbstractProcess {
 
@@ -38,18 +38,25 @@ public class MoveMods extends AbstractProcess {
   }
 
   @Override
-  public void init() {
-  }
-
-  @Override
   protected void doProcess() throws Exception {
     LOG.info("Starting moving mods");
+    if (isDryRun) {
+      LOG.info("DRY RUN");
+    }
+    else {
+      LOG.info("LIVE RUN");
+      for (int countdown = 10; countdown > 0; countdown--) {
+        setMessage("WARNING: LIVE RUN. If you wish to abort, type Ctrl-Shift-Q. Starting in " + countdown + " second" + (countdown > 1 ? "s" : ""));
+        AutomationUtil.waitForFixed(1000L);
+        handleKeys();
+      }
+    }
 
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(fileName);
     String reportFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
             "report-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()),
-            "txt"
+            "csv"
     ).toString();
     String processedCharactersFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
@@ -62,8 +69,10 @@ public class MoveMods extends AbstractProcess {
             "txt"
     ).toString();
 
-    Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(fileName);
     FileUtil.deleteFileIfExists(attentionCharactersFile);
+    FileUtil.deleteFileIfExists(reportFile);
+
+    Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(fileName);
     List<String> alreadyProcessedCharacters = FileUtil.readFromFile(processedCharactersFile);
     LOG.info("Characters already processed: {}", alreadyProcessedCharacters);
     alreadyProcessedCharacters.forEach(modMap.keySet()::remove);
@@ -72,10 +81,20 @@ public class MoveMods extends AbstractProcess {
       throw new ProcessException("Character mods screen: title text not found. Aborting.");
     }
 
+    FileUtil.writeToFile(
+            reportFile,
+            "Character name;Result;Slot;Set;Dots;Tier;Primary stat;Secondary stat 1;Secondary stat 2;Secondary stat 3;Secondary stat 4"
+    );
+
     int numberOfCharactersToProcess = modMap.size();
     int numberOfProcessedCharacters = 0;
     for (Map.Entry<String, List<Mod>> entry : modMap.entrySet()) {
       handleKeys();
+
+      String characterName = entry.getKey();
+      String message = "Character: " + characterName;
+      LOG.info(message);
+      setMessage(message);
 
       if (!CharacterModsScreen.waitForCharacterModsTitle()) {
         throw new ProcessException("Character mods screen: title text not found. Aborting.");
@@ -84,12 +103,6 @@ public class MoveMods extends AbstractProcess {
       numberOfProcessedCharacters++;
       double progress = (double)numberOfProcessedCharacters / (double)numberOfCharactersToProcess;
       setProgress(progress);
-
-      String characterName = entry.getKey();
-      FileUtil.writeToFile(reportFile, "Character: " + characterName);
-      String message = "Processing character: " + characterName;
-      LOG.info(message);
-      setMessage(message);
 
       AutomationUtil.waitFor(250L);
       CharacterModsScreen.filterName(characterName);
@@ -104,14 +117,32 @@ public class MoveMods extends AbstractProcess {
 
       boolean allModsOk = true;
       for (Mod mod : entry.getValue()) {
+        String message2 = "Character: " + characterName + ", Slot: " + mod.getSlot();
+        LOG.info(message2);
+        setMessage(message2);
+
         ModProcessResult result = processMod(mod);
-        AutomationUtil.waitFor(500L);
         LOG.info("Process mod: {}", result);
+        AutomationUtil.waitFor(500L);
         if (!ModScreen.waitForFilterAndSortButtons()) {
           throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
         }
         allModsOk = allModsOk && (result == ModProcessResult.ALREADY_ASSIGNED || result == ModProcessResult.FOUND_AND_ASSIGNED);
-        FileUtil.writeToFile(reportFile, mod.toString() + " => " + result);
+        FileUtil.writeToFile(
+                reportFile,
+                Stream.concat(
+                        Stream.of(
+                                characterName,
+                                result.toString(),
+                                mod.getSlot().toString(),
+                                mod.getSet().toString(),
+                                String.valueOf(mod.getDots()),
+                                mod.getTier().toString(),
+                                mod.getPrimaryStat().toString()
+                        ),
+                        mod.getSecondaryStats().stream().map(Object::toString)
+                ).collect(Collectors.joining(";"))
+        );
       }
 
       // Finalizing

@@ -292,16 +292,11 @@ public class ModScreen {
   }
 
   public static void dragOtherModsToTop() {
-    try {
-      AutomationUtil.dragDrop(
-              LL_OTHER_MODS.get(0),
-              LL_OTHER_MODS.get(8),
-              "Dragging mods to top"
-      );
-    }
-    catch (FindFailed ffe) {
-      throw new ProcessException("Could not drag the other mods to the top");
-    }
+    AutomationUtil.dragDrop(
+            LL_OTHER_MODS.get(0),
+            LL_OTHER_MODS.get(8),
+            "Dragging mods to top"
+    );
   }
 
   public static ModWithStatsInText extractModText(boolean isCharacter) {

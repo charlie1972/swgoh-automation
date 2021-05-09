@@ -19,10 +19,6 @@ public class BronziumAllyPoints extends AbstractProcess {
   }
 
   @Override
-  public void init() {
-  }
-
-  @Override
   protected void doProcess() {
     LOG.info("Collecting bronziums with target ally points of {}", targetAllyPoints);
 

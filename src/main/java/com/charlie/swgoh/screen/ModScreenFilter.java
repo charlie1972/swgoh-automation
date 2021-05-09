@@ -5,7 +5,9 @@ import com.charlie.swgoh.datamodel.ModSet;
 import com.charlie.swgoh.datamodel.ModSlot;
 import com.charlie.swgoh.datamodel.ModStatUnit;
 import com.charlie.swgoh.datamodel.xml.Mod;
+import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
+import org.sikuli.script.FindFailed;
 import org.sikuli.script.Location;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Region;
@@ -27,6 +29,7 @@ public class ModScreenFilter {
   }
   private static final Pattern P_TITLE = new Pattern("mod_screen_filter_title.png");
   private static final Pattern P_UNASSIGNED_CHECKBOX_UNCHECKED = new Pattern("mod_screen_filter_unassigned_unchecked.png");
+  private static final Pattern P_ANY_SLOT = new Pattern("mod_screen_filter_any_slot.png");
 
   // Locations
   public static final Location L_UNASSIGNED_CHECKBOX = new Location(252, 151);
@@ -85,6 +88,7 @@ public class ModScreenFilter {
   // Regions
   public static final Region R_TITLE = new Region(540, 51, 202, 48);
   public static final Region R_UNASSIGNED_CHECKBOX = new Region(220, 120, 64, 64);
+  public static final Region R_ANY_SLOT = new Region(254, 199, 84, 37);
 
   public static boolean waitForTitle() {
     return AutomationUtil.waitForPattern(R_TITLE, P_TITLE, "Waiting for title");
@@ -104,12 +108,15 @@ public class ModScreenFilter {
     }
   }
 
-  public static void clickDefault() {
+  public static void clickDefaultAndEnsureAnySlotIsOnTop() {
     AutomationUtil.click(L_DEFAULT, "Clicking on default button");
+    if (!AutomationUtil.checkForPattern(R_ANY_SLOT, P_ANY_SLOT, "Checking if Any Slot button is visible")) {
+      AutomationUtil.dragDrop(LM_SLOTS.get(ModSlot.SQUARE), LM_SECONDARY_STATS.get(ModStatUnit.OFFENSE_PCT), "Drag & drop to make the Any Slot button visible");
+    }
   }
 
   public static void filterForModSlotAndSet(ModSlot slot, ModSet set) {
-    clickDefault();
+    clickDefaultAndEnsureAnySlotIsOnTop();
     AutomationUtil.click(LM_SLOTS.get(slot), "Clicking on slot: " + slot);
     AutomationUtil.click(LM_SETS.get(set), "Clicking on set: " + set);
   }

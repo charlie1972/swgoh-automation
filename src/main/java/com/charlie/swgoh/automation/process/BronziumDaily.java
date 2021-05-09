@@ -11,10 +11,6 @@ public class BronziumDaily extends AbstractProcess {
   private static final Logger LOG = LoggerFactory.getLogger(BronziumDaily.class);
 
   @Override
-  public void init() {
-  }
-
-  @Override
   protected void doProcess() {
     LOG.info("Collecting daily bronziums");
 
