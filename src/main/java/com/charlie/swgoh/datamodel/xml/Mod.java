@@ -15,6 +15,9 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Mod {
 
+  @XmlElement(name = "fromCharacter")
+  private String fromCharacter;
+
   @XmlElement(name = "character")
   private String character;
 
@@ -40,6 +43,10 @@ public class Mod {
   @XmlElement(name = "secondary-stat")
   @XmlJavaTypeAdapter(ModStatXmlAdapter.class)
   private List<ModStat> secondaryStats;
+
+  public String getFromCharacter() {
+    return fromCharacter;
+  }
 
   public String getCharacter() {
     return character;
@@ -71,6 +78,10 @@ public class Mod {
 
   public List<ModStat> getSecondaryStats() {
     return secondaryStats;
+  }
+
+  public void setFromCharacter(String fromCharacter) {
+    this.fromCharacter = fromCharacter;
   }
 
   public void setCharacter(String character) {
@@ -108,7 +119,8 @@ public class Mod {
   @Override
   public String toString() {
     return "Mod{" +
-            "character='" + character + '\'' +
+            "fromCharacter='" + fromCharacter + '\'' +
+            ", character='" + character + '\'' +
             ", dots=" + dots +
             ", level=" + level +
             ", slot=" + slot +

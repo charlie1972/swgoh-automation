@@ -17,7 +17,7 @@ public class HtmlConnectorTest {
   private static final String FILE = "src/test/resources/test-data.html";
 
   @Test
-  public void unmarshallTest() {
+  public void unmarshallCharacterTest() {
     Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(FILE);
     assertEquals(2, modMap.size());
 
@@ -28,6 +28,7 @@ public class HtmlConnectorTest {
     assertEquals(3, bsfModList.size());
 
     Mod drModCross = drModList.stream().filter(mod -> mod.getSlot() == ModSlot.CROSS).findFirst().get();
+    assertEquals("Jedi Knight Revan", drModCross.getFromCharacter());
     assertEquals(6, drModCross.getDots());
     assertEquals(15, drModCross.getLevel());
     assertEquals(ModSet.SPEED, drModCross.getSet());
@@ -42,6 +43,21 @@ public class HtmlConnectorTest {
             ).collect(Collectors.toList()),
             drModCross.getSecondaryStats()
     );
+
+    Mod bsfModDiamond = bsfModList.stream().filter(mod -> mod.getSlot() == ModSlot.DIAMOND).findFirst().get();
+    assertEquals("", bsfModDiamond.getFromCharacter());
+  }
+
+  @Test
+  public void unmarshallFromCharacterTest() {
+    Map<String, List<Mod>> modMap = HtmlConnector.getModsByFromCharacterFromHTML(FILE);
+    assertEquals(2, modMap.size());
+
+    List<Mod> drModList = modMap.get("Jedi Knight Revan");
+    assertEquals(6, drModList.size());
+
+    List<Mod> bsfModList = modMap.get("Bastila Shan");
+    assertEquals(2, bsfModList.size());
   }
 
 }

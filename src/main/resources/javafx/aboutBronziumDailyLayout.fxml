@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<TextFlow maxHeight="1000.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1">
+    <padding>
+        <Insets bottom="40.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <Text text="Bronzium Daily&#xA;&#xA;">
+      <font>
+         <Font size="24.0" />
+      </font></Text>
+    <Text text="This feature automatically collects your daily bronziums. You need to run it while the game is in the bronzium buying screen. It clicks on the &quot;Free&quot; button whenever it appears until there are no more free Bronziums to collect.&#xA;&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="It does not take any argument.">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+</TextFlow>

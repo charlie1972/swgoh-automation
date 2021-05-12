@@ -8,6 +8,9 @@
   <mods>
     <xsl:for-each select="//div/div[@class='mod-row individual']">
       <mod>
+        <fromCharacter>
+          <xsl:value-of select=".//h4[@class='character-name']"/>
+        </fromCharacter>
         <character>
           <xsl:value-of select=".//div[@class='character-id']/h3"/>
         </character>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+
+<TextFlow maxHeight="1000.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1">
+    <padding>
+        <Insets bottom="40.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <Text text="Read Unequipped Mods&#10;&#10;">
+      <font>
+         <Font size="24.0" />
+      </font></Text>
+    <Text text="This feature enriches the mods retrieved by the Mod Optimizer. You need to run it while being in the mod screen of any of your characters.&#10;&#10;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Before running this feature, you must create a progress file by using ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Save my progress">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" in the Mod Optimizer.&#10;&#10;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="There are two arguments:&#10;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="• The name of the aforementioned file containing your progress&#10;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="• Your 9-digit ally code&#10;&#10;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="You can browse the file system to get the file. Pressing the ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Load">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" button tries to load the file and retrieve all ally codes in the file.&#10;&#10;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="This feature reads through all your mods, then enriches the progress file with the unequipped mods. It writes a new file with the prefix &quot;enriched&quot;, in the same directory as the original file. It ignores mods that are not level 15, and ones that have 4 dots or lower.&#10;&#10;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="You should then import this new file in the Mod Optimizer by using ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Restore my progress">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" in the Mod Optimizer. You can check the unequipped mods are loaded by exploring them in the Mod Optimizer.&#10;&#10;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Performance: reading 270 unequipped mods takes approximately 9 minutes.">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+</TextFlow>

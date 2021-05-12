@@ -19,7 +19,7 @@ public class FXApp extends Application {
   public void start(Stage primaryStage) throws Exception {
     FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/javafx/applicationLayout.fxml"));
     VBox vbox = fxmlLoader.load();
-    ApplicationController controller = fxmlLoader.<ApplicationController>getController();
+    ApplicationController controller = fxmlLoader.getController();
 
     primaryStage.setTitle("Automation tool for Star Wars: Galaxy of Heroes");
     Scene scene = new Scene(vbox);

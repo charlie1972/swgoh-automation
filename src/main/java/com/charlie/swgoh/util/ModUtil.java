@@ -31,9 +31,6 @@ public class ModUtil {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
-  private static final int MOD_STAT_CERTAINTY_THRESHOLD = 90;
-  private static final int MOD_STAT_PASSABLE_THRESHOLD = 50;
-
   public static Mod convertToJsonMod(com.charlie.swgoh.datamodel.xml.Mod xmlMod) {
     Mod jsonMod = new Mod();
 
@@ -101,29 +98,6 @@ public class ModUtil {
 
     // Encode to Base64
     return Base64.getUrlEncoder().withoutPadding().encodeToString(firstHalf);
-  }
-
-  public static boolean matchMods(com.charlie.swgoh.datamodel.xml.Mod referenceMod, ModWithStatsInText textMod) {
-    LOG.debug("Fuzzy matching between this mod: {} and mod texts: {}", referenceMod, textMod);
-    if (referenceMod.getSecondaryStats().size() != textMod.getSecondaryStats().size()) {
-      LOG.debug("The secondary stats have different lengths. No match");
-      return false;
-    }
-
-    List<Integer> scores = new ArrayList<>();
-    scores.add(FuzzySearch.ratio(referenceMod.getPrimaryStat().toString(), StringUtil.stripSpaces(textMod.getPrimaryStat())));
-    for (int i = 0; i < referenceMod.getSecondaryStats().size(); i++) {
-      scores.add(FuzzySearch.ratio(referenceMod.getSecondaryStats().get(i).toString(), StringUtil.stripSpaces(textMod.getSecondaryStats().get(i))));
-    }
-
-    int nbPassable = (int) scores.stream().filter(score -> score >= MOD_STAT_PASSABLE_THRESHOLD).count();
-    int nbCertain = (int) scores.stream().filter(score -> score >= MOD_STAT_CERTAINTY_THRESHOLD).count();
-    // Criteria (both of them)
-    // All passable
-    // Certain: all except one, or all of them
-    boolean result = (nbPassable == referenceMod.getSecondaryStats().size() + 1) && (nbCertain >= referenceMod.getSecondaryStats().size());
-    LOG.debug("Scores: {}, passable: {}, certain: {}, result: {}", scores, nbPassable, nbCertain, result);
-    return result;
   }
 
 }

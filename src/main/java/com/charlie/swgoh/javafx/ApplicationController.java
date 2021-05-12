@@ -13,15 +13,20 @@ import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.util.FileUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,15 +80,32 @@ public class ApplicationController implements IFeedback {
 
   private Stage primaryStage;
 
-  private final Map<String, Runnable> runnableMap = new HashMap<>();
+  private static final String TAB_BRONZIUM_DAILY = "bronziumDailyTab";
+  private static final String TAB_BRONZIUM_ALLY_POINTS = "bronziumAllyPointsTab";
+  private static final String TAB_READ_UNEQUIPPED_MODS = "readUnequippedModsTab";
+  private static final String TAB_MOVE_MODS = "moveModsTab";
+
+  private final Map<String, Runnable> featureMap = new HashMap<>();
+  private final Map<String, String> aboutBoxTitleMap = new HashMap<>();
+  private final Map<String, String> aboutBoxLayoutMap = new HashMap<>();
 
   private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
   public ApplicationController() {
-    runnableMap.put("bronziumDailyTab", this::runBronziumDaily);
-    runnableMap.put("bronziumAllyPointsTab", this::runBronziumAllyPoints);
-    runnableMap.put("readUnequippedModsTab", this::runReadUnequippedMods);
-    runnableMap.put("moveModsTab", this::runMoveMods);
+    featureMap.put(TAB_BRONZIUM_DAILY, this::runBronziumDaily);
+    featureMap.put(TAB_BRONZIUM_ALLY_POINTS, this::runBronziumAllyPoints);
+    featureMap.put(TAB_READ_UNEQUIPPED_MODS, this::runReadUnequippedMods);
+    featureMap.put(TAB_MOVE_MODS, this::runMoveMods);
+
+    aboutBoxTitleMap.put(TAB_BRONZIUM_DAILY, "About Bronzium Daily");
+    aboutBoxTitleMap.put(TAB_BRONZIUM_ALLY_POINTS, "About Bronzium Ally Points");
+    aboutBoxTitleMap.put(TAB_READ_UNEQUIPPED_MODS, "About Read Unequipped Mods");
+    aboutBoxTitleMap.put(TAB_MOVE_MODS, "About Move Mods");
+
+    aboutBoxLayoutMap.put(TAB_BRONZIUM_DAILY, "/javafx/aboutBronziumDailyLayout.fxml");
+    aboutBoxLayoutMap.put(TAB_BRONZIUM_ALLY_POINTS, "/javafx/aboutBronziumAllyPointsLayout.fxml");
+    aboutBoxLayoutMap.put(TAB_READ_UNEQUIPPED_MODS, "/javafx/aboutReadUnequippedModsLayout.fxml");
+    aboutBoxLayoutMap.put(TAB_MOVE_MODS, "/javafx/aboutMoveModsLayout.fxml");
   }
 
   public void init() {
@@ -108,15 +130,35 @@ public class ApplicationController implements IFeedback {
   }
 
   public void about() {
-    LOG.info(getActiveTabId());
+    String activeTabId = getActiveTabId();
+    String layout = aboutBoxLayoutMap.get(activeTabId);
+    if (layout == null) {
+      return;
+    }
+
+    TextFlow textFlow;
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource(layout));
+      textFlow = fxmlLoader.load();
+    }
+    catch (IOException e) {
+      setErrorMessage("Unable to load about box: " + e.getMessage());
+      return;
+    }
+
+    Stage aboutStage = new Stage();
+    aboutStage.setTitle(aboutBoxTitleMap.get(activeTabId));
+
+    Scene scene = new Scene(textFlow);
+    aboutStage.setScene(scene);
+    aboutStage.initModality(Modality.APPLICATION_MODAL);
+    aboutStage.setResizable(false);
+
+    aboutStage.show();
   }
 
   public void run() {
-    String activeTabId = getActiveTabId();
-    if (activeTabId == null) {
-      return;
-    }
-    Runnable runnable = runnableMap.get(activeTabId);
+    Runnable runnable = featureMap.get(getActiveTabId());
     if (runnable != null) {
       executorService.execute(runnable);
     }

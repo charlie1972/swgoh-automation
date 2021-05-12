@@ -3,9 +3,9 @@ package com.charlie.swgoh.connector;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.datamodel.xml.Mods;
 import com.charlie.swgoh.exception.ProcessException;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +24,7 @@ import java.util.stream.Collectors;
 
 public class HtmlConnector {
 
-  private static final List<Pattern> PATTERNS_TO_REMOVE = Arrays.asList(
-          Pattern.compile("<img.*?>"),
-          Pattern.compile("<input.*?>"),
-          Pattern.compile("<br.*?>"),
-          Pattern.compile("<script>.*?</script>"),
-          Pattern.compile("&.*?;")
-  );
+  private static final Pattern PATTERN_TO_REMOVE = Pattern.compile("<img.*?>|<input.*?>|<br.*?>|<script>.*?</script>|&.*?;");
 
   private static final String XSL_FILE = "/xml/transform.xsl";
 
@@ -40,6 +33,13 @@ public class HtmlConnector {
   public static Map<String, List<Mod>> getModsByCharacterFromHTML(String filename) {
     Mods mods = getModsFromHTML(filename);
     return mods.getMods().stream().collect(Collectors.groupingBy(Mod::getCharacter, LinkedHashMap::new, Collectors.toList()));
+  }
+
+  public static Map<String, List<Mod>> getModsByFromCharacterFromHTML(String filename) {
+    Mods mods = getModsFromHTML(filename);
+    return mods.getMods().stream()
+            .filter(mod -> !mod.getFromCharacter().isEmpty())
+            .collect(Collectors.groupingBy(Mod::getFromCharacter, LinkedHashMap::new, Collectors.toList()));
   }
 
   private static Mods getModsFromHTML(String fileName) {
@@ -56,11 +56,8 @@ public class HtmlConnector {
 
   private static String convertHTMLToXML(String html) {
     String temp = extractBody(html);
-    for (Pattern pattern : PATTERNS_TO_REMOVE) {
-      Matcher matcher = pattern.matcher(temp);
-      temp = matcher.replaceAll("");
-    }
-    return temp;
+    Matcher matcher = PATTERN_TO_REMOVE.matcher(temp);
+    return matcher.replaceAll("");
   }
 
   private static String extractBody(String html) {

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<TextFlow maxHeight="1000.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1">
+    <padding>
+        <Insets bottom="40.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <Text text="Move Mods&#xA;&#xA;">
+      <font>
+         <Font size="24.0" />
+      </font></Text>
+    <Text text="This feature moves the mods according to the Mod Optimizer recommendations. You need to run it while being in the ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Character Mods">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" screen (Home > Characters > Mods).&#xA;&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Before running this feature, you must save the recommendations in a file. This process is a little complicated, I hope to have a better interface with the Mod Optimizer tool:&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; In the recommendation screen, switch ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Show mods as">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" > ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Individual mods&#xA;">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; Open the developer tools of your browser&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; Select ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Inspection">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" and right-click on the root ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&lt;html&gt;">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" element&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; Select ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Copy">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" > ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Outer HTML&#xA;">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; Paste the clipboard in a new text file. Give it the .html extension.&#xA;&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="There are two arguments:&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; The name of the HTML file that you just extracted&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; A switch to do a dry run. If this is checked, the tool will do everything as planned, but will revert instead of confirming mods for each character.&#xA;&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="You can browse the file system to get the file. Pressing the ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Check">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" button tries to load the file and check its format.&#xA;&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Once run, this feature creates several report files so you can check what happened. These files are created in the same directory as the source HTML file:&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="processedCharacters.txt">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=": list of all characters that have been fully and correctly processed&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="report-&lt;timestamp&gt;.csv">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=": detailed report for each character and mod that has been processed; can be imported with your favourite spreadsheet application&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="&#x2022; ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="attentionCharacters.txt">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=": list of the characters for which one or more mods could not be processed correctly&#xA;&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="If ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="attentionCharacters.txt">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" exists and is not empty, cross-check with the report to see what characters and mods had errors during the process.&#xA;&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="The process can be run multiple times with the same recommendations. It relies on ">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="processedCharacters.txt">
+        <font>
+            <Font name="System Bold" size="14.0" />
+        </font>
+    </Text>
+    <Text text=" to know which characters to process. If you want to start a new recommendation set, you need to delete the files first.&#xA;&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="Performance-wise, this process can take quite some time. On my system, it takes around 1 hour to move 400 mods across 100 characters.">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+</TextFlow>
