@@ -1,13 +1,10 @@
 package com.charlie.swgoh.util;
 
-import com.charlie.swgoh.datamodel.ModStat;
-import com.charlie.swgoh.datamodel.ModWithStatsInText;
+import com.charlie.swgoh.datamodel.*;
 import com.charlie.swgoh.datamodel.json.Mod;
 import com.charlie.swgoh.exception.ProcessException;
-import com.charlie.swgoh.screen.ModScreen;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Locale;
-import java.util.function.Supplier;
+import java.util.*;
 
 public class ModUtil {
 
@@ -34,32 +27,32 @@ public class ModUtil {
   public static Mod convertToJsonMod(com.charlie.swgoh.datamodel.xml.Mod xmlMod) {
     Mod jsonMod = new Mod();
 
-    jsonMod.setPrimaryBonusType(xmlMod.getPrimaryStat().getUnit().toJsonString());
+    jsonMod.setPrimaryBonusType(xmlMod.getPrimaryStat().getUnit().getJsonString());
     jsonMod.setPrimaryBonusValue(FORMAT.format(xmlMod.getPrimaryStat().getValue()));
 
-    jsonMod.setSecondaryType1(xmlMod.getSecondaryStats().get(0).getUnit().toJsonString());
+    jsonMod.setSecondaryType1(xmlMod.getSecondaryStats().get(0).getUnit().getJsonString());
     jsonMod.setSecondaryValue1(FORMAT.format(xmlMod.getSecondaryStats().get(0).getValue()));
     jsonMod.setSecondaryRoll1(xmlMod.getSecondaryStats().get(0).getRolls());
 
     if (xmlMod.getSecondaryStats().size() > 1) {
-      jsonMod.setSecondaryType2(xmlMod.getSecondaryStats().get(1).getUnit().toJsonString());
+      jsonMod.setSecondaryType2(xmlMod.getSecondaryStats().get(1).getUnit().getJsonString());
       jsonMod.setSecondaryValue2(FORMAT.format(xmlMod.getSecondaryStats().get(1).getValue()));
       jsonMod.setSecondaryRoll2(xmlMod.getSecondaryStats().get(1).getRolls());
     }
 
     if (xmlMod.getSecondaryStats().size() > 2) {
-      jsonMod.setSecondaryType3(xmlMod.getSecondaryStats().get(2).getUnit().toJsonString());
+      jsonMod.setSecondaryType3(xmlMod.getSecondaryStats().get(2).getUnit().getJsonString());
       jsonMod.setSecondaryValue3(FORMAT.format(xmlMod.getSecondaryStats().get(2).getValue()));
       jsonMod.setSecondaryRoll3(xmlMod.getSecondaryStats().get(2).getRolls());
     }
 
     if (xmlMod.getSecondaryStats().size() > 3) {
-      jsonMod.setSecondaryType4(xmlMod.getSecondaryStats().get(3).getUnit().toJsonString());
+      jsonMod.setSecondaryType4(xmlMod.getSecondaryStats().get(3).getUnit().getJsonString());
       jsonMod.setSecondaryValue4(FORMAT.format(xmlMod.getSecondaryStats().get(3).getValue()));
       jsonMod.setSecondaryRoll4(xmlMod.getSecondaryStats().get(3).getRolls());
     }
 
-    jsonMod.setSlot(xmlMod.getSlot().toJsonString());
+    jsonMod.setSlot(xmlMod.getSlot().getShape());
     jsonMod.setSet(xmlMod.getSet().toJsonString());
     jsonMod.setLevel(xmlMod.getLevel());
     jsonMod.setPips(xmlMod.getDots());
@@ -69,6 +62,29 @@ public class ModUtil {
     jsonMod.setUid(computeUid(jsonMod));
 
     return jsonMod;
+  }
+
+  public static com.charlie.swgoh.datamodel.xml.Mod convertToXmlMod(Mod jsonMod, Map<String, String> unitIdMap) {
+    com.charlie.swgoh.datamodel.xml.Mod xmlMod = new com.charlie.swgoh.datamodel.xml.Mod();
+
+    xmlMod.setPrimaryStat(getModStatFromJson(0, jsonMod.getPrimaryBonusValue(), jsonMod.getPrimaryBonusType()));
+
+    List<ModStat> secondaryStats = new ArrayList<>();
+    secondaryStats.add(getModStatFromJson(jsonMod.getSecondaryRoll1(), jsonMod.getSecondaryValue1(), jsonMod.getSecondaryType1()));
+    secondaryStats.add(getModStatFromJson(jsonMod.getSecondaryRoll2(), jsonMod.getSecondaryValue2(), jsonMod.getSecondaryType2()));
+    secondaryStats.add(getModStatFromJson(jsonMod.getSecondaryRoll3(), jsonMod.getSecondaryValue3(), jsonMod.getSecondaryType3()));
+    secondaryStats.add(getModStatFromJson(jsonMod.getSecondaryRoll4(), jsonMod.getSecondaryValue4(), jsonMod.getSecondaryType4()));
+    xmlMod.setSecondaryStats(secondaryStats);
+
+    xmlMod.setSet(ModSet.fromString(jsonMod.getSet()));
+    xmlMod.setSlot(ModSlot.fromString(jsonMod.getSlot(), InputType.JSON));
+    xmlMod.setTier(ModTier.fromJsonInt(jsonMod.getTier()));
+    xmlMod.setLevel(jsonMod.getLevel());
+    xmlMod.setDots(jsonMod.getPips());
+    xmlMod.setCharacter(unitIdMap.get(jsonMod.getCharacterID()));
+    xmlMod.setFromCharacter("");
+
+    return xmlMod;
   }
 
   private static String computeUid(Mod mod) {
@@ -98,6 +114,12 @@ public class ModUtil {
 
     // Encode to Base64
     return Base64.getUrlEncoder().withoutPadding().encodeToString(firstHalf);
+  }
+
+  private static ModStat getModStatFromJson(int rolls, String value, String unit) {
+    ModStatUnit modStatUnit = ModStatUnit.fromString(unit, InputType.JSON);
+    double modStatValue = Math.round(100d * Double.parseDouble(value)) / 100d;
+    return new ModStat(rolls, modStatValue, modStatUnit);
   }
 
 }

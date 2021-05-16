@@ -30,13 +30,17 @@ public enum ModSlot {
     this.name = name;
   }
 
-  public String toJsonString() {
+  public String getShape() {
     return shape;
   }
 
-  public static ModSlot fromName(String theName) {
+  public String getName() {
+    return name;
+  }
+
+  public static ModSlot fromString(String theString, InputType type) {
     for (ModSlot modSlot : ModSlot.values()) {
-      if (modSlot.name.equals(theName)) {
+      if (type.getModSlotText().apply(modSlot).equals(theString)) {
         return modSlot;
       }
     }

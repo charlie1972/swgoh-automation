@@ -47,7 +47,7 @@ public class Profile {
   }
 
   // Other attributes here
-  private Map<String, Object> properties = new HashMap<>();
+  private final Map<String, Object> properties = new HashMap<>();
 
   @JsonAnySetter
   public void add(String key, Object value) {

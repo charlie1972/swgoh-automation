@@ -29,4 +29,13 @@ public enum ModTier {
     return jsonInt;
   }
 
+  public static ModTier fromJsonInt(int theInt) {
+    for (ModTier modTier : ModTier.values()) {
+      if (modTier.jsonInt == theInt) {
+        return modTier;
+      }
+    }
+    return null;
+  }
+
 }

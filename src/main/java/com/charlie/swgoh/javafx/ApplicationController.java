@@ -70,6 +70,18 @@ public class ApplicationController implements IFeedback {
   private CheckBox dryRun;
 
   @FXML
+  public TextField revertMoveModsFileName;
+
+  @FXML
+  public TextField revertProgressFileName;
+
+  @FXML
+  public ComboBox<String> revertAllyCode;
+
+  @FXML
+  public CheckBox revertDryRun;
+
+  @FXML
   private Label status;
 
   @FXML
@@ -84,6 +96,7 @@ public class ApplicationController implements IFeedback {
   private static final String TAB_BRONZIUM_ALLY_POINTS = "bronziumAllyPointsTab";
   private static final String TAB_READ_UNEQUIPPED_MODS = "readUnequippedModsTab";
   private static final String TAB_MOVE_MODS = "moveModsTab";
+  private static final String TAB_REVERT_MOVE_MODS = "revertMoveModsTab";
 
   private final Map<String, Runnable> featureMap = new HashMap<>();
   private final Map<String, String> aboutBoxTitleMap = new HashMap<>();
@@ -96,16 +109,19 @@ public class ApplicationController implements IFeedback {
     featureMap.put(TAB_BRONZIUM_ALLY_POINTS, this::runBronziumAllyPoints);
     featureMap.put(TAB_READ_UNEQUIPPED_MODS, this::runReadUnequippedMods);
     featureMap.put(TAB_MOVE_MODS, this::runMoveMods);
+    featureMap.put(TAB_REVERT_MOVE_MODS, this::runRevertMoveMods);
 
     aboutBoxTitleMap.put(TAB_BRONZIUM_DAILY, "About Bronzium Daily");
     aboutBoxTitleMap.put(TAB_BRONZIUM_ALLY_POINTS, "About Bronzium Ally Points");
     aboutBoxTitleMap.put(TAB_READ_UNEQUIPPED_MODS, "About Read Unequipped Mods");
     aboutBoxTitleMap.put(TAB_MOVE_MODS, "About Move Mods");
+    aboutBoxTitleMap.put(TAB_REVERT_MOVE_MODS, "About Revert Move Mods");
 
     aboutBoxLayoutMap.put(TAB_BRONZIUM_DAILY, "/javafx/aboutBronziumDailyLayout.fxml");
     aboutBoxLayoutMap.put(TAB_BRONZIUM_ALLY_POINTS, "/javafx/aboutBronziumAllyPointsLayout.fxml");
     aboutBoxLayoutMap.put(TAB_READ_UNEQUIPPED_MODS, "/javafx/aboutReadUnequippedModsLayout.fxml");
     aboutBoxLayoutMap.put(TAB_MOVE_MODS, "/javafx/aboutMoveModsLayout.fxml");
+    aboutBoxLayoutMap.put(TAB_REVERT_MOVE_MODS, "/javafx/aboutRevertMoveModsLayout.fxml");
   }
 
   public void init() {
@@ -193,20 +209,7 @@ public class ApplicationController implements IFeedback {
   }
 
   public void loadProgressFile() {
-    try {
-      Progress progress = JsonConnector.readProgressFromFile(progressFileName.getText());
-      allyCode.getItems().clear();
-      allyCode.getItems().addAll(
-              progress.getProfiles().stream().map(Profile::getAllyCode).collect(Collectors.toList())
-      );
-      if (allyCode.getItems().size() == 1) {
-        allyCode.setValue(allyCode.getItems().get(0));
-      }
-      setMessage("File succesfully loaded. Number of profiles: " + progress.getProfiles().size());
-    }
-    catch (Exception e) {
-      setErrorMessage("Error: " + e.getMessage());
-    }
+    loadProgressFileImpl(progressFileName.getText(), allyCode);
   }
 
   public void runReadUnequippedMods() {
@@ -224,15 +227,7 @@ public class ApplicationController implements IFeedback {
   }
 
   public void checkMoveModsFile() {
-    String fileName = moveModsFileName.getText();
-    try {
-      Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(fileName);
-      Integer numberOfMods = modMap.values().stream().map(List::size).reduce(0, Integer::sum);
-      setMessage("File succesfully loaded. Number of characters: " + modMap.size() + ", number of mods to move: " + numberOfMods);
-    }
-    catch (Exception e) {
-      setErrorMessage("Error: " + e.getMessage());
-    }
+    checkMoveModsFileImpl(moveModsFileName.getText());
   }
 
   public void runMoveMods() {
@@ -242,6 +237,34 @@ public class ApplicationController implements IFeedback {
     AbstractProcess process = new MoveMods();
     process.setFeedback(this);
     process.setParameters(fileName, String.valueOf(bDryRun));
+    process.process();
+  }
+
+  public void chooseRevertMoveModsFile() {
+    chooseFile(revertMoveModsFileName::setText);
+  }
+
+  public void checkRevertMoveModsFile() {
+    checkMoveModsFileImpl(revertMoveModsFileName.getText());
+  }
+
+  public void chooseRevertProgressFile() {
+    chooseFile(revertProgressFileName::setText);
+  }
+
+  public void loadRevertProgressFile() {
+    loadProgressFileImpl(revertProgressFileName.getText(), revertAllyCode);
+  }
+
+  public void runRevertMoveMods() {
+    String moveModsFileName = revertMoveModsFileName.getText();
+    String progressFileName = revertProgressFileName.getText();
+    String revertAlly = revertAllyCode.getValue();
+    boolean bRevertDryRun = revertDryRun.isSelected();
+
+    AbstractProcess process = new RevertMoveMods();
+    process.setFeedback(this);
+    process.setParameters(moveModsFileName, progressFileName, revertAlly, String.valueOf(bRevertDryRun));
     process.process();
   }
 
@@ -257,6 +280,35 @@ public class ApplicationController implements IFeedback {
       consumer.accept(fullPath);
       String directory = FileUtil.getFileComponents(fullPath).getDirectoryName();
       Configuration.setDefaultDirectory(directory);
+    }
+  }
+
+  public void loadProgressFileImpl(String fileName, ComboBox<String> allyCodeComboBox) {
+    try {
+      Progress progress = JsonConnector.readProgressFromFile(fileName);
+      allyCodeComboBox.getItems().clear();
+      allyCodeComboBox.getItems().addAll(
+              progress.getProfiles().stream().map(Profile::getAllyCode).collect(Collectors.toList())
+      );
+      if (allyCodeComboBox.getItems().size() == 1) {
+        allyCodeComboBox.setValue(allyCodeComboBox.getItems().get(0));
+      }
+      setMessage("File succesfully loaded. Number of profiles: " + progress.getProfiles().size());
+    }
+    catch (Exception e) {
+      setErrorMessage("Error: " + e.getMessage());
+    }
+  }
+
+  public void checkMoveModsFileImpl(String fileName) {
+    try {
+      List<Mod> mods = HtmlConnector.getModsFromHTML(fileName);
+      int numberOfMods = mods.size();
+      long numberOfCharacters = mods.stream().map(Mod::getCharacter).distinct().count();
+      setMessage("File succesfully loaded. Number of characters: " + numberOfCharacters + ", number of mods to move: " + numberOfMods);
+    }
+    catch (Exception e) {
+      setErrorMessage("Error: " + e.getMessage());
     }
   }
 

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ReadUnequippedMods extends AbstractProcess {
@@ -40,11 +39,10 @@ public class ReadUnequippedMods extends AbstractProcess {
     ).toString();
 
     Progress progress = JsonConnector.readProgressFromFile(fileName);
-    Optional<Profile> optProfile = progress.getProfiles().stream().filter(profile -> allyCode.equals(profile.getAllyCode())).findFirst();
-    if (optProfile.isEmpty()) {
-      throw new ProcessException("Profile with ally code " + allyCode + " not found.");
-    }
-    Profile profile = optProfile.get();
+    Profile profile = progress.getProfiles().stream()
+            .filter(p -> allyCode.equals(p.getAllyCode()))
+            .findFirst()
+            .orElseThrow(() -> new ProcessException("Profile with ally code " + allyCode + " not found."));
     List<com.charlie.swgoh.datamodel.json.Mod> assignedMods = profile.getMods().stream().filter(mod -> mod.getCharacterID() != null).collect(Collectors.toList());
     profile.setMods(assignedMods);
 

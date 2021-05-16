@@ -97,6 +97,21 @@ The process can be run multiple times with the same recommendations. It relies o
 
 Performance-wise, this process can take quite some time. On my system, it takes around 1 hour to move 400 mods across 100 characters. 
 
+### Revert Move Mods
+This feature reverts the actions done by the Move Mods feature.
+
+It is useful if you performed a remod for a specific encounter (TB or legendary event for example). After the encounter you want to get back to the previous mod set. This feature allows to do that.
+
+There are four arguments:
+* The name of the HTML file that was used to perform the mod move
+* The name of the JSON progress file that is given by the Mod Optimizer
+* Your 9-digit ally code
+* A switch to do a dry run
+
+The feature will find the characters whose mods have changed during the mod move, and restore their mods from the snapshot done by the Mod Optimizer.
+
+Aside from that, it performs the same way as the Move Mods feature: it creates the same report files, and has the same performance.  
+
 ## During the execution
 Because this tool takes over the mouse and keyboard, you can't stop it by ordinary means.
 
