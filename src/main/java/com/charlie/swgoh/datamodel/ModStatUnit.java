@@ -54,7 +54,7 @@ public enum ModStatUnit {
     return prettyText;
   }
 
-  public String toJsonString() {
+  public String getJsonString() {
     return optimizerJsonText;
   }
 

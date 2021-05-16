@@ -349,7 +349,7 @@ public class ModScreen {
     String setAsString = matcher.group(3);
     ModSet set = ModSet.fromString(setAsString);
     String slotAsString = matcher.group(4);
-    ModSlot slot = ModSlot.fromName(slotAsString);
+    ModSlot slot = ModSlot.fromString(slotAsString, InputType.GAME);
     if (Stream.of(dots, tier, set, slot).anyMatch(Objects::isNull)) {
       return null;
     }

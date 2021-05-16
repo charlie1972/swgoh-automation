@@ -6,33 +6,32 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class Progress {
+public class GameUnit {
 
-  private List<Profile> profiles;
-  private List<GameUnit> gameUnits;
+  private String baseID;
+  private String name;
 
   @JsonGetter
-  public List<Profile> getProfiles() {
-    return profiles;
+  public String getBaseID() {
+    return baseID;
   }
 
   @JsonSetter
-  public void setProfiles(List<Profile> profiles) {
-    this.profiles = profiles;
+  public void setBaseID(String baseID) {
+    this.baseID = baseID;
   }
 
-  @JsonGetter("gameSettings")
-  public List<GameUnit> getGameUnits() {
-    return gameUnits;
+  @JsonGetter
+  public String getName() {
+    return name;
   }
 
-  @JsonSetter("gameSettings")
-  public void setGameUnits(List<GameUnit> gameUnits) {
-    this.gameUnits = gameUnits;
+  @JsonSetter
+  public void setName(String name) {
+    this.name = name;
   }
 
   // Other attributes here
@@ -52,12 +51,13 @@ public class Progress {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Progress progress = (Progress) o;
-    return Objects.equals(getProfiles(), progress.getProfiles()) && Objects.equals(getGameUnits(), progress.getGameUnits()) && Objects.equals(getProperties(), progress.getProperties());
+    GameUnit gameUnit = (GameUnit) o;
+    return Objects.equals(getBaseID(), gameUnit.getBaseID()) && Objects.equals(getName(), gameUnit.getName()) && Objects.equals(getProperties(), gameUnit.getProperties());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getProfiles(), getGameUnits(), getProperties());
+    return Objects.hash(getBaseID(), getName(), getProperties());
   }
+
 }

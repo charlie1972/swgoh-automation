@@ -3,8 +3,10 @@ package com.charlie.swgoh;
 import com.charlie.swgoh.datamodel.*;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.connector.HtmlConnector;
+import com.charlie.swgoh.datamodel.xml.Mods;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,7 +20,9 @@ public class HtmlConnectorTest {
 
   @Test
   public void unmarshallCharacterTest() {
-    Map<String, List<Mod>> modMap = HtmlConnector.getModsByCharacterFromHTML(FILE);
+    List<Mod> mods = HtmlConnector.getModsFromHTML(FILE);
+    Map<String, List<Mod>> modMap = mods.stream().collect(Collectors.groupingBy(Mod::getCharacter, LinkedHashMap::new, Collectors.toList()));
+
     assertEquals(2, modMap.size());
 
     List<Mod> drModList = modMap.get("Darth Revan");
@@ -50,7 +54,11 @@ public class HtmlConnectorTest {
 
   @Test
   public void unmarshallFromCharacterTest() {
-    Map<String, List<Mod>> modMap = HtmlConnector.getModsByFromCharacterFromHTML(FILE);
+    List<Mod> mods = HtmlConnector.getModsFromHTML(FILE);
+    Map<String, List<Mod>> modMap = mods.stream()
+            .filter(mod -> !mod.getFromCharacter().isEmpty())
+            .collect(Collectors.groupingBy(Mod::getFromCharacter, LinkedHashMap::new, Collectors.toList()));
+
     assertEquals(2, modMap.size());
 
     List<Mod> drModList = modMap.get("Jedi Knight Revan");

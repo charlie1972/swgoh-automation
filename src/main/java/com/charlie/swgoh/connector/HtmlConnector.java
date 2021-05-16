@@ -15,12 +15,9 @@ import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class HtmlConnector {
 
@@ -30,24 +27,13 @@ public class HtmlConnector {
 
   private HtmlConnector() {}
 
-  public static Map<String, List<Mod>> getModsByCharacterFromHTML(String filename) {
-    Mods mods = getModsFromHTML(filename);
-    return mods.getMods().stream().collect(Collectors.groupingBy(Mod::getCharacter, LinkedHashMap::new, Collectors.toList()));
-  }
-
-  public static Map<String, List<Mod>> getModsByFromCharacterFromHTML(String filename) {
-    Mods mods = getModsFromHTML(filename);
-    return mods.getMods().stream()
-            .filter(mod -> !mod.getFromCharacter().isEmpty())
-            .collect(Collectors.groupingBy(Mod::getFromCharacter, LinkedHashMap::new, Collectors.toList()));
-  }
-
-  private static Mods getModsFromHTML(String fileName) {
+  public static List<Mod> getModsFromHTML(String fileName) {
     try {
       String html = Files.readString(new File(fileName).toPath());
       String xmlFromHtml = convertHTMLToXML(html);
       String transformedXML = transformXML(xmlFromHtml);
-      return unmarshallXML(transformedXML);
+      Mods mods = unmarshallXML(transformedXML);
+      return mods.getMods();
     }
     catch (Exception e) {
       throw new ProcessException(e.getClass().getName() + ": " + e.getMessage());
