@@ -52,6 +52,7 @@ public class RevertMoveMods extends AbstractMoveMods {
             .findFirst()
             .orElseThrow(() -> new ProcessException("Ally code " + allyCode + " not found in Progress file"));
     Map<String, List<Mod>> originalModsMap = profile.getMods().stream()
+            .filter(jsonMod -> jsonMod.getCharacterID() != null)
             .map(jsonMod -> ModUtil.convertToXmlMod(jsonMod, unitIdMap))
             .collect(Collectors.groupingBy(Mod::getCharacter, LinkedHashMap::new, Collectors.toList()));
 
