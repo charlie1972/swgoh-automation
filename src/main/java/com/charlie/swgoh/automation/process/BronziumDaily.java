@@ -55,7 +55,7 @@ public class BronziumDaily extends AbstractProcess {
       else if (state == BronziumScreen.State.OPEN_BUY_AGAIN_FINISH) {
         AutomationUtil.click(BronziumScreen.L_FINISH_BUTTON, "Click FINISH button");
       }
-      AutomationUtil.waitFor(500L);
+      AutomationUtil.waitFor(2000L);
     }
   }
 

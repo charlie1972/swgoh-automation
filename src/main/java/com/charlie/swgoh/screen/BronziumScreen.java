@@ -9,6 +9,7 @@ import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
@@ -105,7 +106,7 @@ public class BronziumScreen {
   }
 
   public static int parseAllyPoints(String str) {
-    Matcher matcher = REGEX_ALLY_POINTS.matcher(str);
+    Matcher matcher = REGEX_ALLY_POINTS.matcher(str.toUpperCase(Locale.ROOT));
     if (!matcher.matches()) {
       throw new ProcessException("Unable to parse value: " + str);
     }

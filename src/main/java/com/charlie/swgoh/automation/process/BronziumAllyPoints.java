@@ -37,6 +37,7 @@ public class BronziumAllyPoints extends AbstractProcess {
       state = BronziumScreen.readState();
       LOG.info("Read state: {}", state);
       if (state == BronziumScreen.State.TITLE_BUY || state == BronziumScreen.State.TITLE_FREE || state == BronziumScreen.State.TITLE_WAITING) {
+        AutomationUtil.waitFor(1000L);
         int allyPoints = BronziumScreen.readTitleAllyPoints();
         if (startAllyPoints < 0) {
           startAllyPoints = allyPoints;
@@ -53,6 +54,7 @@ public class BronziumAllyPoints extends AbstractProcess {
         AutomationUtil.click(BronziumScreen.L_CONTINUE_BUTTON, "Click CONTINUE button");
       }
       else if (state == BronziumScreen.State.OPEN_BUY_AGAIN_FINISH) {
+        AutomationUtil.waitFor(1000L);
         int allyPoints = BronziumScreen.readOpenAllyPoints();
         if (startAllyPoints < 0) {
           startAllyPoints = allyPoints;
@@ -63,7 +65,7 @@ public class BronziumAllyPoints extends AbstractProcess {
         }
         AutomationUtil.click(BronziumScreen.L_BUY_AGAIN_BUTTON, "Click BUY AGAIN button");
       }
-      AutomationUtil.waitFor(500L);
+      AutomationUtil.waitFor(1000L);
     }
   }
 

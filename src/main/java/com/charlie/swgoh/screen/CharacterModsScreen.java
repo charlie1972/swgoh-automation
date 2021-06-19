@@ -26,7 +26,8 @@ public class CharacterModsScreen {
   static {
     Configuration.configureImagePath();
   }
-  private static final Pattern P_TITLE_TEXT = new Pattern("character_mods_screen_title.png");
+  private static final Pattern P_CHARACTERS_TAB = new Pattern("character_mods_screen_characters_tab.png");
+  private static final Pattern P_MODS_CHECKED = new Pattern("character_mods_screen_mods_checked.png");
   private static final Pattern P_FILTER_TITLE_TEXT = new Pattern("character_mods_screen_filter_title.png");
   private static final Pattern P_FILTER_TITLE_OK = new Pattern("character_mods_screen_filter_ok.png");
 
@@ -37,20 +38,25 @@ public class CharacterModsScreen {
   }
 
   // Locations
-  public static final Location L_FILTER_BUTTON = new Location(320, 150);
+  public static final Location L_FILTER_BUTTON = new Location(380, 130);
   public static final Location L_FILTER_ALL_CHECKBOX = new Location(470, 225);
   public static final Location L_FILTER_TEXT_ZONE = new Location(640, 150);
 
   // Regions
-  public static final List<Region> RL_CHARACTER_NAMES = IntStream.range(0, 6)
-          .mapToObj(position -> new Region(151 + position * 190, 212, 96, 59))
+  public static final List<Region> RL_CHARACTER_NAMES = IntStream.range(0, 5)
+          .mapToObj(position -> new Region(350 + position * 190, 188, 96, 59))
           .collect(Collectors.toList());
-  public static final Region R_TITLE = new Region(98, 24, 194, 35);
+  public static final Region R_CHARACTERS = new Region(0, 102, 226, 84);
+  public static final Region R_MODS_CHECKED = new Region(819, 107, 50, 50);
   public static final Region R_FILTER_TITLE = new Region(552, 56, 177, 38);
   public static final Region R_FILTER_OK = new Region(1227, 685, 24, 19);
 
-  public static boolean waitForCharacterModsTitle() {
-    return AutomationUtil.waitForPattern(R_TITLE, P_TITLE_TEXT, "Waiting for title text");
+  public static boolean waitForCharactersTab() {
+    return AutomationUtil.waitForPattern(R_CHARACTERS, P_CHARACTERS_TAB, "Waiting for characters tab");
+  }
+
+  public static boolean checkModsCheckbox() {
+    return AutomationUtil.checkForPattern(R_MODS_CHECKED, P_MODS_CHECKED, "Checking the mods checkbox");
   }
 
   public static boolean waitForCharacterModsFilterTitle() {
@@ -78,9 +84,9 @@ public class CharacterModsScreen {
     AutomationUtil.typeText(nameToFilter, "Pasting character name in filter");
     AutomationUtil.waitFor(250L);
     AutomationUtil.typeText("\n", "Typing ENTER in filter");
-    if (!waitForCharacterModsTitle()) {
-      LOG.error("Character mod screen: title text not found. Aborting.");
-      throw new ProcessException("Character mod screen: title text not found. Aborting.");
+    if (!waitForCharactersTab()) {
+      LOG.error("Character mods screen: characters tab not found. Aborting.");
+      throw new ProcessException("Character mods screen: characters tab not found. Aborting.");
     }
   }
 
@@ -93,7 +99,7 @@ public class CharacterModsScreen {
     LOG.info("Scanning for name {}", name);
     int maxScore = -1;
     int position = -1;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < RL_CHARACTER_NAMES.size(); i++) {
       String readName = CharacterModsScreen.readCharacterName(i);
       LOG.info("Read name at position {}: {}", i, readName);
       if (readName.trim().isEmpty()) {

@@ -1,6 +1,5 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.screen.CharacterModsScreen;
@@ -65,8 +64,13 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     LOG.info("Characters already processed: {}", alreadyProcessedCharacters);
     alreadyProcessedCharacters.forEach(modMap.keySet()::remove);
 
-    if (!CharacterModsScreen.waitForCharacterModsTitle()) {
-      throw new ProcessException("Character mods screen: title text not found. Aborting.");
+    if (!CharacterModsScreen.waitForCharactersTab()) {
+      throw new ProcessException("Character mods screen: characters tab not found. Aborting.");
+    }
+
+    if (!CharacterModsScreen.checkModsCheckbox()) {
+      AutomationUtil.click(CharacterModsScreen.R_MODS_CHECKED, "Click on mods checkbox");
+      AutomationUtil.waitFor(2000L);
     }
 
     FileUtil.writeToFile(
@@ -84,8 +88,8 @@ public abstract class AbstractMoveMods extends AbstractProcess {
       LOG.info(message);
       setMessage(message);
 
-      if (!CharacterModsScreen.waitForCharacterModsTitle()) {
-        throw new ProcessException("Character mods screen: title text not found. Aborting.");
+      if (!CharacterModsScreen.waitForCharactersTab()) {
+        throw new ProcessException("Character mods screen: characters tab not found. Aborting.");
       }
 
       numberOfProcessedCharacters++;
