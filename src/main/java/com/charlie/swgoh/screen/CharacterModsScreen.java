@@ -35,6 +35,7 @@ public class CharacterModsScreen {
   static {
     NAME_SUBSTITUTION_MAP.put("Chirrut Îmwe", "Chirrut");
     NAME_SUBSTITUTION_MAP.put("Padmé Amidala", "Amidala");
+    NAME_SUBSTITUTION_MAP.put("Threepio  Chewie", "Threepio");
   }
 
   // Locations

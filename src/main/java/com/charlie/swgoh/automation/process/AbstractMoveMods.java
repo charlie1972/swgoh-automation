@@ -158,7 +158,7 @@ public abstract class AbstractMoveMods extends AbstractProcess {
           }
           AutomationUtil.click(ModScreen.R_DIALOG_BOX_OK, "Clicking on dialog box OK");
         }
-        AutomationUtil.waitFor(1000L);
+        AutomationUtil.waitFor(2000L);
       }
 
       if (!ModScreen.waitForFilterAndSortButtons()) {
@@ -175,7 +175,7 @@ public abstract class AbstractMoveMods extends AbstractProcess {
       }
 
       ModScreen.exitModScreen();
-      AutomationUtil.waitFor(1500L);
+      AutomationUtil.waitFor(2000L);
     }
 
     LOG.info("Finished");
