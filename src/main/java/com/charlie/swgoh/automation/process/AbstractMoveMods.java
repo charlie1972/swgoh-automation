@@ -28,6 +28,10 @@ public abstract class AbstractMoveMods extends AbstractProcess {
   }
 
   protected void perform(FileUtil.FileComponents fileComponents, Map<String, List<Mod>> modMap, boolean isDryRun) throws Exception {
+    if (!CharacterModsScreen.waitForCharactersTab() || !CharacterModsScreen.checkModsCheckbox()) {
+      throw new ProcessException("You must start in the characters tab, with mods shown. Aborting.");
+    }
+
     LOG.info("Starting moving mods");
     if (isDryRun) {
       LOG.info("DRY RUN");
@@ -63,15 +67,6 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     List<String> alreadyProcessedCharacters = FileUtil.readFromFile(processedCharactersFile);
     LOG.info("Characters already processed: {}", alreadyProcessedCharacters);
     alreadyProcessedCharacters.forEach(modMap.keySet()::remove);
-
-    if (!CharacterModsScreen.waitForCharactersTab()) {
-      throw new ProcessException("Character mods screen: characters tab not found. Aborting.");
-    }
-
-    if (!CharacterModsScreen.checkModsCheckbox()) {
-      AutomationUtil.click(CharacterModsScreen.R_MODS_CHECKED, "Click on mods checkbox");
-      AutomationUtil.waitFor(2000L);
-    }
 
     FileUtil.writeToFile(
             reportFile,
