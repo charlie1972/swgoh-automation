@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public class HtmlConnector {
 
-  private static final Pattern PATTERN_TO_REMOVE = Pattern.compile("<img.*?>|<input.*?>|<br.*?>|<script>.*?</script>|&.*?;");
+  private static final Pattern PATTERN_TO_REMOVE = Pattern.compile("<img.*?>|<input.*?>|<br.*?>|<script>.*?</script>|&nbsp;");
 
   private static final String XSL_FILE = "/xml/transform.xsl";
 

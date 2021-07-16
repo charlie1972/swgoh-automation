@@ -2,6 +2,7 @@ package com.charlie.swgoh.automation.process;
 
 import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.connector.JsonConnector;
+import com.charlie.swgoh.datamodel.ModSlot;
 import com.charlie.swgoh.datamodel.json.GameUnit;
 import com.charlie.swgoh.datamodel.json.Profile;
 import com.charlie.swgoh.datamodel.json.Progress;
@@ -10,8 +11,13 @@ import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.FileUtil;
 import com.charlie.swgoh.util.ModUtil;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RevertMoveMods extends AbstractMoveMods {
 
@@ -33,15 +39,10 @@ public class RevertMoveMods extends AbstractMoveMods {
     List<Mod> modList = HtmlConnector.getModsFromHTML(moveModsFileName);
     Progress progress = JsonConnector.readProgressFromFile(progressFileName);
 
-    // Build the character list for which the mods must be restored
-    Set<String> characters = new LinkedHashSet<>();
-    modList.stream()
-            .map(Mod::getCharacter)
-            .forEach(characters::add);
-    modList.stream()
-            .map(Mod::getFromCharacter)
-            .filter(s -> !s.isEmpty())
-            .forEach(characters::add);
+    // Build the character and mod slots that must be restored
+    Map<String, Set<ModSlot>> modsToRestore = new LinkedHashMap<>();
+    addSlots(modList, modsToRestore, Mod::getFromCharacter);
+    addSlots(modList, modsToRestore, Mod::getCharacter);
 
     // Build the mapping between unit ID and unit name for mod conversion
     Map<String, String> unitIdMap = progress.getGameUnits().stream().collect(Collectors.toMap(GameUnit::getBaseID, GameUnit::getName));
@@ -58,11 +59,29 @@ public class RevertMoveMods extends AbstractMoveMods {
 
     // Now build the move mod map
     Map<String, List<Mod>> modMap = new LinkedHashMap<>();
-    characters.forEach(character -> modMap.put(character, originalModsMap.get(character)));
+    modsToRestore.forEach((character, slots) -> {
+      List<Mod> mods = originalModsMap.get(character).stream().filter(mod -> slots.contains(mod.getSlot())).collect(Collectors.toList());
+      modMap.put(character, mods);
+    });
 
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(moveModsFileName);
 
     perform(fileComponents, modMap, isDryRun);
+  }
+
+  private void addSlots(List<Mod> modList, Map<String, Set<ModSlot>> modsToRestore, Function<Mod, String> characterGetter) {
+    modList.forEach(mod -> {
+      String character = characterGetter.apply(mod);
+      if (character.isEmpty()) {
+        return;
+      }
+      if (!modsToRestore.containsKey(character)) {
+        modsToRestore.put(character, Stream.of(mod.getSlot()).collect(Collectors.toSet()));
+      }
+      else {
+        modsToRestore.get(character).add(mod.getSlot());
+      }
+    });
   }
 
 }
