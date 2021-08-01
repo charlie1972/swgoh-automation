@@ -94,15 +94,15 @@ public class BronziumScreen {
   }
 
   private static int returnParseAllyPointsAfterRetries(Supplier<Integer> supplier) {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 10; i++) {
       try {
         return supplier.get();
       }
       catch (Exception e) {
-        AutomationUtil.waitFor(1000L);
+        AutomationUtil.waitFor(500L);
       }
     }
-    return supplier.get();
+    return -1;
   }
 
   public static int parseAllyPoints(String str) {
