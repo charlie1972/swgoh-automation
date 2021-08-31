@@ -51,7 +51,7 @@
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="Aside from that, it performs the same way as the Move Mods feature: it creates the same report files, and has the same performance.">
+    <Text text="Aside from that, it performs the same way as the Move Mods feature: it creates the same report files (they have a different prefix: revert-move-mods), and has the same performance.">
         <font>
             <Font size="14.0" />
         </font>

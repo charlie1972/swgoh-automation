@@ -31,24 +31,29 @@
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="&#x2022; In the recommendation screen, switch ">
+    <Text text="&#x2022; In the recommendation screen, make sure you have the default options:&#xA;">
         <font>
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="Show mods as">
-        <font>
-            <Font name="System Bold" size="14.0" />
-        </font>
-    </Text>
-    <Text text=" > ">
+    <Text text="    &#x2022; Organize mods by: Assigned Character&#xA;">
         <font>
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="Individual mods&#xA;">
+    <Text text="    &#x2022; Show mods as: Sets&#xA;">
         <font>
-            <Font name="System Bold" size="14.0" />
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="    &#x2022; Show me: All assignments&#xA;">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Text>
+    <Text text="    &#x2022; Show characters by tag: All&#xA;">
+        <font>
+            <Font size="14.0" />
         </font>
     </Text>
     <Text text="&#x2022; Open the developer tools of your browser&#xA;">
@@ -101,7 +106,7 @@
             <Font name="System Bold" size="14.0" />
         </font>
     </Text>
-    <Text text="&#x2022; Paste the clipboard in a new text file. Give it the .html extension.&#xA;&#xA;">
+    <Text text="&#x2022; Paste the clipboard in a new text file. Give it the .html extension. Make sure the file encoding is UTF-8.&#xA;&#xA;">
         <font>
             <Font size="14.0" />
         </font>
@@ -146,7 +151,7 @@
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="processedCharacters.txt">
+    <Text text="move-mods-processedCharacters.txt">
         <font>
             <Font name="System Bold" size="14.0" />
         </font>
@@ -161,7 +166,7 @@
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="report-&lt;timestamp&gt;.csv">
+    <Text text="move-mods-report-&lt;timestamp&gt;.csv">
         <font>
             <Font name="System Bold" size="14.0" />
         </font>
@@ -176,7 +181,7 @@
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="attentionCharacters.txt">
+    <Text text="move-mods-attentionCharacters.txt">
         <font>
             <Font name="System Bold" size="14.0" />
         </font>
@@ -191,7 +196,7 @@
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="attentionCharacters.txt">
+    <Text text="move-mods-attentionCharacters.txt">
         <font>
             <Font name="System Bold" size="14.0" />
         </font>
@@ -206,7 +211,7 @@
             <Font size="14.0" />
         </font>
     </Text>
-    <Text text="processedCharacters.txt">
+    <Text text="move-mods-processedCharacters.txt">
         <font>
             <Font name="System Bold" size="14.0" />
         </font>

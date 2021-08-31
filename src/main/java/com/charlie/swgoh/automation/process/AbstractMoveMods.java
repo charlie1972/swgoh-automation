@@ -27,6 +27,8 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     NOT_FOUND
   }
 
+  protected abstract String getFileNamePrefix();
+
   protected void perform(FileUtil.FileComponents fileComponents, Map<String, List<Mod>> modMap, boolean isDryRun) throws Exception {
     if (!CharacterModsScreen.waitForCharactersTab() || !CharacterModsScreen.checkModsCheckbox()) {
       throw new ProcessException("You must start in the characters tab, with mods shown. Aborting.");
@@ -47,17 +49,17 @@ public abstract class AbstractMoveMods extends AbstractProcess {
 
     String reportFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
-            "report-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()),
+            getFileNamePrefix() + "-report-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()),
             "csv"
     ).toString();
     String processedCharactersFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
-            "processedCharacters",
+            getFileNamePrefix() + "-processedCharacters",
             "txt"
     ).toString();
     String attentionCharactersFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
-            "attentionCharacters",
+            getFileNamePrefix() + "-attentionCharacters",
             "txt"
     ).toString();
 
@@ -73,8 +75,9 @@ public abstract class AbstractMoveMods extends AbstractProcess {
             "Character name;Result;Slot;Set;Dots;Tier;Primary stat;Secondary stat 1;Secondary stat 2;Secondary stat 3;Secondary stat 4"
     );
 
-    int numberOfCharactersToProcess = modMap.size();
-    int numberOfProcessedCharacters = 0;
+    int numberOfModsToProcess = modMap.values().stream().map(List::size).reduce(0, Integer::sum);
+    int numberOfProcessedMods = 0;
+    setProgress(0d);
     for (Map.Entry<String, List<Mod>> entry : modMap.entrySet()) {
       handleKeys();
 
@@ -86,10 +89,6 @@ public abstract class AbstractMoveMods extends AbstractProcess {
       if (!CharacterModsScreen.waitForCharactersTab()) {
         throw new ProcessException("Character mods screen: characters tab not found. Aborting.");
       }
-
-      numberOfProcessedCharacters++;
-      double progress = (double)numberOfProcessedCharacters / (double)numberOfCharactersToProcess;
-      setProgress(progress);
 
       AutomationUtil.waitFor(250L);
       CharacterModsScreen.filterName(characterName);
@@ -130,6 +129,10 @@ public abstract class AbstractMoveMods extends AbstractProcess {
                         mod.getSecondaryStats().stream().map(Object::toString)
                 ).collect(Collectors.joining(";"))
         );
+
+        numberOfProcessedMods++;
+        double progress = (double)numberOfProcessedMods / (double)numberOfModsToProcess;
+        setProgress(progress);
       }
 
       // Finalizing

@@ -35,6 +35,11 @@ public class RevertMoveMods extends AbstractMoveMods {
   }
 
   @Override
+  protected String getFileNamePrefix() {
+    return "revert-move-mods";
+  }
+
+  @Override
   protected void doProcess() throws Exception {
     List<Mod> modList = HtmlConnector.getModsFromHTML(moveModsFileName);
     Progress progress = JsonConnector.readProgressFromFile(progressFileName);
