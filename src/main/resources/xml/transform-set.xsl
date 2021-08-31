@@ -6,18 +6,18 @@
 >
 <xsl:template match="/">
   <mods>
-    <xsl:for-each select="//div/div[@class='mod-row individual']">
+    <xsl:for-each select="//div/div[@class='mod-set-view']/div">
       <mod>
         <fromCharacter>
-          <xsl:value-of select=".//h4[@class='character-name']"/>
+          <xsl:value-of select=".//div[@class='assigned-character']/span"/>
         </fromCharacter>
         <character>
-          <xsl:value-of select=".//div[@class='character-id']/h3"/>
+          <xsl:value-of select="../../../div/h3"/>
         </character>
-        <xsl:variable name="detail" select="fn:tokenize(fn:normalize-space(.//div[@class='mod-detail']/div[1]/@class), '\s')"/>
+        <xsl:variable name="detail" select="fn:tokenize(fn:normalize-space(./div[1]/@class), '\s')"/>
         <dots><xsl:value-of select="fn:tokenize($detail[2], '-')[2]"/></dots>
         <level>
-          <xsl:value-of select=".//div[@class='mod-detail']/div[1]/div[3]"/>
+          <xsl:value-of select="./div[1]/div[3]"/>
         </level>
         <slot><xsl:value-of select="$detail[3]"/></slot>
         <tier><xsl:value-of select="$detail[5]"/></tier>

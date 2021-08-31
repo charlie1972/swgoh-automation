@@ -32,6 +32,11 @@ public class MoveMods extends AbstractMoveMods {
   }
 
   @Override
+  protected String getFileNamePrefix() {
+    return "move-mods";
+  }
+
+  @Override
   protected void doProcess() throws Exception {
     List<Mod> modList = HtmlConnector.getModsFromHTML(fileName);
     Map<String, List<Mod>> modMap = modList.stream().collect(Collectors.groupingBy(Mod::getCharacter, LinkedHashMap::new, Collectors.toList()));

@@ -68,17 +68,21 @@ This feature reads through all your mods, then enriches the progress file with t
 
 You should then import this new file in the Mod Optimizer by using **Restore my progress** in the Mod Optimizer. You can check the unequipped mods are loaded by exploring them in the Mod Optimizer.
 
-Performance: reading 270 unequipped mods takes approximately 9 minutes. 
+Performance: reading 300 unequipped mods takes approximately 10 minutes. 
 
 ### Move Mods
 This feature moves the mods according to the Mod Optimizer recommendations. You need to run it while being in the **Character Mods** screen (Home > Characters > Mods).
 
 Before running this feature, you must save the recommendations in a file. This process is a little complicated, I hope to have a better interface with the Mod Optimizer tool:
-* In the recommendation screen, switch **Show mods as** > **Individual mods**
+* In the recommendation screen, make sure you have the default options:
+  * Organize mods by: Assigned Character
+  * Show mods as: Sets
+  * Show me: All assignments
+  * Show characters by tag: All
 * Open the developer tools of your browser
 * Select **Inspection** and right-click on the root **\<html>** element
 * Select **Copy** > **Outer HTML**
-* Paste the clipboard in a new text file. Give it the .html extension.
+* Paste the clipboard in a new text file. Give it the .html extension. Make sure the file encoding is UTF-8.
 
 There are two arguments:
 * The name of the HTML file that you just extracted
@@ -87,13 +91,13 @@ There are two arguments:
 You can browse the file system to get the file. Pressing the **Check** button tries to load the file and check its format.
 
 Once run, this feature creates several report files so you can check what happened. These files are created in the same directory as the source HTML file:
-* **processedCharacters.txt**: list of all characters that have been fully and correctly processed
-* **report-\<timestamp>.csv**: detailed report for each character and mod that has been processed; can be imported with your favourite spreadsheet application
-* **attentionCharacters.txt**: list of the characters for which one or more mods could not be processed correctly
+* **move-mods-processedCharacters.txt**: list of all characters that have been fully and correctly processed
+* **move-mods-report-\<timestamp>.csv**: detailed report for each character and mod that has been processed; can be imported with your favourite spreadsheet application
+* **move-mods-attentionCharacters.txt**: list of the characters for which one or more mods could not be processed correctly
 
-If **attentionCharacters.txt** exists and is not empty, cross-check with the report to see what characters and mods had errors during the process.
+If **move-mods-attentionCharacters.txt** exists and is not empty, cross-check with the report to see what characters and mods had errors during the process.
 
-The process can be run multiple times with the same recommendations. It relies on **processedCharacters.txt** to know which characters to process. If you want to start a new recommendation set, you need to delete the files first.
+The process can be run multiple times with the same recommendations. It relies on **move-mods-processedCharacters.txt** to know which characters to process. If you want to start a new recommendation set, you need to delete the files first.
 
 Performance-wise, this process can take quite some time. On my system, it takes around 1 hour to move 400 mods across 100 characters. 
 
@@ -110,7 +114,7 @@ There are four arguments:
 
 The feature will find the characters whose mods have changed during the mod move, and restore their mods from the snapshot done by the Mod Optimizer.
 
-Aside from that, it performs the same way as the Move Mods feature: it creates the same report files, and has the same performance.  
+Aside from that, it performs the same way as the Move Mods feature: it creates the same report files (they have a different prefix: revert-move-mods), and has the same performance.  
 
 ## During the execution
 Because this tool takes over the mouse and keyboard, you can't stop it by ordinary means.

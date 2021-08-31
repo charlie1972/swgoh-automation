@@ -18,12 +18,13 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class HtmlConnector {
 
   private static final Pattern PATTERN_TO_REMOVE = Pattern.compile("<img.*?>|<input.*?>|<br.*?>|<script>.*?</script>|&nbsp;");
 
-  private static final String XSL_FILE = "/xml/transform.xsl";
+  private static final String XSL_FILE = "/xml/transform-set.xsl";
 
   private HtmlConnector() {}
 
@@ -33,7 +34,7 @@ public class HtmlConnector {
       String xmlFromHtml = convertHTMLToXML(html);
       String transformedXML = transformXML(xmlFromHtml);
       Mods mods = unmarshallXML(transformedXML);
-      return mods.getMods();
+      return mods.getMods().stream().filter(mod -> !mod.getCharacter().equals(mod.getFromCharacter())).collect(Collectors.toList());
     }
     catch (Exception e) {
       throw new ProcessException(e.getClass().getName() + ": " + e.getMessage());

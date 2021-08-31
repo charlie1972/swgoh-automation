@@ -10,6 +10,7 @@ import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +32,18 @@ public class CharacterModsScreen {
   private static final Pattern P_FILTER_TITLE_TEXT = new Pattern("character_mods_screen_filter_title.png");
   private static final Pattern P_FILTER_TITLE_OK = new Pattern("character_mods_screen_filter_ok.png");
 
+  private static final List<String> NAME_PARTS = Arrays.asList(
+          "Chirrut",
+          "Amidala"
+  );
+
   private static final Map<String, String> NAME_SUBSTITUTION_MAP = new HashMap<>();
   static {
     NAME_SUBSTITUTION_MAP.put("Chirrut Îmwe", "Chirrut");
     NAME_SUBSTITUTION_MAP.put("Padmé Amidala", "Amidala");
   }
+
+  private static final int MATCH_THRESHOLD = 90;
 
   // Locations
   public static final Location L_FILTER_BUTTON = new Location(380, 130);
@@ -68,7 +76,13 @@ public class CharacterModsScreen {
   }
 
   public static void filterName(String name) {
-    String nameToFilter = NAME_SUBSTITUTION_MAP.getOrDefault(name, name);
+    String nameToFilter = name;
+    for (String n : NAME_PARTS) {
+      if (name.contains(n)) {
+        nameToFilter = n;
+        break;
+      }
+    }
 
     AutomationUtil.click(L_FILTER_BUTTON, "Clicking on filter button");
     if (!waitForCharacterModsFilterTitle()) {
@@ -108,7 +122,7 @@ public class CharacterModsScreen {
       }
       int score = FuzzySearch.ratio(name, readName);
       LOG.info("Matching score: {}", score);
-      if (score > 85) {
+      if (score >= MATCH_THRESHOLD) {
         position = i;
         break;
       }
