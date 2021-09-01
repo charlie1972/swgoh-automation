@@ -14,6 +14,7 @@ A tool made for automating tedious tasks in Star Wars: Galaxy of Heroes
 * Spend ally points by repeatedly collecting bronziums until a specified threshold  is reached
 * Read your unequipped mods and inject them in the Mod Optimizer
 * Retrieve the Mod Optimizer's recommendations and move the mods accordingly
+* Revert the previous mod move
 
 ## How to run it from the release
 * Get the archive at: https://github.com/charlie1972/swgoh-automation/releases
@@ -23,7 +24,8 @@ A tool made for automating tedious tasks in Star Wars: Galaxy of Heroes
 * Clone the project from: https://github.com/charlie1972/swgoh-automation
 * Make sure the JAVA_HOME environment variable is set
 * Build the project: `mvn clean package`
-* Run it from the target directory: `swgoh-automation-<version>.exe` 
+* Unzip the archive located in the target directory: swgoh-automation-<version>.zip
+* Run it: `swgoh-automation-<version>.exe` 
 
 ## IMPORTANT
 The first things the tool does when running are:
@@ -73,19 +75,18 @@ Performance: reading 300 unequipped mods takes approximately 10 minutes.
 ### Move Mods
 This feature moves the mods according to the Mod Optimizer recommendations. You need to run it while being in the **Character Mods** screen (Home > Characters > Mods).
 
-Before running this feature, you must save the recommendations in a file. This process is a little complicated, I hope to have a better interface with the Mod Optimizer tool:
+Before running this feature, you must save the recommendations in a file:
 * In the recommendation screen, make sure you have the default options:
   * Organize mods by: Assigned Character
   * Show mods as: Sets
   * Show me: All assignments
   * Show characters by tag: All
-* Open the developer tools of your browser
-* Select **Inspection** and right-click on the root **\<html>** element
-* Select **Copy** > **Outer HTML**
-* Paste the clipboard in a new text file. Give it the .html extension. Make sure the file encoding is UTF-8.
+* In your browser, use **Save As...**
+* Choose **Complete web page**
+* Save
 
 There are two arguments:
-* The name of the HTML file that you just extracted
+* The name of the HTML file that you just saved
 * A switch to do a dry run. If this is checked, the tool will do everything as planned, but will revert instead of confirming mods for each character.
 
 You can browse the file system to get the file. Pressing the **Check** button tries to load the file and check its format.
@@ -122,6 +123,8 @@ Because this tool takes over the mouse and keyboard, you can't stop it by ordina
 There are two global hotkeys that the tool recognizes:
 * Stop the process by using CTRL-SHIFT-Q
 * Pause and unpause the process by using CTRL-SHIFT-SPACE
+
+If they don't work, there probably is another application that uses the same global hotkeys. Close them before using this tool.
 
 There might be some delay between the hotkey being pressed and the actual pause/stop. The tool does so only when at a stable state.
 
