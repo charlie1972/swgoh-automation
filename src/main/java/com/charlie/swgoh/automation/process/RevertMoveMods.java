@@ -65,8 +65,10 @@ public class RevertMoveMods extends AbstractMoveMods {
     // Now build the move mod map
     Map<String, List<Mod>> modMap = new LinkedHashMap<>();
     modsToRestore.forEach((character, slots) -> {
-      List<Mod> mods = originalModsMap.get(character).stream().filter(mod -> slots.contains(mod.getSlot())).collect(Collectors.toList());
-      modMap.put(character, mods);
+      if (originalModsMap.containsKey(character)) {
+        List<Mod> mods = originalModsMap.get(character).stream().filter(mod -> slots.contains(mod.getSlot())).collect(Collectors.toList());
+        modMap.put(character, mods);
+      }
     });
 
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(moveModsFileName);

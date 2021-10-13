@@ -156,11 +156,11 @@ public abstract class AbstractMoveMods extends AbstractProcess {
           }
           AutomationUtil.click(ModScreen.R_DIALOG_BOX_OK, "Clicking on dialog box OK");
         }
-        AutomationUtil.waitFor(2000L);
+        AutomationUtil.waitFor(1000L);
       }
 
-      if (!ModScreen.waitForFilterAndSortButtons()) {
-        throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
+      if (!ModScreen.waitForRevertButtonVanish()) {
+        throw new ProcessException("Mod screen: revert button has not vanished. Aborting.");
       }
 
       if (allModsOk) {

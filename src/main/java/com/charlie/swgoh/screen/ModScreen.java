@@ -233,6 +233,10 @@ public class ModScreen {
     return AutomationUtil.waitForPattern(R_MINUS_BUTTON, P_MINUS_BUTTON, "Waiting for minus button");
   }
 
+  public static boolean waitForRevertButtonVanish() {
+    return AutomationUtil.waitForPatternVanish(R_REVERT_BUTTON, P_REVERT_BUTTON, "Waiting for remove button to vanish");
+  }
+
   public static boolean checkName(String name) {
     String readName = AutomationUtil.readLine(R_CHARACTER_NAME);
     int score = FuzzySearch.ratio(StringUtil.prepareForMatching(name), StringUtil.prepareForMatching(readName));

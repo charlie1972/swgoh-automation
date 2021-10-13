@@ -138,6 +138,11 @@ public class AutomationUtil {
     return getShiftedRegion(region).has(pattern, WAIT_FOR_IMAGE_DURATION);
   }
 
+  public static boolean waitForPatternVanish(Region region, Pattern pattern, String description) {
+    LOG.debug(description);
+    return getShiftedRegion(region).waitVanish(pattern, WAIT_FOR_IMAGE_DURATION);
+  }
+
   public static boolean checkForPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
     return getShiftedRegion(region).has(pattern, 0.1 * Configuration.getSpeed().getDelayMultiplier());
