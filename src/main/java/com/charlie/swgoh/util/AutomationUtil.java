@@ -181,4 +181,10 @@ public class AutomationUtil {
     return null;
   }
 
+  public static void highlight(Region region) {
+    Region shiftedRegion = getShiftedRegion(region);
+    Region.highlightAllOff();
+    shiftedRegion.highlight();
+  }
+
 }

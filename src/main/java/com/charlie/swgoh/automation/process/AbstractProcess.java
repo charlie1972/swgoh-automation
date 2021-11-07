@@ -22,6 +22,7 @@ public abstract class AbstractProcess {
   }
 
   public void process() {
+    AutomationUtil.waitForDelay();
     Configuration.configure();
     BlueStacksApp.showAndAdjust();
     setMessage("");

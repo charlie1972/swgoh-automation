@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.ApplicationController">
+<VBox xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.ApplicationController">
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
         <Tab id="bronziumDailyTab" fx:id="bronziumDailyTab" closable="false" text="Bronzium Daily">
             <Label alignment="CENTER" contentDisplay="TOP" maxHeight="500.0" maxWidth="1000.0" text="No parameters" textFill="GREY">
@@ -180,6 +180,188 @@
                         <Insets bottom="20.0" left="10.0" right="10.0" />
                     </GridPane.margin>
                 </CheckBox>
+            </GridPane>
+        </Tab>
+        <Tab id="debugTab" fx:id="debugTab" closable="false" text="Debug">
+            <GridPane alignment="CENTER">
+                <columnConstraints>
+                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                </rowConstraints>
+            <children>
+               <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#debugAdjustWindow" text="Adjust window" />
+               <Button mnemonicParsing="false" onAction="#debugReadSelection" text="Read selection" GridPane.rowIndex="1" />
+               <GridPane alignment="CENTER" gridLinesVisible="true" GridPane.columnIndex="1">
+                 <columnConstraints>
+                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                 </columnConstraints>
+                 <rowConstraints>
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                 </rowConstraints>
+                  <children>
+                     <Label alignment="CENTER" contentDisplay="CENTER" text="Top Left" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <font>
+                           <Font size="10.0" />
+                        </font></Label>
+                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                        <children>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="1" userData="TL|V|-1">
+                              <font>
+                                 <Font size="9.0" />
+                              </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="10" userData="TL|V|-10">
+                              <font>
+                                 <Font size="9.0" />
+                              </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="100" userData="TL|V|-100">
+                              <font>
+                                 <Font size="9.0" />
+                              </font></Button>
+                        </children>
+                     </HBox>
+                      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
+                          <children>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="1" userData="TL|H|-1">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="10" userData="TL|H|-10">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="100" userData="TL|H|-100">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                          </children>
+                      </HBox>
+                      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                          <children>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="1" userData="TL|H|+1">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="10" userData="TL|H|+10">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="100" userData="TL|H|+100">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                          </children>
+                      </HBox>
+                      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                          <children>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="1" userData="TL|V|+1">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="10" userData="TL|V|+10">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                              <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="100" userData="TL|V|+100">
+                                  <font>
+                                      <Font size="9.0" />
+                                  </font></Button>
+                          </children>
+                      </HBox>
+                  </children>
+               </GridPane>
+               <GridPane gridLinesVisible="true" GridPane.columnIndex="2">
+                 <columnConstraints>
+                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                 </columnConstraints>
+                 <rowConstraints>
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                 </rowConstraints>
+                  <children>
+                     <Label text="Size" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <font>
+                           <Font size="10.0" />
+                        </font></Label>
+                  </children>
+                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                       <children>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="1" userData="SZ|V|-1">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="10" userData="SZ|V|-10">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="100" userData="SZ|V|-100">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                       </children>
+                   </HBox>
+                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
+                       <children>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="1" userData="SZ|H|-1">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="10" userData="SZ|H|-10">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="100" userData="SZ|H|-100">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                       </children>
+                   </HBox>
+                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                       <children>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="1" userData="SZ|H|+1">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="10" userData="SZ|H|+10">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="100" userData="SZ|H|+100">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                       </children>
+                   </HBox>
+                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                       <children>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="1" userData="SZ|V|+1">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="10" userData="SZ|V|+10">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                           <Button mnemonicParsing="false" onAction="#debugChangeSelection" text="100" userData="SZ|V|+100">
+                               <font>
+                                   <Font size="9.0" />
+                               </font></Button>
+                       </children>
+                   </HBox>
+               </GridPane>
+            </children>
             </GridPane>
         </Tab>
 

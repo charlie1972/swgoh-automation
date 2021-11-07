@@ -11,7 +11,10 @@ import javafx.stage.WindowEvent;
 
 public class FXApp extends Application {
 
+  private static boolean isDebug;
+
   public static void main(String[] args) {
+    isDebug = args.length > 0 && "debug".equalsIgnoreCase(args[0]);
     launch();
   }
 
@@ -27,7 +30,7 @@ public class FXApp extends Application {
     primaryStage.setResizable(false);
 
     controller.setPrimaryStage(primaryStage);
-    controller.init();
+    controller.init(isDebug);
 
     primaryStage.show();
   }
