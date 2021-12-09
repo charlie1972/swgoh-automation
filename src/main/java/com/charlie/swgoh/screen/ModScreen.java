@@ -163,7 +163,7 @@ public class ModScreen {
       }
     }
   }
-  public static final Location L_CONFIRM_BUTTON = new Location(1120, 586);
+  public static final Location L_CONFIRM_BUTTON = new Location(1040, 604);
 
   // Regions
   public static final Region R_CHARACTER_NAME = new Region(172, 18, 500, 30);
@@ -221,7 +221,7 @@ public class ModScreen {
   public static final Region R_UNASSIGNED_LABEL = new Region(793, 110, 155, 30);
   public static final Region R_REMOVE_BUTTON = new Region(673, 452, 119, 42);
   public static final Region R_ASSIGN_LOADOUT_BUTTON = new Region(659, 554, 94, 38);
-  public static final Region R_REVERT_BUTTON = new Region(854, 568, 100, 36);
+  public static final Region R_REVERT_BUTTON = new Region(854, 585, 100, 36);
   public static final Region R_MOD_SCROLLBAR = new Region(470, 182, 4, 432);
   public static final Region R_DIALOG_BOX_OK = new Region(767, 439, 51, 43); // For dry-run
 
