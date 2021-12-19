@@ -24,6 +24,8 @@ public class Configuration {
   private static Double windowX;
   private static Double windowY;
 
+  private static boolean isDebug = false;
+
   private static boolean isInitialized = false;
 
   private static IFeedback feedback;
@@ -83,6 +85,14 @@ public class Configuration {
 
   public static void setWindowY(Double windowY) {
     Configuration.windowY = windowY;
+  }
+
+  public static boolean isIsDebug() {
+    return isDebug;
+  }
+
+  public static void setIsDebug(boolean isDebug) {
+    Configuration.isDebug = isDebug;
   }
 
   public static void loadProperties() {

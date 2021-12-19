@@ -7,7 +7,6 @@ import com.charlie.swgoh.connector.JsonConnector;
 import com.charlie.swgoh.datamodel.json.Profile;
 import com.charlie.swgoh.datamodel.json.Progress;
 import com.charlie.swgoh.datamodel.xml.Mod;
-import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.util.FileUtil;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -22,7 +21,6 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,8 +94,6 @@ public class ApplicationController implements IFeedback {
 
   private Stage primaryStage;
 
-  private DebugDelegate debugDelegate;
-
   private static final String TAB_BRONZIUM_DAILY = "bronziumDailyTab";
   private static final String TAB_BRONZIUM_ALLY_POINTS = "bronziumAllyPointsTab";
   private static final String TAB_READ_UNEQUIPPED_MODS = "readUnequippedModsTab";
@@ -128,12 +124,10 @@ public class ApplicationController implements IFeedback {
     aboutBoxLayoutMap.put(TAB_READ_UNEQUIPPED_MODS, "/javafx/aboutReadUnequippedModsLayout.fxml");
     aboutBoxLayoutMap.put(TAB_MOVE_MODS, "/javafx/aboutMoveModsLayout.fxml");
     aboutBoxLayoutMap.put(TAB_REVERT_MOVE_MODS, "/javafx/aboutRevertMoveModsLayout.fxml");
-
-    debugDelegate = new DebugDelegate(this);
   }
 
-  public void init(boolean isDebug) {
-    if (!isDebug) {
+  public void init() {
+    if (!Configuration.isIsDebug()) {
       tabPane.getTabs().remove(debugTab);
     }
 
@@ -330,18 +324,6 @@ public class ApplicationController implements IFeedback {
 
   public void onSpeedChange() {
     Configuration.setSpeed(AutomationSpeed.fromText(speed.getValue()));
-  }
-
-  public void debugAdjustWindow() {
-    debugDelegate.adjustWindow();
-  }
-
-  public void debugChangeSelection(ActionEvent event) {
-    debugDelegate.changeRegion((String) ((Node) event.getSource()).getUserData());
-  }
-
-  public void debugReadSelection() {
-    debugDelegate.readSelection();
   }
 
   @Override

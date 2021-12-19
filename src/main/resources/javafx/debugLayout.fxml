@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.DebugController">
+    <HBox spacing="20.0">
+        <Button mnemonicParsing="false" onAction="#adjustWindow" text="Adjust window" />
+        <Button mnemonicParsing="false" onAction="#takeScreenshot" text="Take screenshot" />
+      <TextField fx:id="screenshotDirectoryText" prefWidth="225.0" />
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <padding>
+         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+    </HBox>
+    <HBox>
+        <GridPane alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label alignment="CENTER" contentDisplay="CENTER" text="Top Left" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Label>
+                <HBox alignment="CENTER" GridPane.columnIndex="1">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="1" userData="TL|V|-1">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="10" userData="TL|V|-10">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="100" userData="TL|V|-100">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                    </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+                </HBox>
+                <HBox alignment="CENTER" GridPane.rowIndex="1">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="1" userData="TL|H|-1">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="10" userData="TL|H|-10">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="100" userData="TL|H|-100">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                    </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+                </HBox>
+                <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="1" userData="TL|H|+1">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="10" userData="TL|H|+10">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="100" userData="TL|H|+100">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                    </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+                </HBox>
+                <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="1" userData="TL|V|+1">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="10" userData="TL|V|+10">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#changeRegion" text="100" userData="TL|V|+100">
+                            <font>
+                                <Font size="9.0" />
+                            </font>
+                        </Button>
+                    </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+                </HBox>
+            </children>
+        </GridPane>
+      <Separator orientation="VERTICAL" />
+        <GridPane GridPane.columnIndex="2">
+            <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label text="Size" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Label>
+            </children>
+            <HBox alignment="CENTER" GridPane.columnIndex="1">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="1" userData="SZ|V|-1">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="10" userData="SZ|V|-10">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="100" userData="SZ|V|-100">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                </children>
+            <padding>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            </HBox>
+            <HBox alignment="CENTER" GridPane.rowIndex="1">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="1" userData="SZ|H|-1">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="10" userData="SZ|H|-10">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="100" userData="SZ|H|-100">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                </children>
+            <padding>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            </HBox>
+            <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="1" userData="SZ|H|+1">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="10" userData="SZ|H|+10">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="100" userData="SZ|H|+100">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                </children>
+            <padding>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            </HBox>
+            <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="1" userData="SZ|V|+1">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="10" userData="SZ|V|+10">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#changeRegion" text="100" userData="SZ|V|+100">
+                        <font>
+                            <Font size="9.0" />
+                        </font>
+                    </Button>
+                </children>
+            <padding>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            </HBox>
+        </GridPane>
+      <padding>
+         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+    </HBox>
+   <HBox alignment="CENTER_LEFT" spacing="10.0">
+      <padding>
+         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+      <children>
+         <Label text="X" />
+         <TextField maxWidth="60.0" fx:id="xText">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin>
+         </TextField>
+         <Label layoutX="15.0" layoutY="15.0" text="Y" />
+         <TextField fx:id="yText" layoutX="33.0" layoutY="15.0" maxWidth="60.0">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin>
+         </TextField>
+         <Label layoutX="15.0" layoutY="15.0" text="W" />
+         <TextField fx:id="wText" layoutX="33.0" layoutY="15.0" maxWidth="60.0">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin>
+         </TextField>
+         <Label layoutX="190.0" layoutY="15.0" text="H" />
+         <TextField fx:id="hText" layoutX="212.0" layoutY="15.0" maxWidth="60.0">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin>
+         </TextField>
+         <Button mnemonicParsing="false" onAction="#readRegionFromTextFields" text="Set" />
+      </children>
+      <VBox.margin>
+         <Insets right="20.0" />
+      </VBox.margin>
+   </HBox>
+   <HBox alignment="CENTER_LEFT" spacing="20.0">
+      <children>
+           <Button mnemonicParsing="false" onAction="#readSelection" text="Read selection" />
+         <Label fx:id="readSelection" />
+      </children>
+      <padding>
+         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+   </HBox>
+</VBox>

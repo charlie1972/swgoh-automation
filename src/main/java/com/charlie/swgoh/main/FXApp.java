@@ -2,37 +2,49 @@ package com.charlie.swgoh.main;
 
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.javafx.ApplicationController;
+import com.charlie.swgoh.javafx.DebugController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class FXApp extends Application {
 
-  private static boolean isDebug;
-
   public static void main(String[] args) {
-    isDebug = args.length > 0 && "debug".equalsIgnoreCase(args[0]);
+    Configuration.setIsDebug(args.length > 0 && "debug".equalsIgnoreCase(args[0]));
     launch();
   }
 
   @Override
   public void start(Stage primaryStage) throws Exception {
-    FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/javafx/applicationLayout.fxml"));
-    VBox vbox = fxmlLoader.load();
-    ApplicationController controller = fxmlLoader.getController();
+    FXMLLoader mainFxmlLoader = new FXMLLoader(this.getClass().getResource("/javafx/applicationLayout.fxml"));
+    VBox mainVbox = mainFxmlLoader.load();
+    ApplicationController mainController = mainFxmlLoader.getController();
 
     primaryStage.setTitle("Automation tool for Star Wars: Galaxy of Heroes");
-    Scene scene = new Scene(vbox);
-    primaryStage.setScene(scene);
+    Scene mainScene = new Scene(mainVbox);
+    primaryStage.setScene(mainScene);
     primaryStage.setResizable(false);
 
-    controller.setPrimaryStage(primaryStage);
-    controller.init(isDebug);
+    mainController.setPrimaryStage(primaryStage);
+    mainController.init();
 
     primaryStage.show();
+
+    if (Configuration.isIsDebug()) {
+      FXMLLoader debugFxmlLoader = new FXMLLoader(this.getClass().getResource("/javafx/debugLayout.fxml"));
+      VBox debugVbox = debugFxmlLoader.load();
+      Stage debugStage = new Stage();
+      debugStage.setTitle("Debug - use with care");
+      Scene debugScene = new Scene(debugVbox);
+      debugStage.setScene(debugScene);
+      debugStage.setResizable(false);
+      DebugController debugController = debugFxmlLoader.getController();
+      debugController.init(primaryStage, debugStage);
+      debugStage.show();
+    }
+
   }
 
   @Override
