@@ -1,5 +1,6 @@
 package com.charlie.swgoh.automation;
 
+import com.charlie.swgoh.window.EmulatorType;
 import org.sikuli.basics.Debug;
 import org.sikuli.basics.Settings;
 import org.sikuli.script.ImagePath;
@@ -16,6 +17,7 @@ public class Configuration {
   private static final String SPEED = "speed";
   private static final String WINDOW_X = "windowX";
   private static final String WINDOW_Y = "windowY";
+  private static final String EMULATOR = "emulator";
 
   private static final String IMAGE_PATH = Configuration.class.getName() + "/images";
 
@@ -23,6 +25,9 @@ public class Configuration {
   private static AutomationSpeed speed;
   private static Double windowX;
   private static Double windowY;
+  private static EmulatorType emulatorType;
+
+  private static boolean isDebug = false;
 
   private static boolean isInitialized = false;
 
@@ -85,6 +90,22 @@ public class Configuration {
     Configuration.windowY = windowY;
   }
 
+  public static EmulatorType getEmulatorType() {
+    return emulatorType;
+  }
+
+  public static void setEmulatorType(EmulatorType emulatorType) {
+    Configuration.emulatorType = emulatorType;
+  }
+
+  public static boolean isIsDebug() {
+    return isDebug;
+  }
+
+  public static void setIsDebug(boolean isDebug) {
+    Configuration.isDebug = isDebug;
+  }
+
   public static void loadProperties() {
     File propertiesFile = new File(PROPERTIES_FILE_NAME);
     if (propertiesFile.exists()) {
@@ -96,6 +117,7 @@ public class Configuration {
       }
       defaultDirectory = properties.getProperty(DEFAULT_DIRECTORY, "");
       speed = properties.getProperty(SPEED) != null ? AutomationSpeed.fromText(properties.getProperty(SPEED)) : AutomationSpeed.FASTEST;
+      emulatorType = properties.getProperty(EMULATOR) != null ? EmulatorType.valueOf(properties.getProperty(EMULATOR)) : EmulatorType.BLUESTACKS_5;
       try {
         windowX = Double.parseDouble(properties.getProperty(WINDOW_X));
         windowY = Double.parseDouble(properties.getProperty(WINDOW_Y));
@@ -110,6 +132,7 @@ public class Configuration {
       speed = AutomationSpeed.FASTEST;
       windowX = null;
       windowY = null;
+      emulatorType = null;
     }
   }
 
@@ -119,6 +142,7 @@ public class Configuration {
     properties.setProperty(SPEED, speed.getText());
     properties.setProperty(WINDOW_X, String.valueOf(windowX));
     properties.setProperty(WINDOW_Y, String.valueOf(windowY));
+    properties.setProperty(EMULATOR, emulatorType.name());
     try (OutputStream outputStream = new FileOutputStream(PROPERTIES_FILE_NAME)) {
       properties.store(outputStream, "Configuration for SWGoH Automation");
     }
