@@ -1,8 +1,8 @@
 package com.charlie.swgoh.util;
 
-import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.exception.ProcessException;
+import com.charlie.swgoh.window.EmulatorWindow;
 import org.sikuli.script.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +23,15 @@ public class AutomationUtil {
 
   public static Location getShiftedLocation(Location location) {
     return new Location(
-            location.getX() + BlueStacksApp.getWindow().getX(),
-            location.getY() + BlueStacksApp.getWindow().getY()
+            location.getX() + EmulatorWindow.INSTANCE.getWindow().getX(),
+            location.getY() + EmulatorWindow.INSTANCE.getWindow().getY()
     );
   }
 
   public static Region getShiftedRegion(Region region) {
     return new Region(
-            region.getX() + BlueStacksApp.getWindow().getX(),
-            region.getY() + BlueStacksApp.getWindow().getY(),
+            region.getX() + EmulatorWindow.INSTANCE.getWindow().getX(),
+            region.getY() + EmulatorWindow.INSTANCE.getWindow().getY(),
             region.getW(),
             region.getH()
     );
@@ -40,7 +40,7 @@ public class AutomationUtil {
   public static void mouseMove(Location location, String description) {
     try {
       LOG.debug( "{}: moving to {}", description, location);
-      BlueStacksApp.getWindow().mouseMove(getShiftedLocation(location));
+      EmulatorWindow.INSTANCE.getWindow().mouseMove(getShiftedLocation(location));
     }
     catch (FindFailed ffe) {
       throw new ProcessException(description);
@@ -49,23 +49,23 @@ public class AutomationUtil {
 
   public static void mouseMoveOffset(int xoff, int yoff, String description) {
     LOG.debug("Move mouse xoff={}, yoff={}: {}", xoff, yoff, description);
-    BlueStacksApp.getWindow().mouseMove(xoff, yoff);
+    EmulatorWindow.INSTANCE.getWindow().mouseMove(xoff, yoff);
   }
 
   public static void mouseDown(int buttons, String description) {
     LOG.debug("Mouse down (buttons={}): {}", buttons, description);
-    BlueStacksApp.getWindow().mouseDown(buttons);
+    EmulatorWindow.INSTANCE.getWindow().mouseDown(buttons);
   }
 
   public static void mouseUp(String description) {
     LOG.debug("Mouse up: {}", description);
-    BlueStacksApp.getWindow().mouseUp();
+    EmulatorWindow.INSTANCE.getWindow().mouseUp();
   }
 
   public static void dragDrop(Location fromLocation, Location toLocation, String description) {
     try {
       LOG.debug("Drag drop from={}, to={}: {}", fromLocation, toLocation, description);
-      BlueStacksApp.getWindow().dragDrop(getShiftedLocation(fromLocation), getShiftedLocation(toLocation));
+      EmulatorWindow.INSTANCE.getWindow().dragDrop(getShiftedLocation(fromLocation), getShiftedLocation(toLocation));
     }
     catch (FindFailed ffe) {
       throw new ProcessException(description);
@@ -75,7 +75,7 @@ public class AutomationUtil {
   public static void click(Location location, String description) {
     try {
       LOG.debug( "{}: clicking on {}", description, location);
-      BlueStacksApp.getWindow().click(getShiftedLocation(location));
+      EmulatorWindow.INSTANCE.getWindow().click(getShiftedLocation(location));
     }
     catch (FindFailed ffe) {
       throw new ProcessException(description);
@@ -88,7 +88,7 @@ public class AutomationUtil {
 
   public static <T> void typeText(String text, String description) {
     LOG.debug( "{}: typing \"{}\"", description, text);
-    BlueStacksApp.getWindow().type(text);
+    EmulatorWindow.INSTANCE.getWindow().type(text);
   }
 
   public static String readLine(Region region) {
@@ -155,7 +155,7 @@ public class AutomationUtil {
   }
 
   public static String takeScreenshot(String directory) {
-    ScreenImage screenImage = Screen.getPrimaryScreen().capture(BlueStacksApp.getWindow());
+    ScreenImage screenImage = Screen.getPrimaryScreen().capture(EmulatorWindow.INSTANCE.getWindow());
     return screenImage.getFile(directory);
   }
 

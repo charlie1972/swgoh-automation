@@ -49,17 +49,17 @@ public abstract class AbstractMoveMods extends AbstractProcess {
 
     String reportFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
-            getFileNamePrefix() + "-report-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()),
+            fileComponents.getFileName() + "-" + getFileNamePrefix() + "-report-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()),
             "csv"
     ).toString();
     String processedCharactersFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
-            getFileNamePrefix() + "-processedCharacters",
+            fileComponents.getFileName() + "-" + getFileNamePrefix() + "-processedCharacters",
             "txt"
     ).toString();
     String attentionCharactersFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
-            getFileNamePrefix() + "-attentionCharacters",
+            fileComponents.getFileName() + "-" + getFileNamePrefix() + "-attentionCharacters",
             "txt"
     ).toString();
 

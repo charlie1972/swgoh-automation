@@ -281,4 +281,13 @@
          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
       </padding>
    </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="20.0">
+        <children>
+            <Button mnemonicParsing="false" onAction="#enumerateWindows" text="Enumerate windows" />
+            <Label fx:id="enumerateWindows" />
+        </children>
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        </padding>
+    </HBox>
 </VBox>

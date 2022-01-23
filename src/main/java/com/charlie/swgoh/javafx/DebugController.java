@@ -1,8 +1,9 @@
 package com.charlie.swgoh.javafx;
 
-import com.charlie.swgoh.automation.BlueStacksApp;
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.util.AutomationUtil;
+import com.charlie.swgoh.window.EmulatorWindow;
+import com.charlie.swgoh.window.Win32Util;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -10,8 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.sikuli.script.Region;
-
-import java.nio.file.Paths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DebugController {
 
@@ -35,6 +36,8 @@ public class DebugController {
 
   private Region debugRegion = new Region(600, 500, 200, 100);
 
+  private static final Logger LOG = LoggerFactory.getLogger(DebugController.class);
+
   public void init(Stage primaryStage, Stage debugStage) {
     debugStage.setX(primaryStage.getX());
     debugStage.setY(primaryStage.getY() + primaryStage.getHeight() + 20.0);
@@ -42,7 +45,8 @@ public class DebugController {
 
   public void adjustWindow() {
     Configuration.configure();
-    BlueStacksApp.showAndAdjust();
+    EmulatorWindow.init();
+    EmulatorWindow.INSTANCE.showAndAdjust();
   }
 
   public void takeScreenshot() {
@@ -116,6 +120,13 @@ public class DebugController {
     }
     String read = AutomationUtil.readLine(debugRegion);
     readSelection.setText(read);
+  }
+
+  public void enumerateWindows() {
+    Win32Util.enumerateWindows(win32Data -> {
+      LOG.debug("Window: {}", win32Data);
+      return true;
+    });
   }
 
 }

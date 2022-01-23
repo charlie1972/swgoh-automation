@@ -1,8 +1,12 @@
 package com.charlie.swgoh.automation.process;
 
-import com.charlie.swgoh.automation.*;
+import com.charlie.swgoh.automation.AppKeyHolder;
+import com.charlie.swgoh.automation.Configuration;
+import com.charlie.swgoh.automation.FeedbackStatus;
+import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
+import com.charlie.swgoh.window.EmulatorWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,12 +26,13 @@ public abstract class AbstractProcess {
   }
 
   public void process() {
-    AutomationUtil.waitForDelay();
-    Configuration.configure();
-    BlueStacksApp.showAndAdjust();
-    setMessage("");
-    feedbackRunning();
     try {
+      AutomationUtil.waitForDelay();
+      Configuration.configure();
+      EmulatorWindow.init();
+      EmulatorWindow.INSTANCE.showAndAdjust();
+      setMessage("");
+      feedbackRunning();
       doProcess();
       feedbackFinished();
     }
@@ -105,7 +110,7 @@ public abstract class AbstractProcess {
       AutomationUtil.waitForDelay();
     }
     if (hasPaused) {
-      BlueStacksApp.showAndAdjust();
+      EmulatorWindow.INSTANCE.showAndAdjust();
       feedbackRunning();
     }
   }

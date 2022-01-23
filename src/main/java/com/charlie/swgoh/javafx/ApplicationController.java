@@ -1,6 +1,9 @@
 package com.charlie.swgoh.javafx;
 
-import com.charlie.swgoh.automation.*;
+import com.charlie.swgoh.automation.AutomationSpeed;
+import com.charlie.swgoh.automation.Configuration;
+import com.charlie.swgoh.automation.FeedbackStatus;
+import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.automation.process.*;
 import com.charlie.swgoh.connector.HtmlConnector;
 import com.charlie.swgoh.connector.JsonConnector;
@@ -9,10 +12,8 @@ import com.charlie.swgoh.datamodel.json.Progress;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.util.FileUtil;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -40,9 +41,6 @@ public class ApplicationController implements IFeedback {
 
   @FXML
   private TabPane tabPane;
-
-  @FXML
-  private Tab debugTab;
 
   @FXML
   private HBox controls;
@@ -127,10 +125,6 @@ public class ApplicationController implements IFeedback {
   }
 
   public void init() {
-    if (!Configuration.isIsDebug()) {
-      tabPane.getTabs().remove(debugTab);
-    }
-
     Configuration.setFeedback(this);
     Configuration.loadProperties();
     if (Configuration.getWindowX() == null || Configuration.getWindowY() == null) {
