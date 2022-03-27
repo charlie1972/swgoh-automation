@@ -75,8 +75,8 @@ public class BronziumAllyPoints extends AbstractProcess {
   // False: not finished
   private boolean feedbackAndCheckAllyPoints(int allyPoints, int startAllyPoints) {
     setMessage("Current Ally Points: " + allyPoints);
-    double progress = (double)(startAllyPoints - allyPoints) / (double)(startAllyPoints - targetAllyPoints);
-    setProgress(progress);
+    progress = (double)(startAllyPoints - allyPoints) / (double)(startAllyPoints - targetAllyPoints);
+    updateProgressAndETA();
     if (allyPoints < targetAllyPoints) {
       LOG.info("Target reached: {}", targetAllyPoints);
       return true;

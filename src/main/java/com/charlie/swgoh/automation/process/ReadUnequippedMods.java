@@ -38,8 +38,8 @@ public class ReadUnequippedMods extends AbstractProcess {
             fileComponents.getExtension()
     ).toString();
 
-    Progress progress = JsonConnector.readProgressFromFile(fileName);
-    Profile profile = progress.getProfiles().stream()
+    Progress modOptimizerProgress = JsonConnector.readProgressFromFile(fileName);
+    Profile profile = modOptimizerProgress.getProfiles().stream()
             .filter(p -> allyCode.equals(p.getAllyCode()))
             .findFirst()
             .orElseThrow(() -> new ProcessException("Profile with ally code " + allyCode + " not found."));
@@ -74,7 +74,8 @@ public class ReadUnequippedMods extends AbstractProcess {
       handleKeys();
       modNumber++;
       setMessage("Reading mod #" + modNumber);
-      setProgress(ModScreen.computeModProgress());
+      progress = ModScreen.computeModProgress();
+      updateProgressAndETA();
       Mod mod = null;
       try {
         mod = ModScreen.readOtherMod();
@@ -90,7 +91,7 @@ public class ReadUnequippedMods extends AbstractProcess {
       profile.getMods().add(jsonMod);
     }
 
-    JsonConnector.writeProgressToFile(progress, resultFileName);
+    JsonConnector.writeProgressToFile(modOptimizerProgress, resultFileName);
 
     LOG.info("Finished");
   }
