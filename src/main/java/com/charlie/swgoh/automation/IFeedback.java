@@ -12,4 +12,6 @@ public interface IFeedback {
 
   void setProgress(double progress);
 
+  void setETA(String eta);
+
 }

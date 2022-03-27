@@ -77,9 +77,9 @@ public abstract class AbstractMoveMods extends AbstractProcess {
 
     int numberOfModsToProcess = modMap.values().stream().map(List::size).reduce(0, Integer::sum);
     int numberOfProcessedMods = 0;
-    setProgress(0d);
     for (Map.Entry<String, List<Mod>> entry : modMap.entrySet()) {
       handleKeys();
+      updateProgressAndETA();
 
       String characterName = entry.getKey();
       String message = "Character: " + characterName;
@@ -131,8 +131,8 @@ public abstract class AbstractMoveMods extends AbstractProcess {
         );
 
         numberOfProcessedMods++;
-        double progress = (double)numberOfProcessedMods / (double)numberOfModsToProcess;
-        setProgress(progress);
+        progress = (double)numberOfProcessedMods / (double)numberOfModsToProcess;
+        updateProgressAndETA();
       }
 
       // Finalizing

@@ -90,6 +90,9 @@ public class ApplicationController implements IFeedback {
   @FXML
   private ProgressBar progress;
 
+  @FXML
+  private Label eta;
+
   private Stage primaryStage;
 
   private static final String TAB_BRONZIUM_DAILY = "bronziumDailyTab";
@@ -346,6 +349,11 @@ public class ApplicationController implements IFeedback {
     double tempProgress = Math.min(progressDouble, 1d);
     double boundProgress = Math.max(tempProgress, 0d);
     Platform.runLater(() -> progress.setProgress(boundProgress));
+  }
+
+  @Override
+  public void setETA(String etaString) {
+    Platform.runLater(() -> eta.setText(etaString));
   }
 
   @Override

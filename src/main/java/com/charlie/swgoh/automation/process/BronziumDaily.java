@@ -27,8 +27,8 @@ public class BronziumDaily extends AbstractProcess {
     while (true) {
       handleKeys();
 
-      double progress = (double)(System.currentTimeMillis() - lastFreeBronziumTimeMillis) / (10d * 60d * 1000d);
-      setProgress(progress);
+      progress = (double)(System.currentTimeMillis() - lastFreeBronziumTimeMillis) / (10d * 60d * 1000d);
+      updateProgressAndETA();
       setMessage("Number of bronziums opened during this run: " + numberOfOpenedBronziums);
 
       AutomationUtil.mouseMove(BronziumScreen.L_IDLE, "Move mouse to idle position");
@@ -40,6 +40,9 @@ public class BronziumDaily extends AbstractProcess {
       }
       else if (state == BronziumScreen.State.TITLE_FREE) {
         lastFreeBronziumTimeMillis = System.currentTimeMillis();
+        startProgress = 0.0;
+        startTimeMillis = lastFreeBronziumTimeMillis;
+
         numberOfOpenedBronziums++;
         AutomationUtil.click(BronziumScreen.L_BRONZIUM_BUY_BUTTON, "Click FREE bronzium button");
       }

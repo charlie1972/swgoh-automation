@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.ApplicationController">
+<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.ApplicationController">
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
         <Tab id="bronziumDailyTab" fx:id="bronziumDailyTab" closable="false" text="Bronzium Daily">
             <Label alignment="CENTER" contentDisplay="TOP" maxHeight="500.0" maxWidth="1000.0" text="No parameters" textFill="GREY">
@@ -233,10 +233,24 @@
                 <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
             </GridPane.margin>
         </Label>
-        <ProgressBar fx:id="progress" maxWidth="1000.0" progress="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <GridPane.margin>
-                <Insets left="10.0" right="20.0" />
-            </GridPane.margin>
-        </ProgressBar>
+      <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <children>
+              <ProgressBar fx:id="progress" maxWidth="1000.0" progress="0.0" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </HBox.margin></ProgressBar>
+                 <Label text="ETA:">
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin></Label>
+             <Label fx:id="eta" prefWidth="70.0">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin></Label>
+         </children>
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+      </HBox>
     </GridPane>
 </VBox>

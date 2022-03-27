@@ -10,10 +10,16 @@ import com.charlie.swgoh.window.EmulatorWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+
 public abstract class AbstractProcess {
 
   private IFeedback feedback = null;
   private final Logger LOG;
+
+  protected double progress;
+  protected double startProgress;
+  protected long startTimeMillis;
 
   public AbstractProcess() {
     LOG = LoggerFactory.getLogger(this.getClass());
@@ -31,6 +37,9 @@ public abstract class AbstractProcess {
       Configuration.configure();
       EmulatorWindow.init();
       EmulatorWindow.INSTANCE.showAndAdjust();
+      progress = 0.0;
+      startProgress = 0.0;
+      startTimeMillis = System.currentTimeMillis();
       setMessage("");
       feedbackRunning();
       doProcess();
@@ -41,7 +50,6 @@ public abstract class AbstractProcess {
     }
     finally {
       feedbackIdle();
-      setProgress(0d);
     }
   }
 
@@ -65,9 +73,15 @@ public abstract class AbstractProcess {
     }
   }
 
-  protected void setProgress(double progress) {
+  private void setProgress() {
     if (feedback != null) {
       feedback.setProgress(progress);
+    }
+  }
+
+  private void setETA(String eta) {
+    if (feedback != null) {
+      feedback.setETA(eta);
     }
   }
 
@@ -77,6 +91,35 @@ public abstract class AbstractProcess {
     }
   }
 
+  protected void updateProgressAndETA() {
+    setProgress();
+
+    double elapsedProgress = progress - startProgress;
+    if (elapsedProgress < 0.01) {
+      setETA("Computing...");
+      return;
+    }
+
+    long timeElapsedMillis = System.currentTimeMillis() - startTimeMillis;
+    double rate = timeElapsedMillis / elapsedProgress;
+    long etaMillis = (long) ((1.0 - progress) * rate);
+    Duration duration = Duration.ofMillis(etaMillis);
+    int hours = duration.toHoursPart();
+    int minutes = duration.toMinutesPart();
+    int seconds = duration.toSecondsPart();
+    StringBuilder sb = new StringBuilder();
+    if (hours > 0) {
+      sb.append(hours).append("h ");
+    }
+    if (minutes > 0) {
+      sb.append(minutes).append("m ");
+    }
+    if (seconds > 0) {
+      sb.append(seconds).append("s");
+    }
+    setETA(sb.toString());
+  }
+
   private void feedbackRunning() {
     setAllControlsDisabled(true);
     setStatus(FeedbackStatus.RUNNING);
@@ -84,10 +127,14 @@ public abstract class AbstractProcess {
 
   private void feedbackPause() {
     setStatus(FeedbackStatus.PAUSED);
+    setETA("Paused");
   }
 
   private void feedbackFinished() {
     setMessage("Finished");
+    progress = 0.0;
+    setProgress();
+    setETA("Finished");
   }
 
   private void feedbackIdle() {
@@ -111,6 +158,8 @@ public abstract class AbstractProcess {
     }
     if (hasPaused) {
       EmulatorWindow.INSTANCE.showAndAdjust();
+      startProgress = progress;
+      startTimeMillis = System.currentTimeMillis();
       feedbackRunning();
     }
   }
