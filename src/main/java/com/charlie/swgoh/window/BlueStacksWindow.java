@@ -51,7 +51,7 @@ public abstract class BlueStacksWindow extends EmulatorWindow {
               win32Data.getClassName().toUpperCase(Locale.ROOT).startsWith(getClassNameForBluestacks()) &&
                       win32Data.getWindowText().startsWith(getWindowTextForBluestacks())
       ) {
-          bluestacks.copyFrom(win32Data);
+        bluestacks.copyFrom(win32Data);
       }
       if (
               win32Data.getClassName().toUpperCase(Locale.ROOT).startsWith(getClassNameForViewport()) &&
@@ -75,7 +75,7 @@ public abstract class BlueStacksWindow extends EmulatorWindow {
     int widthDiff = bluestacks.getRect().width - viewport.getRect().width;
     int heightDiff = bluestacks.getRect().height - viewport.getRect().height;
 
-    Rectangle newRect = new Rectangle(0, 0, TARGET_WIDTH + widthDiff, TARGET_HEIGHT + heightDiff);
+    Rectangle newRect = new Rectangle(bluestacks.getRect().x, bluestacks.getRect().y, TARGET_WIDTH + widthDiff, TARGET_HEIGHT + heightDiff);
 
     Win32Util.moveWindow(bluestacks, newRect);
   }
