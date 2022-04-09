@@ -79,7 +79,7 @@ public class BronziumScreen {
     if (AutomationUtil.checkForPattern(R_CONTINUE, P_CONTINUE, "Checking for CONTINUE")) {
       return State.OPEN_CONTINUE;
     }
-    if (AutomationUtil.checkForPattern(R_BUY_AGAIN, P_BUY_AGAIN, "Checking for BUY AGAIN")) {
+    if (AutomationUtil.checkForPattern(R_FINISH, P_FINISH, "Checking for BUY AGAIN")) {
       return State.OPEN_BUY_AGAIN_FINISH;
     }
     return State.UNKNOWN;
