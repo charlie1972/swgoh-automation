@@ -3,10 +3,8 @@ package com.charlie.swgoh.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,6 +47,36 @@ public class FileUtil {
       }
       return sb.toString();
     }
+
+    public String getFileAndExtension() {
+      if (extension != null && !extension.isEmpty()) {
+        return fileName + EXTENSION_SEPARATOR + extension;
+      }
+      else {
+        return fileName;
+      }
+    }
+
+    public FileComponents withDirectoryName(String directoryName) {
+      return new FileComponents(directoryName, this.fileName, this.extension);
+    }
+
+    public FileComponents withFileName(String fileName) {
+      return new FileComponents(this.directoryName, fileName, this.extension);
+    }
+
+    public FileComponents withExtension(String extension) {
+      return new FileComponents(this.directoryName, this.fileName, extension);
+    }
+
+  }
+
+  public static List<FileComponents> getFilesInDirectory(String directoryName) throws IOException {
+    List<FileComponents> fileComponents = new ArrayList<>();
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(new File(directoryName).toPath(), path -> !Files.isDirectory(path))) {
+      stream.forEach(path -> fileComponents.add(getFileComponents(path.toAbsolutePath().toString())));
+    }
+    return fileComponents;
   }
 
   public static void deleteFileIfExists(String fileName) throws IOException {
@@ -64,6 +92,10 @@ public class FileUtil {
             StandardOpenOption.WRITE,
             StandardOpenOption.APPEND
     );
+  }
+
+  public static boolean exists(String fileName) {
+    return Files.exists(new File(fileName).toPath());
   }
 
   public static List<String> readFromFile(String fileName) throws IOException {

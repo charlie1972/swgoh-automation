@@ -20,13 +20,20 @@ public class ReadUnequippedMods extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(ReadUnequippedMods.class);
 
-  private String allyCode;
-  private String fileName;
+  private final String allyCode;
+  private final String fileName;
+
+  public ReadUnequippedMods(String allyCode, String fileName) {
+    this.allyCode = allyCode;
+    this.fileName = fileName;
+  }
 
   @Override
   public void setParameters(String... parameters) {
+/*
     allyCode = parameters[0];
     fileName = parameters[1];
+*/
   }
 
   @Override
@@ -38,7 +45,7 @@ public class ReadUnequippedMods extends AbstractProcess {
             fileComponents.getExtension()
     ).toString();
 
-    Progress modOptimizerProgress = JsonConnector.readProgressFromFile(fileName);
+    Progress modOptimizerProgress = JsonConnector.readObjectFromFile(fileName, Progress.class);
     Profile profile = modOptimizerProgress.getProfiles().stream()
             .filter(p -> allyCode.equals(p.getAllyCode()))
             .findFirst()
@@ -91,7 +98,7 @@ public class ReadUnequippedMods extends AbstractProcess {
       profile.getMods().add(jsonMod);
     }
 
-    JsonConnector.writeProgressToFile(modOptimizerProgress, resultFileName);
+    JsonConnector.writeObjectToFile(modOptimizerProgress, resultFileName);
 
     LOG.info("Finished");
   }

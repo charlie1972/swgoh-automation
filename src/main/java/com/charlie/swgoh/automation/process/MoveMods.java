@@ -22,18 +22,25 @@ import java.util.stream.Stream;
 
 public class MoveMods extends AbstractMoveMods {
 
-  private String fileName;
-  private boolean isDryRun;
+  private final String fileName;
+  private final boolean isDryRun;
 
-  @Override
-  public void setParameters(String... parameters) {
-    fileName = parameters[0];
-    isDryRun = Boolean.parseBoolean(parameters[1]);
+  public MoveMods(String fileName, boolean isDryRun) {
+    this.fileName = fileName;
+    this.isDryRun = isDryRun;
   }
 
   @Override
-  protected String getFileNamePrefix() {
-    return "move-mods";
+  public void setParameters(String... parameters) {
+/*
+    fileName = parameters[0];
+    isDryRun = Boolean.parseBoolean(parameters[1]);
+*/
+  }
+
+  @Override
+  protected String getFileNameSuffix() {
+    return "move";
   }
 
   @Override

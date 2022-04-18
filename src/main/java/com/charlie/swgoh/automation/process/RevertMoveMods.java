@@ -11,43 +11,51 @@ import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.FileUtil;
 import com.charlie.swgoh.util.ModUtil;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RevertMoveMods extends AbstractMoveMods {
 
-  private String moveModsFileName;
-  private String progressFileName;
-  private String allyCode;
-  private boolean isDryRun;
+  private final List<String> moveModsFileNames;
+  private final String progressFileName;
+  private final String allyCode;
+  private final boolean isDryRun;
 
-  @Override
-  public void setParameters(String... parameters) {
-    moveModsFileName = parameters[0];
-    progressFileName = parameters[1];
-    allyCode  = parameters[2];
-    isDryRun = Boolean.parseBoolean(parameters[3]);
+  public RevertMoveMods(List<String> moveModsFileNames, String progressFileName, String allyCode, boolean isDryRun) {
+    this.moveModsFileNames = moveModsFileNames;
+    this.progressFileName = progressFileName;
+    this.allyCode = allyCode;
+    this.isDryRun = isDryRun;
   }
 
   @Override
-  protected String getFileNamePrefix() {
-    return "revert-move-mods";
+  public void setParameters(String... parameters) {
+/*
+    progressFileName = parameters[0];
+    allyCode  = parameters[1];
+    isDryRun = Boolean.parseBoolean(parameters[2]);
+    moveModsFileNames = Arrays.asList(parameters).subList(3, parameters.length);
+*/
+  }
+
+  @Override
+  protected String getFileNameSuffix() {
+    return "revert";
   }
 
   @Override
   protected void doProcess() throws Exception {
-    List<Mod> modList = HtmlConnector.getModsFromHTML(moveModsFileName);
-    Progress progress = JsonConnector.readProgressFromFile(progressFileName);
+    Progress progress = JsonConnector.readObjectFromFile(progressFileName, Progress.class);
 
     // Build the character and mod slots that must be restored
     Map<String, Set<ModSlot>> modsToRestore = new LinkedHashMap<>();
-    addSlots(modList, modsToRestore, Mod::getFromCharacter);
-    addSlots(modList, modsToRestore, Mod::getCharacter);
+    for (String moveModsFileName : moveModsFileNames) {
+      List<Mod> modList = HtmlConnector.getModsFromHTML(moveModsFileName);
+      addSlots(modList, modsToRestore, Mod::getFromCharacter);
+      addSlots(modList, modsToRestore, Mod::getCharacter);
+    }
 
     // Build the mapping between unit ID and unit name for mod conversion
     Map<String, String> unitIdMap = progress.getGameUnits().stream().collect(Collectors.toMap(GameUnit::getBaseID, GameUnit::getName));
@@ -71,7 +79,10 @@ public class RevertMoveMods extends AbstractMoveMods {
       }
     });
 
-    FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(moveModsFileName);
+    FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(moveModsFileNames.get(0));
+    if (moveModsFileNames.size() > 1) {
+      fileComponents = fileComponents.withFileName("__all__");
+    }
 
     perform(fileComponents, modMap, isDryRun);
   }

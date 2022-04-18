@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
@@ -181,6 +182,86 @@
                     </GridPane.margin>
                 </CheckBox>
             </GridPane>
+        </Tab>
+        <Tab id="modsTab" fx:id="modsTab" closable="false" text="Mods">
+            <VBox>
+                <TitledPane collapsible="false" text="Working directory">
+                    <HBox spacing="10.0">
+                        <TextField fx:id="modsWorkingDirectory" minWidth="300" />
+                        <Button onAction="#modsChooseDirectory" text="..." />
+                        <Button onAction="#modsRefresh" text="Refresh" />
+                    </HBox>
+                </TitledPane>
+                <TitledPane collapsible="false" text="Progress file">
+                    <GridPane>
+                        <Label text="Standard" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="15.0" top="5.0" />
+                     </GridPane.margin></Label>
+                        <Label fx:id="modsProgressFile" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </GridPane.margin></Label>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER">
+                            <Label text="Ally code" />
+                            <ComboBox fx:id="modsAllyCode" editable="true" prefWidth="100.0" />
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
+                     </GridPane.margin>
+                        </HBox>
+                        <Label text="Enriched" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="15.0" top="5.0" />
+                     </GridPane.margin></Label>
+                        <Label fx:id="modsEnrichedProgressFile" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </GridPane.margin></Label>
+                        <Button fx:id="modsBtnReadUnequippedMods" onAction="#modsReadUnequippedMods" text="Read unequipped mods" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="10.0" right="2.0" top="2.0" />
+                     </GridPane.margin></Button>
+                        <columnConstraints>
+                             <ColumnConstraints />
+                             <ColumnConstraints />
+                             <ColumnConstraints />
+                        </columnConstraints>
+                        <rowConstraints>
+                             <RowConstraints />
+                             <RowConstraints />
+                        </rowConstraints>
+                    </GridPane>
+                </TitledPane>
+                <TitledPane collapsible="false" text="Move mods">
+                    <HBox prefWidth="100.0" spacing="20.0">
+                        <TableView fx:id="modsMoveFiles" prefHeight="250.0">
+                            <placeholder>
+                                <Label text="No mods move file" />
+                            </placeholder>
+                            <columns>
+                                <TableColumn prefWidth="200" text="Name">
+                                    <cellValueFactory><PropertyValueFactory property="name" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn prefWidth="100" text="Status">
+                                    <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
+                                </TableColumn>
+                            </columns>
+                        </TableView>
+                        <VBox spacing="20.0">
+                            <HBox prefWidth="100.0">
+                                <Label prefWidth="200.0" text="Dry run" HBox.hgrow="ALWAYS" />
+                                <CheckBox fx:id="modsDryRun" HBox.hgrow="ALWAYS" />
+                            </HBox>
+                            <Button fx:id="modsBtnMoveSelected" onAction="#modsMoveSelected" prefWidth="100.0" text="Move selected" />
+                            <Button fx:id="modsBtnRevertSelected" onAction="#modsRevertSelected" prefWidth="100.0" text="Revert selected" />
+                            <Button fx:id="modsBtnRevertAll" onAction="#modsRevertAll" prefWidth="100.0" text="Revert all" />
+                     <padding>
+                        <Insets top="20.0" />
+                     </padding>
+                        </VBox>
+                    </HBox>
+                </TitledPane>
+            </VBox>
         </Tab>
     </TabPane>
     <Separator prefWidth="200.0" />
