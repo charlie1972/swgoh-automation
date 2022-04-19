@@ -13,11 +13,14 @@ import com.charlie.swgoh.datamodel.json.Profile;
 import com.charlie.swgoh.datamodel.json.Progress;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.util.FileUtil;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -27,6 +30,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -371,26 +375,26 @@ public class ApplicationController implements IFeedback {
   // Bronzium tab
   public void bronziumDailyCollect() {
     executorService.execute(() -> {
-      setButtonHighlight(bronziumsBtnDailyCollect, true);
+      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
 
       AbstractProcess process = new BronziumDaily();
       process.setFeedback(this);
       process.process();
 
-      setButtonHighlight(bronziumsBtnDailyCollect, false);
+      flasher.stop();
     });
   }
 
   public void bronziumsTargetCollect() {
     executorService.execute(() -> {
-      setButtonHighlight(bronziumsBtnTargetCollect, true);
+      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
 
       String target = bronziumsTargetAllyPoints.getText();
       AbstractProcess process = new BronziumAllyPoints(target);
       process.setFeedback(this);
       process.process();
 
-      setButtonHighlight(bronziumsBtnTargetCollect, false);
+      flasher.stop();
     });
   }
 
@@ -555,7 +559,7 @@ public class ApplicationController implements IFeedback {
 
   public void modsReadUnequippedMods() {
     executorService.execute(() -> {
-      setButtonHighlight(modsBtnReadUnequippedMods, true);
+      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
 
       String ally = modsAllyCode.getValue();
       String fileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
@@ -564,14 +568,14 @@ public class ApplicationController implements IFeedback {
       process.setFeedback(this);
       process.process();
 
-      setButtonHighlight(modsBtnReadUnequippedMods, false);
+      flasher.stop();
       modsRefresh();
     });
   }
 
   public void modsMoveSelected() {
     executorService.execute(() -> {
-      setButtonHighlight(modsBtnMoveSelected, true);
+      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
 
       ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
       if (selectedItems.isEmpty()) {
@@ -586,14 +590,14 @@ public class ApplicationController implements IFeedback {
       process.setFeedback(this);
       process.process();
 
-      setButtonHighlight(modsBtnMoveSelected, false);
+      flasher.stop();
       modsRefresh();
     });
   }
 
   public void modsRevertSelected() {
     executorService.execute(() -> {
-      setButtonHighlight(modsBtnRevertSelected, true);
+      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
 
       ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
       if (selectedItems.isEmpty()) {
@@ -615,14 +619,14 @@ public class ApplicationController implements IFeedback {
       process.setFeedback(this);
       process.process();
 
-      setButtonHighlight(modsBtnRevertSelected, false);
+      flasher.stop();
       modsRefresh();
     });
   }
 
   public void modsRevertAll() {
     executorService.execute(() -> {
-      setButtonHighlight(modsBtnRevertAll, true);
+      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
 
       ObservableList<MoveFile> allItems = modsMoveFiles.getItems();
       if (allItems.isEmpty()) {
@@ -643,14 +647,41 @@ public class ApplicationController implements IFeedback {
       process.setFeedback(this);
       process.process();
 
-      setButtonHighlight(modsBtnRevertAll, false);
+      flasher.stop();
       modsRefresh();
     });
   }
 
-  private void setButtonHighlight(Button button, boolean isHighlighted) {
-    String style = isHighlighted ? "-fx-background-color: #00ff00;" : "";
-    Platform.runLater(() -> button.setStyle(style));
+  private static class Flasher {
+    private final Timeline timeline;
+    private final Node node;
+    private final String nodeStyle;
+    private final String nodeHighlightedStyle;
+
+    Flasher(Node node) {
+      this.node = node;
+      nodeStyle = node.getStyle();
+      nodeHighlightedStyle = "-fx-background-color: #aaffaa; " + this.nodeStyle;
+      timeline = new Timeline(
+              new KeyFrame(Duration.seconds(0.5), e -> highlightNode()),
+              new KeyFrame(Duration.seconds(1.0), e -> unHighlightNode())
+      );
+      timeline.setCycleCount(Animation.INDEFINITE);
+      timeline.play();
+    }
+
+    void stop() {
+      timeline.stop();
+      unHighlightNode();
+    }
+
+    private void highlightNode() {
+      node.setStyle(nodeHighlightedStyle);
+    }
+
+    private void unHighlightNode() {
+      node.setStyle(nodeStyle);
+    }
   }
 
   public void setPrimaryStage(Stage primaryStage) {
