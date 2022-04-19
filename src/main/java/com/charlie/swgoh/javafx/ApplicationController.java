@@ -15,6 +15,7 @@ import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.util.FileUtil;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -82,6 +83,16 @@ public class ApplicationController implements IFeedback {
 
   @FXML
   public CheckBox revertDryRun;
+
+  // Bronzium Tab
+  @FXML
+  public Button bronziumsBtnDailyCollect;
+
+  @FXML
+  public TextField bronziumsTargetAllyPoints;
+
+  @FXML
+  public Button bronziumsBtnTargetCollect;
 
   // Mods Tab
   @FXML
@@ -235,12 +246,14 @@ public class ApplicationController implements IFeedback {
   }
 
   public void runBronziumAllyPoints() {
+/*
     String target = targetAllyPoints.getText();
 
     AbstractProcess process = new BronziumAllyPoints();
     process.setFeedback(this);
     process.setParameters(target);
     process.process();
+*/
   }
 
   public void chooseProgressFile() {
@@ -353,6 +366,32 @@ public class ApplicationController implements IFeedback {
     catch (Exception e) {
       setErrorMessage("Error: " + e.getMessage());
     }
+  }
+
+  // Bronzium tab
+  public void bronziumDailyCollect() {
+    executorService.execute(() -> {
+      setButtonHighlight(bronziumsBtnDailyCollect, true);
+
+      AbstractProcess process = new BronziumDaily();
+      process.setFeedback(this);
+      process.process();
+
+      setButtonHighlight(bronziumsBtnDailyCollect, false);
+    });
+  }
+
+  public void bronziumsTargetCollect() {
+    executorService.execute(() -> {
+      setButtonHighlight(bronziumsBtnTargetCollect, true);
+
+      String target = bronziumsTargetAllyPoints.getText();
+      AbstractProcess process = new BronziumAllyPoints(target);
+      process.setFeedback(this);
+      process.process();
+
+      setButtonHighlight(bronziumsBtnTargetCollect, false);
+    });
   }
 
   // Mod tab

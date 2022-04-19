@@ -183,6 +183,22 @@
                 </CheckBox>
             </GridPane>
         </Tab>
+        <Tab id="modsTab" fx:id="bronziumsTab" closable="false" text="Bronziums">
+            <VBox>
+                <TitledPane collapsible="false" text="Daily">
+                    <HBox>
+                        <Button fx:id="bronziumsBtnDailyCollect" onAction="#bronziumDailyCollect" prefWidth="100.0" text="Collect" />
+                    </HBox>
+                </TitledPane>
+                <TitledPane collapsible="false" text="Target ally points">
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label text="Target" />
+                        <TextField fx:id="bronziumsTargetAllyPoints" />
+                        <Button fx:id="bronziumsBtnTargetCollect" onAction="#bronziumsTargetCollect" text="Collect to target" />
+                    </HBox>
+                </TitledPane>
+            </VBox>
+        </Tab>
         <Tab id="modsTab" fx:id="modsTab" closable="false" text="Mods">
             <VBox>
                 <TitledPane collapsible="false" text="Working directory">
