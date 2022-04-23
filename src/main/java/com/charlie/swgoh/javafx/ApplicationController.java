@@ -143,7 +143,7 @@ public class ApplicationController implements IFeedback {
 
   public void bronziumsTargetCollect() {
     executorService.execute(() -> {
-      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
+      Flasher flasher = new Flasher(bronziumsBtnTargetCollect);
 
       String target = bronziumsTargetAllyPoints.getText();
       AbstractProcess process = new BronziumAllyPoints(target);
@@ -315,7 +315,7 @@ public class ApplicationController implements IFeedback {
 
   public void modsReadUnequippedMods() {
     executorService.execute(() -> {
-      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
+      Flasher flasher = new Flasher(modsBtnReadUnequippedMods);
 
       String ally = modsAllyCode.getValue();
       String fileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
@@ -331,7 +331,7 @@ public class ApplicationController implements IFeedback {
 
   public void modsMoveSelected() {
     executorService.execute(() -> {
-      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
+      Flasher flasher = new Flasher(modsBtnMoveSelected);
 
       ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
       if (selectedItems.isEmpty()) {
@@ -353,7 +353,7 @@ public class ApplicationController implements IFeedback {
 
   public void modsRevertSelected() {
     executorService.execute(() -> {
-      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
+      Flasher flasher = new Flasher(modsBtnRevertSelected);
 
       ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
       if (selectedItems.isEmpty()) {
@@ -382,7 +382,7 @@ public class ApplicationController implements IFeedback {
 
   public void modsRevertAll() {
     executorService.execute(() -> {
-      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
+      Flasher flasher = new Flasher(modsBtnRevertAll);
 
       ObservableList<MoveFile> allItems = modsMoveFiles.getItems();
       if (allItems.isEmpty()) {
