@@ -417,7 +417,7 @@ public class ApplicationController implements IFeedback {
     Flasher(Node node) {
       this.node = node;
       nodeStyle = node.getStyle();
-      nodeHighlightedStyle = "-fx-background-color: #bbffbb; " + this.nodeStyle;
+      nodeHighlightedStyle = "-fx-background-color: #99ff99; " + this.nodeStyle;
       timeline = new Timeline(
               new KeyFrame(Duration.seconds(0.5), e -> highlightNode()),
               new KeyFrame(Duration.seconds(1.0), e -> unHighlightNode())
