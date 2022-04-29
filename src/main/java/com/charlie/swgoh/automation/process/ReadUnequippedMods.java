@@ -29,14 +29,6 @@ public class ReadUnequippedMods extends AbstractProcess {
   }
 
   @Override
-  public void setParameters(String... parameters) {
-/*
-    allyCode = parameters[0];
-    fileName = parameters[1];
-*/
-  }
-
-  @Override
   protected void doProcess() throws Exception {
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(fileName);
     String resultFileName = new FileUtil.FileComponents(

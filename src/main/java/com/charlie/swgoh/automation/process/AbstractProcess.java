@@ -25,15 +25,13 @@ public abstract class AbstractProcess {
     LOG = LoggerFactory.getLogger(this.getClass());
   }
 
-  public void setParameters(String... parameters) {}
-
   public void setFeedback(IFeedback feedback) {
     this.feedback = feedback;
   }
 
   public void process() {
     try {
-      AutomationUtil.waitForDelay();
+      feedbackRunning();
       Configuration.configure();
       EmulatorWindow.init();
       EmulatorWindow.INSTANCE.showAndAdjust();
@@ -41,7 +39,6 @@ public abstract class AbstractProcess {
       startProgress = 0.0;
       startTimeMillis = System.currentTimeMillis();
       setMessage("");
-      feedbackRunning();
       doProcess();
       feedbackFinished();
     }

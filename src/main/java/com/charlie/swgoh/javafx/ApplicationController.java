@@ -26,11 +26,13 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ApplicationController implements IFeedback {
@@ -130,28 +132,11 @@ public class ApplicationController implements IFeedback {
 
   // Bronzium tab
   public void bronziumDailyCollect() {
-    executorService.execute(() -> {
-      Flasher flasher = new Flasher(bronziumsBtnDailyCollect);
-
-      AbstractProcess process = new BronziumDaily();
-      process.setFeedback(this);
-      process.process();
-
-      flasher.stop();
-    });
+    runProcess(BronziumDaily::new, null, bronziumsBtnDailyCollect);
   }
 
   public void bronziumsTargetCollect() {
-    executorService.execute(() -> {
-      Flasher flasher = new Flasher(bronziumsBtnTargetCollect);
-
-      String target = bronziumsTargetAllyPoints.getText();
-      AbstractProcess process = new BronziumAllyPoints(target);
-      process.setFeedback(this);
-      process.process();
-
-      flasher.stop();
-    });
+    runProcess(() -> new BronziumAllyPoints(bronziumsTargetAllyPoints.getText()), null, bronziumsBtnTargetCollect);
   }
 
   // Mod tab
@@ -314,98 +299,70 @@ public class ApplicationController implements IFeedback {
   }
 
   public void modsReadUnequippedMods() {
-    executorService.execute(() -> {
-      Flasher flasher = new Flasher(modsBtnReadUnequippedMods);
-
-      String ally = modsAllyCode.getValue();
-      String fileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
-
-      AbstractProcess process = new ReadUnequippedMods(ally, fileName);
-      process.setFeedback(this);
-      process.process();
-
-      flasher.stop();
-      modsRefresh();
-    });
+    runProcess(
+            () -> new ReadUnequippedMods(modsAllyCode.getValue(), modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText()),
+            this::modsRefresh,
+            modsBtnReadUnequippedMods
+    );
   }
 
   public void modsMoveSelected() {
-    executorService.execute(() -> {
-      Flasher flasher = new Flasher(modsBtnMoveSelected);
+    runProcess(
+            () -> {
+              ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
 
-      ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
-      if (selectedItems.isEmpty()) {
-        setErrorMessage("No mods move file selected");
-        return;
-      }
+              String fileName = !selectedItems.isEmpty() ? selectedItems.get(0).getFileComponents().toString() : null;
+              boolean bDryRun = modsDryRun.isSelected();
 
-      String fileName = selectedItems.get(0).getFileComponents().toString();
-      boolean bDryRun = modsDryRun.isSelected();
-
-      AbstractProcess process = new MoveMods(fileName, bDryRun);
-      process.setFeedback(this);
-      process.process();
-
-      flasher.stop();
-      modsRefresh();
-    });
+              return new MoveMods(fileName, bDryRun);
+            },
+            this::modsRefresh,
+            modsBtnMoveSelected
+    );
   }
 
   public void modsRevertSelected() {
-    executorService.execute(() -> {
-      Flasher flasher = new Flasher(modsBtnRevertSelected);
+    runProcess(
+            () -> {
+              ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
 
-      ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
-      if (selectedItems.isEmpty()) {
-        setErrorMessage("No mods move file selected");
-        return;
-      }
+              List<String> moveModsFileNames = !selectedItems.isEmpty() ? Collections.singletonList(selectedItems.get(0).getFileComponents().toString()) : Collections.emptyList();
+              String progressFileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
+              String revertAlly = modsAllyCode.getValue();
+              boolean bRevertDryRun = modsDryRun.isSelected();
 
-      String moveModsFileName = selectedItems.get(0).getFileComponents().toString();
-      String progressFileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
-      String revertAlly = modsAllyCode.getValue();
-      boolean bRevertDryRun = modsDryRun.isSelected();
+              return new RevertMoveMods(
+                      moveModsFileNames,
+                      progressFileName,
+                      revertAlly,
+                      bRevertDryRun
+              );
 
-      AbstractProcess process = new RevertMoveMods(
-              Collections.singletonList(moveModsFileName),
-              progressFileName,
-              revertAlly,
-              bRevertDryRun
-      );
-      process.setFeedback(this);
-      process.process();
-
-      flasher.stop();
-      modsRefresh();
-    });
+            },
+            this::modsRefresh,
+            modsBtnRevertSelected
+    );
   }
 
   public void modsRevertAll() {
-    executorService.execute(() -> {
-      Flasher flasher = new Flasher(modsBtnRevertAll);
+    runProcess(
+            () -> {
+              ObservableList<MoveFile> allItems = modsMoveFiles.getItems();
 
-      ObservableList<MoveFile> allItems = modsMoveFiles.getItems();
-      if (allItems.isEmpty()) {
-        setErrorMessage("No mods move file");
-        return;
-      }
+              String progressFileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
+              String revertAlly = modsAllyCode.getValue();
+              boolean bRevertDryRun = modsDryRun.isSelected();
 
-      String progressFileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
-      String revertAlly = modsAllyCode.getValue();
-      boolean bRevertDryRun = modsDryRun.isSelected();
-
-      AbstractProcess process = new RevertMoveMods(
-              allItems.stream().map(MoveFile::getFileComponents).map(Object::toString).collect(Collectors.toList()),
-              progressFileName,
-              revertAlly,
-              bRevertDryRun
-      );
-      process.setFeedback(this);
-      process.process();
-
-      flasher.stop();
-      modsRefresh();
-    });
+              return new RevertMoveMods(
+                      allItems.stream().map(MoveFile::getFileComponents).map(Object::toString).collect(Collectors.toList()),
+                      progressFileName,
+                      revertAlly,
+                      bRevertDryRun
+              );
+            },
+            this::modsRefresh,
+            modsBtnRevertAll
+    );
   }
 
   private static class Flasher {
@@ -417,7 +374,7 @@ public class ApplicationController implements IFeedback {
     Flasher(Node node) {
       this.node = node;
       nodeStyle = node.getStyle();
-      nodeHighlightedStyle = "-fx-background-color: #99ff99; " + this.nodeStyle;
+      nodeHighlightedStyle = "-fx-background-color: #80ff80; " + this.nodeStyle;
       timeline = new Timeline(
               new KeyFrame(Duration.seconds(0.5), e -> highlightNode()),
               new KeyFrame(Duration.seconds(1.0), e -> unHighlightNode())
@@ -438,6 +395,19 @@ public class ApplicationController implements IFeedback {
     private void unHighlightNode() {
       node.setStyle(nodeStyle);
     }
+  }
+
+  private void runProcess(Supplier<AbstractProcess> processSupplier, Runnable postProcess, Node... flashingNodes) {
+    executorService.execute(() -> {
+      List<Flasher> flashers = Arrays.stream(flashingNodes).map(Flasher::new).collect(Collectors.toList());
+      AbstractProcess process = processSupplier.get();
+      process.setFeedback(this);
+      process.process();
+      flashers.forEach(Flasher::stop);
+      if (postProcess != null) {
+        postProcess.run();
+      }
+    });
   }
 
   public void setPrimaryStage(Stage primaryStage) {

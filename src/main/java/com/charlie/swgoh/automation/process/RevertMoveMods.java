@@ -11,7 +11,10 @@ import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.FileUtil;
 import com.charlie.swgoh.util.ModUtil;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,20 +27,13 @@ public class RevertMoveMods extends AbstractMoveMods {
   private final boolean isDryRun;
 
   public RevertMoveMods(List<String> moveModsFileNames, String progressFileName, String allyCode, boolean isDryRun) {
+    if (moveModsFileNames.isEmpty()) {
+      throw new ProcessException("No mods move file");
+    }
     this.moveModsFileNames = moveModsFileNames;
     this.progressFileName = progressFileName;
     this.allyCode = allyCode;
     this.isDryRun = isDryRun;
-  }
-
-  @Override
-  public void setParameters(String... parameters) {
-/*
-    progressFileName = parameters[0];
-    allyCode  = parameters[1];
-    isDryRun = Boolean.parseBoolean(parameters[2]);
-    moveModsFileNames = Arrays.asList(parameters).subList(3, parameters.length);
-*/
   }
 
   @Override

@@ -17,14 +17,6 @@ public class BronziumAllyPoints extends AbstractProcess {
   }
 
   @Override
-  public void setParameters(String... parameters) {
-/*
-    this.targetAllyPoints = BronziumScreen.parseAllyPoints(parameters[0]);
-    LOG.info("Target ally points: {}", targetAllyPoints);
-*/
-  }
-
-  @Override
   protected void doProcess() {
     LOG.info("Collecting bronziums with target ally points of {}", targetAllyPoints);
 
