@@ -73,8 +73,13 @@ public class ReadUnequippedMods extends AbstractProcess {
       handleKeys();
       modNumber++;
       setMessage("Reading mod #" + modNumber);
-      progress = ModScreen.computeModProgress();
-      updateProgressAndETA();
+      if (modNumber == 13) {
+        startTimeMillis = System.currentTimeMillis();
+      }
+      if (modNumber % 4 == 1) {
+        progress = ModScreen.computeModProgress();
+        updateProgressAndETA();
+      }
       Mod mod = null;
       try {
         mod = ModScreen.readOtherMod();
