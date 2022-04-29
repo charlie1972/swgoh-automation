@@ -400,10 +400,17 @@ public class ApplicationController implements IFeedback {
   private void runProcess(Supplier<AbstractProcess> processSupplier, Runnable postProcess, Node... flashingNodes) {
     executorService.execute(() -> {
       List<Flasher> flashers = Arrays.stream(flashingNodes).map(Flasher::new).collect(Collectors.toList());
-      AbstractProcess process = processSupplier.get();
-      process.setFeedback(this);
-      process.process();
-      flashers.forEach(Flasher::stop);
+      try {
+        AbstractProcess process = processSupplier.get();
+        process.setFeedback(this);
+        process.process();
+      }
+      catch (Exception e) {
+        setErrorMessage("Error: " + e.getMessage());
+      }
+      finally {
+        flashers.forEach(Flasher::stop);
+      }
       if (postProcess != null) {
         postProcess.run();
       }
