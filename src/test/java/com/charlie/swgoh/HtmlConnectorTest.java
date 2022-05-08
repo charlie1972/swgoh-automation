@@ -19,7 +19,7 @@ public class HtmlConnectorTest {
 
   @Test
   public void unmarshallCharacterTest() {
-    List<Mod> mods = HtmlConnector.getModsFromHTML(FILE);
+    List<Mod> mods = HtmlConnector.getModsFromHTML(FILE, false);
     Map<String, List<Mod>> modMap = mods.stream().collect(Collectors.groupingBy(Mod::getCharacter, LinkedHashMap::new, Collectors.toList()));
 
     assertEquals(3, modMap.size());
@@ -56,7 +56,7 @@ public class HtmlConnectorTest {
 
   @Test
   public void unmarshallFromCharacterTest() {
-    List<Mod> mods = HtmlConnector.getModsFromHTML(FILE);
+    List<Mod> mods = HtmlConnector.getModsFromHTML(FILE, false);
     Map<String, List<Mod>> modMap = mods.stream()
             .filter(mod -> !mod.getFromCharacter().isEmpty())
             .collect(Collectors.groupingBy(Mod::getFromCharacter, LinkedHashMap::new, Collectors.toList()));
