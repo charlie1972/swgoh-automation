@@ -309,12 +309,14 @@ public class ApplicationController implements IFeedback {
   public void modsMoveSelected() {
     runProcess(
             () -> {
+              ObservableList<MoveFile> allItems = modsMoveFiles.getItems();
               ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
 
               String fileName = !selectedItems.isEmpty() ? selectedItems.get(0).getFileComponents().toString() : null;
+              boolean bUseAllSlots = allItems.size() > 1;
               boolean bDryRun = modsDryRun.isSelected();
 
-              return new MoveMods(fileName, bDryRun);
+              return new MoveMods(fileName, bUseAllSlots, bDryRun);
             },
             this::modsRefresh,
             modsBtnMoveSelected

@@ -48,7 +48,7 @@ public class RevertMoveMods extends AbstractMoveMods {
     // Build the character and mod slots that must be restored
     Map<String, Set<ModSlot>> modsToRestore = new LinkedHashMap<>();
     for (String moveModsFileName : moveModsFileNames) {
-      List<Mod> modList = HtmlConnector.getModsFromHTML(moveModsFileName);
+      List<Mod> modList = HtmlConnector.getModsFromHTML(moveModsFileName, true);
       addSlots(modList, modsToRestore, Mod::getFromCharacter);
       addSlots(modList, modsToRestore, Mod::getCharacter);
     }

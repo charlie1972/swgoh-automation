@@ -13,13 +13,15 @@ import java.util.stream.Collectors;
 public class MoveMods extends AbstractMoveMods {
 
   private final String fileName;
+  private final boolean useAllSlots;
   private final boolean isDryRun;
 
-  public MoveMods(String fileName, boolean isDryRun) {
+  public MoveMods(String fileName, boolean useAllSlots, boolean isDryRun) {
     if (fileName == null) {
       throw new ProcessException("No mods move file selected");
     }
     this.fileName = fileName;
+    this.useAllSlots = useAllSlots;
     this.isDryRun = isDryRun;
   }
 
@@ -30,7 +32,7 @@ public class MoveMods extends AbstractMoveMods {
 
   @Override
   protected void doProcess() throws Exception {
-    List<Mod> modList = HtmlConnector.getModsFromHTML(fileName);
+    List<Mod> modList = HtmlConnector.getModsFromHTML(fileName, useAllSlots);
     Map<String, List<Mod>> modMap = modList.stream().collect(Collectors.groupingBy(Mod::getCharacter, LinkedHashMap::new, Collectors.toList()));
 
     FileUtil.FileComponents fileComponents = FileUtil.getFileComponents(fileName);

@@ -28,13 +28,18 @@ public class HtmlConnector {
 
   private HtmlConnector() {}
 
-  public static List<Mod> getModsFromHTML(String fileName) {
+  public static List<Mod> getModsFromHTML(String fileName, boolean useAllSlots) {
     try {
       String html = Files.readString(new File(fileName).toPath());
       String xmlFromHtml = convertHTMLToXML(html);
       String transformedXML = transformXML(xmlFromHtml);
-      Mods mods = unmarshallXML(transformedXML);
-      return mods.getMods().stream().filter(mod -> !mod.getCharacter().equals(mod.getFromCharacter())).collect(Collectors.toList());
+      List<Mod> mods = unmarshallXML(transformedXML).getMods();
+      if (useAllSlots) {
+        return mods;
+      }
+      else {
+        return mods.stream().filter(mod -> !mod.getCharacter().equals(mod.getFromCharacter())).collect(Collectors.toList());
+      }
     }
     catch (Exception e) {
       throw new ProcessException(e.getClass().getName() + ": " + e.getMessage());
