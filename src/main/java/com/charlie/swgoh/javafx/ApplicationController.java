@@ -127,6 +127,8 @@ public class ApplicationController implements IFeedback {
     }
     speed.setValue(Configuration.getSpeed().getText());
 
+    modsWorkingDirectory.setText(Configuration.getDefaultDirectory());
+
     modsMoveFiles.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
   }
 

@@ -44,7 +44,7 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     else {
       LOG.info("LIVE RUN");
       for (int countdown = 10; countdown > 0; countdown--) {
-        setMessage("WARNING: LIVE RUN. If you wish to abort, type Ctrl-Shift-Q. Starting in " + countdown + " second" + (countdown > 1 ? "s" : ""));
+        setMessage("WARNING: LIVE RUN. If you wish to abort, type Ctrl-Shift-Q. Starting in " + countdown + "s");
         AutomationUtil.waitForFixed(1000L);
         handleKeys();
       }
