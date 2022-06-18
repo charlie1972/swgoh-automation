@@ -10,12 +10,10 @@ public class BronziumAllyPoints extends AbstractProcess {
 
   private static final Logger LOG = LoggerFactory.getLogger(BronziumAllyPoints.class);
 
-  private int targetAllyPoints;
+  private final int targetAllyPoints;
 
-  @Override
-  public void setParameters(String... parameters) {
-    this.targetAllyPoints = BronziumScreen.parseAllyPoints(parameters[0]);
-    LOG.info("Target ally points: {}", targetAllyPoints);
+  public BronziumAllyPoints(String targetAllyPoints) {
+    this.targetAllyPoints = BronziumScreen.parseAllyPoints(targetAllyPoints);
   }
 
   @Override

@@ -2,185 +2,115 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.ApplicationController">
     <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
-        <Tab id="bronziumDailyTab" fx:id="bronziumDailyTab" closable="false" text="Bronzium Daily">
-            <Label alignment="CENTER" contentDisplay="TOP" maxHeight="500.0" maxWidth="1000.0" text="No parameters" textFill="GREY">
-                <font>
-                    <Font size="18.0" />
-                </font>
-            </Label>
+        <Tab closable="false" text="Bronziums">
+            <VBox>
+                <TitledPane collapsible="false" text="Daily">
+                    <HBox>
+                        <Button fx:id="bronziumsBtnDailyCollect" onAction="#bronziumDailyCollect" prefWidth="100.0" text="Collect" />
+                    </HBox>
+                </TitledPane>
+                <TitledPane collapsible="false" text="Target ally points">
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label text="Target" />
+                        <TextField fx:id="bronziumsTargetAllyPoints" />
+                        <Button fx:id="bronziumsBtnTargetCollect" onAction="#bronziumsTargetCollect" text="Collect to target" />
+                    </HBox>
+                </TitledPane>
+            </VBox>
         </Tab>
-        <Tab id="bronziumAllyPointsTab" fx:id="bronziumAllyPointsTab" closable="false" text="Bronzium Ally Points">
-            <HBox alignment="CENTER_LEFT" maxHeight="10.0" spacing="10.0">
-                <padding>
-                    <Insets left="20.0" right="20.0" top="20.0" />
-                </padding>
-                <Label text="Target ally points" />
-                <TextField fx:id="targetAllyPoints">
-                    <HBox.margin>
-                        <Insets left="10.0" />
-                    </HBox.margin>
-                </TextField>
-            </HBox>
-        </Tab>
-        <Tab id="readUnequippedModsTab" fx:id="readUnequippedModsTab" closable="false" text="Read Unequipped Mods">
-            <GridPane alignment="CENTER_LEFT">
-                <columnConstraints>
-                    <ColumnConstraints hgrow="NEVER" />
-                    <ColumnConstraints hgrow="SOMETIMES" />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints vgrow="NEVER" />
-                    <RowConstraints vgrow="NEVER" />
-                    <RowConstraints vgrow="NEVER" />
-                    <RowConstraints vgrow="SOMETIMES" />
-                </rowConstraints>
-                <padding>
-                    <Insets left="20.0" right="20.0" top="20.0" />
-                </padding>
-                <Label text="Progress file">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" right="10.0" />
-                    </GridPane.margin>
-                </Label>
-                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                    <GridPane.margin>
-                        <Insets bottom="20.0" left="10.0" />
-                    </GridPane.margin>
-                    <TextField fx:id="progressFileName" minWidth="300" />
-                    <Button onAction="#chooseProgressFile" text="..." />
-                    <Button mnemonicParsing="false" onAction="#loadProgressFile" text="Load" />
-                </HBox>
-                <Label text="Ally code" GridPane.rowIndex="1">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" right="10.0" />
-                    </GridPane.margin>
-                </Label>
-                <ComboBox fx:id="allyCode" editable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" left="10.0" right="10.0" />
-                    </GridPane.margin>
-                </ComboBox>
-            </GridPane>
-        </Tab>
-        <Tab id="moveModsTab" fx:id="moveModsTab" closable="false" text="Move Mods">
-            <GridPane alignment="CENTER_LEFT">
-                <columnConstraints>
-                    <ColumnConstraints hgrow="NEVER" />
-                    <ColumnConstraints hgrow="SOMETIMES" />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints vgrow="NEVER" />
-                    <RowConstraints vgrow="NEVER" />
-                    <RowConstraints vgrow="NEVER" />
-                    <RowConstraints vgrow="ALWAYS" />
-                </rowConstraints>
-                <padding>
-                    <Insets left="20.0" right="20.0" top="20.0" />
-                </padding>
-                <Label alignment="TOP_LEFT" text="Move mods file">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" right="10.0" />
-                    </GridPane.margin>
-                </Label>
-                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                    <GridPane.margin>
-                        <Insets bottom="20.0" left="10.0" />
-                    </GridPane.margin>
-                    <TextField fx:id="moveModsFileName" minWidth="300" />
-                    <Button onAction="#chooseMoveModsFile" text="..." />
-                    <Button mnemonicParsing="false" onAction="#checkMoveModsFile" text="Check" />
-                </HBox>
-                <Label text="Dry run" GridPane.rowIndex="1">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" right="10.0" />
-                    </GridPane.margin>
-                </Label>
-                <CheckBox fx:id="dryRun" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" left="10.0" right="10.0" />
-                    </GridPane.margin>
-                </CheckBox>
-            </GridPane>
-        </Tab>
-        <Tab id="revertMoveModsTab" fx:id="revertMoveModsTab" closable="false" text="Revert Move Mods">
-            <GridPane alignment="CENTER_LEFT">
-                <columnConstraints>
-                    <ColumnConstraints hgrow="NEVER" />
-                    <ColumnConstraints hgrow="SOMETIMES" />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints vgrow="NEVER" />
-                    <RowConstraints vgrow="NEVER" />
-                    <RowConstraints vgrow="ALWAYS" />
-               <RowConstraints />
-                </rowConstraints>
-                <padding>
-                    <Insets left="20.0" right="20.0" top="20.0" />
-                </padding>
-                <Label alignment="TOP_LEFT" text="Move mods file">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" right="10.0" />
-                    </GridPane.margin>
-                </Label>
-                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1">
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                    <GridPane.margin>
-                        <Insets bottom="20.0" left="10.0" />
-                    </GridPane.margin>
-                    <TextField fx:id="revertMoveModsFileName" minWidth="300" />
-                    <Button onAction="#chooseRevertMoveModsFile" text="..." />
-                    <Button mnemonicParsing="false" onAction="#checkRevertMoveModsFile" text="Check" />
-                </HBox>
-                <Label text="Progress file" GridPane.rowIndex="1">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" right="10.0" />
-                    </GridPane.margin>
-                </Label>
-                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
-                    <GridPane.margin>
-                        <Insets bottom="20.0" left="10.0" />
-                    </GridPane.margin>
-                    <TextField fx:id="revertProgressFileName" minWidth="300" />
-                    <Button onAction="#chooseRevertProgressFile" text="..." />
-                    <Button mnemonicParsing="false" onAction="#loadRevertProgressFile" text="Load" />
-                </HBox>
-                <Label text="Ally code" GridPane.rowIndex="2">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" right="10.0" />
-                    </GridPane.margin>
-                </Label>
-                <ComboBox fx:id="revertAllyCode" editable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" left="10.0" right="10.0" />
-                    </GridPane.margin>
-                </ComboBox>
-                <Label text="Dry run" GridPane.rowIndex="3">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" right="10.0" />
-                    </GridPane.margin>
-                </Label>
-                <CheckBox fx:id="revertDryRun" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                    <GridPane.margin>
-                        <Insets bottom="20.0" left="10.0" right="10.0" />
-                    </GridPane.margin>
-                </CheckBox>
-            </GridPane>
+        <Tab closable="false" text="Mods">
+            <VBox>
+                <TitledPane collapsible="false" text="Working directory">
+                    <HBox spacing="10.0">
+                        <TextField fx:id="modsWorkingDirectory" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                        <Button onAction="#modsChooseDirectory" text="..." />
+                        <Button onAction="#modsRefresh" prefWidth="75.0" text="Refresh" />
+                    </HBox>
+                </TitledPane>
+                <TitledPane collapsible="false" text="Progress file">
+                    <GridPane>
+                        <Label text="Standard" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="15.0" top="5.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label fx:id="modsProgressFile" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER">
+                            <Label text="Ally code" />
+                            <ComboBox fx:id="modsAllyCode" editable="true" maxWidth="100.0" />
+                            <GridPane.margin>
+                                <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
+                            </GridPane.margin>
+                        </HBox>
+                        <Label text="Enriched" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="15.0" top="5.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label fx:id="modsEnrichedProgressFile" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Button fx:id="modsBtnReadUnequippedMods" maxWidth="1.7976931348623157E308" onAction="#modsReadUnequippedMods" text="Read unequipped mods" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
+                            </GridPane.margin>
+                        </Button>
+                        <columnConstraints>
+                            <ColumnConstraints />
+                            <ColumnConstraints />
+                            <ColumnConstraints />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints />
+                            <RowConstraints />
+                        </rowConstraints>
+                    </GridPane>
+                </TitledPane>
+                <TitledPane collapsible="false" text="Move mods">
+                    <HBox spacing="50.0">
+                        <TableView fx:id="modsMoveFiles" prefHeight="250.0">
+                            <placeholder>
+                                <Label text="No mods move file" />
+                            </placeholder>
+                            <columns>
+                                <TableColumn prefWidth="200" text="Name">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="name" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                                <TableColumn prefWidth="100" text="Status">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="status" />
+                                    </cellValueFactory>
+                                </TableColumn>
+                            </columns>
+                        </TableView>
+                        <VBox fillWidth="false" prefWidth="100.0" spacing="30.0">
+                            <HBox spacing="10.0">
+                                <CheckBox fx:id="modsDryRun" HBox.hgrow="ALWAYS" />
+                                <Label prefWidth="200.0" text="Dry run" HBox.hgrow="ALWAYS" />
+                            </HBox>
+                            <Button fx:id="modsBtnMoveSelected" onAction="#modsMoveSelected" prefWidth="100.0" text="Move selected" />
+                            <Button fx:id="modsBtnRevertSelected" onAction="#modsRevertSelected" prefWidth="100.0" text="Revert selected" />
+                            <Button fx:id="modsBtnRevertAll" onAction="#modsRevertAll" prefWidth="100.0" text="Revert all" />
+                            <padding>
+                                <Insets top="20.0" />
+                            </padding>
+                        </VBox>
+                    </HBox>
+                </TitledPane>
+            </VBox>
         </Tab>
     </TabPane>
     <Separator prefWidth="200.0" />
@@ -188,10 +118,8 @@
         <padding>
             <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
         </padding>
-        <Button fx:id="aboutButton" onAction="#about" text="About" />
-      <Pane HBox.hgrow="ALWAYS" />
-        <Button fx:id="runButton" onAction="#run" text="Run" />
-      <ChoiceBox fx:id="speed" onAction="#onSpeedChange" prefWidth="100.0" />
+        <Label text="Speed" />
+        <ChoiceBox fx:id="speed" onAction="#onSpeedChange" prefWidth="100.0" />
     </HBox>
     <Separator prefWidth="200.0" />
     <GridPane alignment="CENTER_LEFT">
@@ -233,24 +161,25 @@
                 <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
             </GridPane.margin>
         </Label>
-      <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2">
-         <children>
-              <ProgressBar fx:id="progress" maxWidth="1000.0" progress="0.0" HBox.hgrow="ALWAYS">
-               <HBox.margin>
-                  <Insets left="10.0" right="10.0" />
-               </HBox.margin></ProgressBar>
-                 <Label text="ETA:">
-               <HBox.margin>
-                  <Insets right="5.0" />
-               </HBox.margin></Label>
-             <Label fx:id="eta" prefWidth="70.0">
-               <HBox.margin>
-                  <Insets right="10.0" />
-               </HBox.margin></Label>
-         </children>
-         <GridPane.margin>
-            <Insets />
-         </GridPane.margin>
-      </HBox>
+        <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <ProgressBar fx:id="progress" maxWidth="1000.0" progress="0.0" HBox.hgrow="ALWAYS">
+                <HBox.margin>
+                    <Insets left="10.0" right="10.0" />
+                </HBox.margin>
+            </ProgressBar>
+            <Label text="ETA:">
+                <HBox.margin>
+                    <Insets right="5.0" />
+                </HBox.margin>
+            </Label>
+            <Label fx:id="eta" prefWidth="70.0">
+                <HBox.margin>
+                    <Insets right="10.0" />
+                </HBox.margin>
+            </Label>
+            <GridPane.margin>
+                <Insets />
+            </GridPane.margin>
+        </HBox>
     </GridPane>
 </VBox>

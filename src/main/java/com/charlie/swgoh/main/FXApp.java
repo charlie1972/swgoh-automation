@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 public class FXApp extends Application {
 
   public static void main(String[] args) {
-    Configuration.setIsDebug(args.length > 0 && "debug".equalsIgnoreCase(args[0]));
+    Configuration.setDebug(args.length > 0 && "debug".equalsIgnoreCase(args[0]));
     launch();
   }
 
@@ -32,7 +32,7 @@ public class FXApp extends Application {
 
     primaryStage.show();
 
-    if (Configuration.isIsDebug()) {
+    if (Configuration.isDebug()) {
       FXMLLoader debugFxmlLoader = new FXMLLoader(this.getClass().getResource("/javafx/debugLayout.fxml"));
       VBox debugVbox = debugFxmlLoader.load();
       Stage debugStage = new Stage();

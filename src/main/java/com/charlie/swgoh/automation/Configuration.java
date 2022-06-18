@@ -27,7 +27,7 @@ public class Configuration {
   private static Double windowY;
   private static EmulatorType emulatorType;
 
-  private static boolean isDebug = false;
+  private static boolean debug = false;
 
   private static boolean isInitialized = false;
 
@@ -98,12 +98,12 @@ public class Configuration {
     Configuration.emulatorType = emulatorType;
   }
 
-  public static boolean isIsDebug() {
-    return isDebug;
+  public static boolean isDebug() {
+    return debug;
   }
 
-  public static void setIsDebug(boolean isDebug) {
-    Configuration.isDebug = isDebug;
+  public static void setDebug(boolean debug) {
+    Configuration.debug = debug;
   }
 
   public static void loadProperties() {

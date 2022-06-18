@@ -18,7 +18,7 @@ public class JsonConnectorTest {
 
   @Test
   public void deserializeTest() throws Exception {
-    Progress progress = JsonConnector.readProgressFromFile(FILE_IN);
+    Progress progress = JsonConnector.readObjectFromFile(FILE_IN, Progress.class);
     assertNotNull(progress);
     assertNotNull(progress.getProfiles());
     assertEquals(1, progress.getProfiles().size());
@@ -47,8 +47,8 @@ public class JsonConnectorTest {
     progress.getProfiles().get(0).getMods().get(0).setPips(5);
     progress.getProfiles().get(0).getMods().get(0).setPrimaryBonusType("speed");
     progress.getProfiles().get(0).getMods().get(0).setPrimaryBonusValue("30");
-    JsonConnector.writeProgressToFile(progress, FILE_OUT);
-    Progress loadedProgress = JsonConnector.readProgressFromFile(FILE_OUT);
+    JsonConnector.writeObjectToFile(progress, FILE_OUT);
+    Progress loadedProgress = JsonConnector.readObjectFromFile(FILE_OUT, Progress.class);
     assertEquals(progress, loadedProgress);
   }
 

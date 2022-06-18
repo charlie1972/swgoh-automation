@@ -1,6 +1,5 @@
 package com.charlie.swgoh.connector;
 
-import com.charlie.swgoh.datamodel.json.Progress;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
@@ -12,24 +11,24 @@ public class JsonConnector {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
-  public static Progress readProgressFromFile(String fileName) throws Exception {
+  public static <T> T readObjectFromFile(String fileName, Class<T> clazz) throws Exception {
     Reader reader = new InputStreamReader(
             new BufferedInputStream(
                     new FileInputStream(fileName)
             ),
             StandardCharsets.UTF_8
     );
-    return MAPPER.readValue(reader, Progress.class);
+    return MAPPER.readValue(reader, clazz);
   }
 
-  public static void writeProgressToFile(Progress progress, String fileName) throws Exception {
+  public static void writeObjectToFile(Object object, String fileName) throws Exception {
     Writer writer = new OutputStreamWriter(
             new BufferedOutputStream(
                     new FileOutputStream(fileName)
             ),
             StandardCharsets.UTF_8
     );
-    MAPPER.writerWithDefaultPrettyPrinter().writeValue(writer, progress);
+    MAPPER.writerWithDefaultPrettyPrinter().writeValue(writer, object);
   }
 
 }

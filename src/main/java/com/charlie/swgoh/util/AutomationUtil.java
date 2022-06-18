@@ -19,6 +19,7 @@ public class AutomationUtil {
 
   public static final long DELAY = 1000L;
 
+  private static final long DEBUG_DELAY = 100L;
   private static final double WAIT_FOR_IMAGE_DURATION = 5.0;
 
   public static Location getShiftedLocation(Location location) {
@@ -40,6 +41,9 @@ public class AutomationUtil {
   public static void mouseMove(Location location, String description) {
     try {
       LOG.debug( "{}: moving to {}", description, location);
+      if (Configuration.isDebug()) {
+        highlightTemporarily(location);
+      }
       EmulatorWindow.INSTANCE.getWindow().mouseMove(getShiftedLocation(location));
     }
     catch (FindFailed ffe) {
@@ -75,6 +79,9 @@ public class AutomationUtil {
   public static void click(Location location, String description) {
     try {
       LOG.debug( "{}: clicking on {}", description, location);
+      if (Configuration.isDebug()) {
+        highlightTemporarily(location);
+      }
       EmulatorWindow.INSTANCE.getWindow().click(getShiftedLocation(location));
     }
     catch (FindFailed ffe) {
@@ -92,23 +99,21 @@ public class AutomationUtil {
   }
 
   public static String readLine(Region region) {
+    if (Configuration.isDebug()) {
+      highlightTemporarily(region);
+    }
     String text = getShiftedRegion(region).textLine();
     LOG.debug("Read line in {}: {}", region, text);
     return text;
   }
 
   public static List<String> readLines(Region region) {
+    if (Configuration.isDebug()) {
+      highlightTemporarily(region);
+    }
     List<String> lines = getShiftedRegion(region).textLines();
     LOG.debug("Read lines in {}: {}", region, lines);
     return lines;
-  }
-
-  public static Location getLocation(int x, int y) {
-    return new Location(x, y);
-  }
-
-  public static Region getRegion(int x, int y, int w, int h) {
-    return new Region(x, y, w, h);
   }
 
   public static void waitFor(Long millis) {
@@ -135,20 +140,32 @@ public class AutomationUtil {
 
   public static boolean waitForPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
+    if (Configuration.isDebug()) {
+      highlightTemporarily(region);
+    }
     return getShiftedRegion(region).has(pattern, WAIT_FOR_IMAGE_DURATION);
   }
 
   public static boolean waitForPatternVanish(Region region, Pattern pattern, String description) {
     LOG.debug(description);
+    if (Configuration.isDebug()) {
+      highlightTemporarily(region);
+    }
     return getShiftedRegion(region).waitVanish(pattern, WAIT_FOR_IMAGE_DURATION);
   }
 
   public static boolean checkForPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
+    if (Configuration.isDebug()) {
+      highlightTemporarily(region);
+    }
     return getShiftedRegion(region).has(pattern, 0.1 * Configuration.getSpeed().getDelayMultiplier());
   }
 
   public static List<Match> findAllPatterns(Region region, Pattern pattern, String description) {
+    if (Configuration.isDebug()) {
+      highlightTemporarily(region);
+    }
     List<Match> result = getShiftedRegion(region).findAllList(pattern);
     LOG.debug("{}: {} matches", description, result.size());
     return result;
@@ -181,10 +198,32 @@ public class AutomationUtil {
     return null;
   }
 
+  public static void highlightTemporarily(Region region) {
+    Region shiftedRegion = getShiftedRegion(region);
+    Region.highlightAllOff();
+    shiftedRegion.highlight();
+    waitForFixed(DEBUG_DELAY);
+    Region.highlightAllOff();
+  }
+
   public static void highlight(Region region) {
     Region shiftedRegion = getShiftedRegion(region);
     Region.highlightAllOff();
     shiftedRegion.highlight();
+  }
+
+  public static void highlightTemporarily(Location location) {
+    Location shiftedLocation = getShiftedLocation(location);
+    Region region = new Region(
+            shiftedLocation.getX() - 1,
+            shiftedLocation.getY() - 1,
+            3,
+            3
+    );
+    Region.highlightAllOff();
+    region.highlight();
+    waitForFixed(DEBUG_DELAY);
+    Region.highlightAllOff();
   }
 
 }

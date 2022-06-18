@@ -222,7 +222,7 @@ public class ModScreen {
   public static final Region R_REMOVE_BUTTON = new Region(673, 452, 119, 42);
   public static final Region R_ASSIGN_LOADOUT_BUTTON = new Region(659, 554, 94, 38);
   public static final Region R_REVERT_BUTTON = new Region(854, 585, 100, 36);
-  public static final Region R_MOD_SCROLLBAR = new Region(470, 182, 4, 432);
+  public static final Region R_MOD_SCROLLBAR = new Region(471, 182, 4, 432);
   public static final Region R_DIALOG_BOX_OK = new Region(767, 439, 51, 43); // For dry-run
 
   public static boolean waitForFilterAndSortButtons() {
@@ -380,13 +380,13 @@ public class ModScreen {
     AutomationUtil.mouseMove(LL_OTHER_MODS.get(12), "Move mouse to 1st mod of 4th line");
     AutomationUtil.mouseDown(Button.LEFT, "Start drag");
     int mouseY = LL_OTHER_MODS.get(12).getY();
-    int movement = -22;
+    int movement = -16;
     int halfwayY = (LL_OTHER_MODS.get(12).getY() + LL_OTHER_MODS.get(8).getY()) / 2;
     while (mouseY > halfwayY) {
       AutomationUtil.mouseMoveOffset(0, movement, "Move up: fast");
       mouseY += movement;
     }
-    movement = -11;
+    movement = -8;
     boolean isOK = false;
     while (mouseY > LL_OTHER_MODS.get(0).getY()) {
       AutomationUtil.mouseMoveOffset(0, movement, "Move up: medium");
@@ -397,7 +397,7 @@ public class ModScreen {
       }
     }
     if (isOK) {
-      movement = -5;
+      movement = -4;
       isOK = false;
       while (mouseY > LL_OTHER_MODS.get(0).getY()) {
         AutomationUtil.mouseMoveOffset(0, movement, "Move up: slow");

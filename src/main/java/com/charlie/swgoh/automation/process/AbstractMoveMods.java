@@ -1,5 +1,7 @@
 package com.charlie.swgoh.automation.process;
 
+import com.charlie.swgoh.connector.JsonConnector;
+import com.charlie.swgoh.datamodel.json.MoveStatus;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.screen.CharacterModsScreen;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +30,7 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     NOT_FOUND
   }
 
-  protected abstract String getFileNamePrefix();
+  protected abstract String getFileNameSuffix();
 
   protected void perform(FileUtil.FileComponents fileComponents, Map<String, List<Mod>> modMap, boolean isDryRun) throws Exception {
     if (!CharacterModsScreen.waitForCharactersTab() || !CharacterModsScreen.checkModsCheckbox()) {
@@ -41,17 +44,17 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     else {
       LOG.info("LIVE RUN");
       for (int countdown = 10; countdown > 0; countdown--) {
-        setMessage("WARNING: LIVE RUN. If you wish to abort, type Ctrl-Shift-Q. Starting in " + countdown + " second" + (countdown > 1 ? "s" : ""));
+        setMessage("WARNING: LIVE RUN. If you wish to abort, type Ctrl-Shift-Q. Starting in " + countdown + "s");
         AutomationUtil.waitForFixed(1000L);
         handleKeys();
       }
     }
 
-    String reportFile = new FileUtil.FileComponents(
-            fileComponents.getDirectoryName(),
-            fileComponents.getFileName() + "-" + getFileNamePrefix() + "-report-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()),
-            "csv"
-    ).toString();
+    String reportFile = fileComponents
+            .withFileName(fileComponents.getFileName() + "-" + getFileNameSuffix() + "-report-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()))
+            .withExtension("csv")
+            .toString();
+/*
     String processedCharactersFile = new FileUtil.FileComponents(
             fileComponents.getDirectoryName(),
             fileComponents.getFileName() + "-" + getFileNamePrefix() + "-processedCharacters",
@@ -62,11 +65,29 @@ public abstract class AbstractMoveMods extends AbstractProcess {
             fileComponents.getFileName() + "-" + getFileNamePrefix() + "-attentionCharacters",
             "txt"
     ).toString();
+*/
+    String moveStatusFile = fileComponents
+            .withFileName(fileComponents.getFileName() + "-" + getFileNameSuffix())
+            .withExtension("status")
+            .toString();
 
-    FileUtil.deleteFileIfExists(attentionCharactersFile);
+//    FileUtil.deleteFileIfExists(attentionCharactersFile);
     FileUtil.deleteFileIfExists(reportFile);
 
-    List<String> alreadyProcessedCharacters = FileUtil.readFromFile(processedCharactersFile);
+    MoveStatus moveStatus;
+    if (FileUtil.exists(moveStatusFile)) {
+      moveStatus = JsonConnector.readObjectFromFile(moveStatusFile, MoveStatus.class);
+    }
+    else {
+      moveStatus = new MoveStatus();
+      moveStatus.setAttention(new ArrayList<>());
+      moveStatus.setDone(new ArrayList<>());
+      moveStatus.setToProcess(new ArrayList<>(modMap.keySet()));
+      JsonConnector.writeObjectToFile(moveStatus, moveStatusFile);
+    }
+
+//    List<String> alreadyProcessedCharacters = FileUtil.readFromFile(processedCharactersFile);
+    List<String> alreadyProcessedCharacters = moveStatus.getDone();
     LOG.info("Characters already processed: {}", alreadyProcessedCharacters);
     alreadyProcessedCharacters.forEach(modMap.keySet()::remove);
 
@@ -75,8 +96,8 @@ public abstract class AbstractMoveMods extends AbstractProcess {
             "Character name;Result;Slot;Set;Dots;Tier;Primary stat;Secondary stat 1;Secondary stat 2;Secondary stat 3;Secondary stat 4"
     );
 
-    int numberOfModsToProcess = modMap.values().stream().map(List::size).reduce(0, Integer::sum);
-    int numberOfProcessedMods = 0;
+    int numberOfItemsToProcess = modMap.values().stream().map(List::size).reduce(0, Integer::sum) + modMap.size();
+    int numberOfProcessedItems = 0;
     for (Map.Entry<String, List<Mod>> entry : modMap.entrySet()) {
       handleKeys();
       updateProgressAndETA();
@@ -100,6 +121,9 @@ public abstract class AbstractMoveMods extends AbstractProcess {
       if (!ModScreen.checkName(characterName)) {
         throw new ProcessException("Mod screen: name on screen doesn't match " + characterName + ". Aborting.");
       }
+      numberOfProcessedItems++;
+      progress = (double)numberOfProcessedItems / (double)numberOfItemsToProcess;
+      updateProgressAndETA();
 
       boolean allModsOk = true;
       for (Mod mod : entry.getValue()) {
@@ -130,8 +154,8 @@ public abstract class AbstractMoveMods extends AbstractProcess {
                 ).collect(Collectors.joining(";"))
         );
 
-        numberOfProcessedMods++;
-        progress = (double)numberOfProcessedMods / (double)numberOfModsToProcess;
+        numberOfProcessedItems++;
+        progress = (double)numberOfProcessedItems / (double)numberOfItemsToProcess;
         updateProgressAndETA();
       }
 
@@ -165,12 +189,17 @@ public abstract class AbstractMoveMods extends AbstractProcess {
 
       if (allModsOk) {
         LOG.info("End of processing character {}: complete", characterName);
-        FileUtil.writeToFile(processedCharactersFile, characterName);
+        moveStatus.getDone().add(characterName);
+        moveStatus.getAttention().remove(characterName);
+        moveStatus.getToProcess().remove(characterName);
+//        FileUtil.writeToFile(processedCharactersFile, characterName);
       }
       else {
         LOG.warn("End of processing character {}: may be incomplete, attention is required", characterName);
-        FileUtil.writeToFile(attentionCharactersFile, characterName);
+        moveStatus.getAttention().add(characterName);
+//        FileUtil.writeToFile(attentionCharactersFile, characterName);
       }
+      JsonConnector.writeObjectToFile(moveStatus, moveStatusFile);
 
       ModScreen.exitModScreen();
       AutomationUtil.waitFor(2000L);
