@@ -163,12 +163,12 @@ public class ModScreen {
       }
     }
   }
-  public static final Location L_CONFIRM_BUTTON = new Location(1040, 604);
+  public static final Location L_CONFIRM_BUTTON = new Location(1050, 590);
 
   // Regions
   public static final Region R_CHARACTER_NAME = new Region(172, 18, 500, 30);
   public static final Region R_CHARACTER_MOD_SET_AND_SLOT = new Region(793, 112, 370, 26);
-  public static final Region R_CHARACTER_MOD_LEVEL_AND_TIER = new Region(870, 221, 48, 18);
+  public static final Region R_CHARACTER_MOD_LEVEL_AND_TIER = new Region(870, 221, 48, 17);
   public static final Region R_CHARACTER_MOD_PRIMARY_STAT = new Region(991, 171, 200, 25);
   public static final List<Region> RL_CHARACTER_MOD_SECONDARY_STATS = Arrays.asList(
           new Region(991, 224, 200, 25),
@@ -187,7 +187,7 @@ public class ModScreen {
           )
           .collect(Collectors.toList());
   public static final Region R_OTHER_MOD_SET_AND_SLOT = new Region(793, 420, 424, 26);
-  public static final Region R_OTHER_MOD_LEVEL_AND_TIER = new Region(870, 528, 48, 18);
+  public static final Region R_OTHER_MOD_LEVEL_AND_TIER = new Region(870, 529, 48, 17);
   public static final Region R_OTHER_MOD_PRIMARY_STAT = new Region(991, 478, 200, 25);
   public static final List<Region> RL_OTHER_MOD_SECONDARY_STATS = Arrays.asList(
           new Region(991, 531, 200, 25),
@@ -221,7 +221,7 @@ public class ModScreen {
   public static final Region R_UNASSIGNED_LABEL = new Region(793, 110, 155, 30);
   public static final Region R_REMOVE_BUTTON = new Region(673, 452, 119, 42);
   public static final Region R_ASSIGN_LOADOUT_BUTTON = new Region(659, 554, 94, 38);
-  public static final Region R_REVERT_BUTTON = new Region(854, 585, 100, 36);
+  public static final Region R_REVERT_BUTTON = new Region(854, 568, 100, 36);
   public static final Region R_MOD_SCROLLBAR = new Region(471, 182, 4, 432);
   public static final Region R_DIALOG_BOX_OK = new Region(767, 439, 51, 43); // For dry-run
 

@@ -2,8 +2,6 @@ package com.charlie.swgoh.datamodel;
 
 import com.charlie.swgoh.util.StringUtil;
 
-import java.util.stream.Stream;
-
 public enum ModStatUnit {
   ACCURACY_PCT("% Accuracy", "%Accuracy", "Accuracy %"),
   CRIT_AVOIDANCE_PCT("% Crit Avoidance", "%CriticalAvoidance", "Critical Avoidance %"),

@@ -6,7 +6,7 @@
 
     <groupId>com.charlie</groupId>
     <artifactId>swgoh-automation</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9.1-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -169,12 +169,28 @@
                 <version>2.22.2</version>
             </plugin>
             <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.3</version>
-                <configuration>
-                    <mainClass>com.charlie.swgoh.main.FXApp</mainClass>
-                </configuration>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>swgoh-automation.cmd</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -225,47 +241,6 @@
                             <commandlineArgs>
                                 --no-header-files --no-man-pages --compress=2 --add-modules ${modules.for.jlink} --output ${project.build.directory}/java-runtime
                             </commandlineArgs>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>2.0.1</version>
-                <executions>
-                    <execution>
-                        <id>l4j</id>
-                        <phase>package</phase>
-                        <goals><goal>launch4j</goal></goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <outfile>${project.build.directory}/swgoh-automation-${project.version}.exe</outfile>
-                            <dontWrapJar>true</dontWrapJar>
-                            <jar>lib/swgoh-automation-${project.version}.jar</jar>
-                            <errTitle>Error</errTitle>
-                            <classPath>
-                                <mainClass>-m swgoh.automation/com.charlie.swgoh.main.FXApp</mainClass>
-                                <addDependencies>false</addDependencies>
-                            </classPath>
-                            <jre>
-                                <path>${project.build.directory}/java-runtime</path>
-                                <minVersion>11</minVersion>
-                                <opts>
-                                    <opt>--module-path lib</opt>
-                                </opts>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>${executable.version}</fileVersion>
-                                <txtFileVersion>txt file version?</txtFileVersion>
-                                <fileDescription>Automation tool for Star Wars: Galaxy of Heroes</fileDescription>
-                                <copyright>charlie.com</copyright>
-                                <productVersion>${executable.version}</productVersion>
-                                <txtProductVersion>${executable.version}</txtProductVersion>
-                                <productName>ATSWGOH</productName>
-                                <internalName>swgoh-automation</internalName>
-                                <originalFilename>swgoh-automation.exe</originalFilename>
-                            </versionInfo>
                         </configuration>
                     </execution>
                 </executions>

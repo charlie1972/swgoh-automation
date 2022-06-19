@@ -52,10 +52,10 @@ public class CharacterModsScreen {
 
   // Regions
   public static final List<Region> RL_CHARACTER_NAMES = IntStream.range(0, 5)
-          .mapToObj(position -> new Region(350 + position * 190, 188, 96, 59))
+          .mapToObj(position -> new Region(362 + position * 190, 191, 89, 53))
           .collect(Collectors.toList());
-  public static final Region R_CHARACTERS = new Region(0, 102, 226, 84);
-  public static final Region R_MODS_CHECKED = new Region(819, 107, 50, 50);
+  public static final Region R_CHARACTERS = new Region(22, 122, 155, 41);
+  public static final Region R_MODS_CHECKED = new Region(835, 107, 50, 50);
   public static final Region R_FILTER_TITLE = new Region(552, 56, 177, 38);
   public static final Region R_FILTER_OK = new Region(1227, 685, 24, 19);
 

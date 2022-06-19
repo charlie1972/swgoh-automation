@@ -54,25 +54,12 @@ public abstract class AbstractMoveMods extends AbstractProcess {
             .withFileName(fileComponents.getFileName() + "-" + getFileNameSuffix() + "-report-" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()))
             .withExtension("csv")
             .toString();
-/*
-    String processedCharactersFile = new FileUtil.FileComponents(
-            fileComponents.getDirectoryName(),
-            fileComponents.getFileName() + "-" + getFileNamePrefix() + "-processedCharacters",
-            "txt"
-    ).toString();
-    String attentionCharactersFile = new FileUtil.FileComponents(
-            fileComponents.getDirectoryName(),
-            fileComponents.getFileName() + "-" + getFileNamePrefix() + "-attentionCharacters",
-            "txt"
-    ).toString();
-*/
     String moveStatusFile = fileComponents
             .withFileName(fileComponents.getFileName() + "-" + getFileNameSuffix())
             .withExtension("status")
             .toString();
 
-//    FileUtil.deleteFileIfExists(attentionCharactersFile);
-    FileUtil.deleteFileIfExists(reportFile);
+   FileUtil.deleteFileIfExists(reportFile);
 
     MoveStatus moveStatus;
     if (FileUtil.exists(moveStatusFile)) {
