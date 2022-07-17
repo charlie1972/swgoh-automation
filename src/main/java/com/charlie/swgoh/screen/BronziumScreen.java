@@ -99,6 +99,7 @@ public class BronziumScreen {
         return supplier.get();
       }
       catch (Exception e) {
+        LOG.error("Exception while reading ally points", e);
         AutomationUtil.waitFor(500L);
       }
     }
