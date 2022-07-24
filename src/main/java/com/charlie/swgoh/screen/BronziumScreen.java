@@ -95,13 +95,12 @@ public class BronziumScreen {
 
   private static int returnParseAllyPointsAfterRetries(Supplier<Integer> supplier) {
     for (int i = 0; i < 10; i++) {
-      try {
-        return supplier.get();
+      int value = supplier.get();
+      if (value != -1) {
+        return value;
       }
-      catch (Exception e) {
-        LOG.error("Exception while reading ally points", e);
-        AutomationUtil.waitFor(500L);
-      }
+      LOG.warn("Error while reading ally points. Retrying ({})", i);
+      AutomationUtil.waitFor(500L);
     }
     return -1;
   }
@@ -109,7 +108,8 @@ public class BronziumScreen {
   public static int parseAllyPoints(String str) {
     Matcher matcher = REGEX_ALLY_POINTS.matcher(str.toUpperCase(Locale.ROOT));
     if (!matcher.matches()) {
-      throw new ProcessException("Unable to parse value: " + str);
+      LOG.warn("Unable to parse value: {}", str);
+      return -1;
     }
     double number = Double.parseDouble(matcher.group(1).replace(",", ""));
     if (matcher.group(2).isEmpty()) {
@@ -123,7 +123,8 @@ public class BronziumScreen {
       if ("M".equals(multiplier)) {
         return (int)(1000000.0 * number);
       }
-      throw new ProcessException("Unrecognized multiplier: " + multiplier);
+      LOG.warn("Unrecognized multiplier in: {}", str);
+      return -1;
     }
   }
 

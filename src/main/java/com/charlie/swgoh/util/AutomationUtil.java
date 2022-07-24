@@ -4,12 +4,17 @@ import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.window.EmulatorWindow;
 import org.sikuli.script.*;
+import org.sikuli.script.support.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class AutomationUtil {
 
@@ -102,7 +107,20 @@ public class AutomationUtil {
     if (Configuration.isDebug()) {
       highlightTemporarily(region);
     }
-    String text = getShiftedRegion(region).textLine();
+    String text;
+    try {
+      text = getShiftedRegion(region).textLine();
+    }
+    catch (SikuliXception e) {
+      LOG.warn("OCR.textLine failed. Trying to do custom resource copy");
+      initTessdata();
+      try {
+        text = getShiftedRegion(region).textLine();
+      }
+      catch (SikuliXception ee) {
+        throw new ProcessException("OCR.textLine failed, you need to restart the application");
+      }
+    }
     LOG.debug("Read line in {}: {}", region, text);
     return text;
   }
@@ -111,7 +129,20 @@ public class AutomationUtil {
     if (Configuration.isDebug()) {
       highlightTemporarily(region);
     }
-    List<String> lines = getShiftedRegion(region).textLines();
+    List<String> lines;
+    try {
+      lines = getShiftedRegion(region).textLines();
+    }
+    catch (SikuliXception e) {
+      LOG.warn("OCR.textLine failed. Trying to do custom resource copy");
+      initTessdata();
+      try {
+        lines = getShiftedRegion(region).textLines();
+      }
+      catch (SikuliXception ee) {
+        throw new ProcessException("OCR.textLines failed, you need to restart the application");
+      }
+    }
     LOG.debug("Read lines in {}: {}", region, lines);
     return lines;
   }
@@ -224,6 +255,69 @@ public class AutomationUtil {
     region.highlight();
     waitForFixed(DEBUG_DELAY);
     Region.highlightAllOff();
+  }
+
+  // This method aims to fix the inability to copy the tessdata directory at OCR initialization
+  private static void initTessdata() {
+    // Initialize the RunTime singleton so that root directories are set, and get the tessdata directory
+    File cachedTessdataDirectory = new File(RunTime.get().fSikulixAppPath, "SikulixTesseract/tessdata");
+    // Check the existence of the sikuliX JAR containing the tessdata directory
+    URL url = RunTime.class.getResource("/tessdataSX");
+    if (url == null || !"jar".equals(url.getProtocol())) {
+      throw new ProcessException("tessdata directory not found in sikuliX JAR, OCR will malfunction");
+    }
+    LOG.debug("Resource /tessdataSX found, URL is {}", url);
+    // Extract name of JAR file
+    String urlFile = url.getFile();
+    int p = urlFile.lastIndexOf("!");
+    if (!urlFile.startsWith("file:///") || p < 0) {
+      throw new ProcessException("Resource /tessdataSX is not a file in a JAR, it should start with file:/// and have ! as separator: " + urlFile);
+    }
+    String jarFile = urlFile.substring(8, p);
+    // Open JAR file as zip
+    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(jarFile))) {
+      ZipEntry zipEntry;
+      while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+        String zipEntryName = zipEntry.getName();
+        // Copy only directories/files in directory tessdataSX
+        if (!zipEntryName.startsWith("tessdataSX/")) {
+          zipInputStream.closeEntry();
+          continue;
+        }
+        LOG.debug("Zip entry: {}", zipEntry);
+        File cachedFile = new File(cachedTessdataDirectory, zipEntryName.substring(11));
+        if (zipEntryName.endsWith("/")) {
+          LOG.debug("Cached element {} is a directory", cachedFile);
+          if (!cachedFile.exists()) {
+            LOG.debug("Cached directory {} doesn't exist, creating it", cachedFile);
+            if (!cachedFile.mkdirs()) {
+              throw new ProcessException("Could not create directory " + cachedFile + "; aborting tessdata copy");
+            }
+          }
+          zipInputStream.closeEntry();
+          continue;
+        }
+        if (cachedFile.exists() && cachedFile.length() == zipEntry.getSize()) {
+          LOG.debug("Cached file {} exists, checked size against the zip entry's is OK", cachedFile);
+          zipInputStream.closeEntry();
+          continue;
+        }
+        if (cachedFile.exists()) {
+          LOG.debug("Cached file {} exists, deleting it before copy", cachedFile);
+          if (!cachedFile.delete()) {
+            throw new ProcessException("Could not delete file " + cachedFile + " before copy; aborting tessdata copy");
+          }
+        }
+        LOG.debug("Copying file {}", cachedFile);
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(cachedFile))) {
+          zipInputStream.transferTo(outputStream);
+        }
+        zipInputStream.closeEntry();
+      }
+    }
+    catch (IOException e) {
+      throw new ProcessException("Exception while unzipping " + jarFile + ". Exception is: " + e);
+    }
   }
 
 }

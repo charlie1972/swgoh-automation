@@ -31,6 +31,7 @@ public class BronziumDaily extends AbstractProcess {
       updateProgressAndETA();
       setMessage("Number of bronziums opened during this run: " + numberOfOpenedBronziums);
 
+      AutomationUtil.mouseMove(BronziumScreen.L_BUY_AGAIN_BUTTON, "Move mouse to left of idle position");
       AutomationUtil.mouseMove(BronziumScreen.L_IDLE, "Move mouse to idle position");
       state = BronziumScreen.readState();
       LOG.info("Read state: {}", state);

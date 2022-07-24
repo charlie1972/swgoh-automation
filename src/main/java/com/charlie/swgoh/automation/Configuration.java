@@ -6,22 +6,15 @@ import org.sikuli.basics.Settings;
 import org.sikuli.script.ImagePath;
 import org.sikuli.script.Key;
 import org.sikuli.script.KeyModifier;
-import org.sikuli.script.support.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.URL;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class Configuration {
 
   private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
-
-  private static final String TESSDATA_SX = "tessdataSX";
-  private static final String TESSDATA_SX_SL = TESSDATA_SX + "/";
 
   private static final String PROPERTIES_FILE_NAME = "swgoh-automation.properties";
   private static final String DEFAULT_DIRECTORY = "defaultDirectory";
@@ -45,10 +38,6 @@ public class Configuration {
   private static IFeedback feedback;
 
   private Configuration() {}
-
-  static {
-    initTessdata();
-  }
 
   public static void configureImagePath() {
     ImagePath.add(IMAGE_PATH);
@@ -163,72 +152,6 @@ public class Configuration {
     }
     catch (IOException e) {
       feedback.setErrorMessage("Save properties: " + e.getMessage());
-    }
-  }
-
-  // This method aims to fix the inability to copy the tessdata directory at OCR initialization
-  private static void initTessdata() {
-    // Initialize the RunTime singleton so that root directories are set, and get the tessdata directory
-    File cachedTessdataDirectory = new File(RunTime.get().fSikulixAppPath, "SikulixTesseract/tessdata");
-    // Check the existence of the sikuliX JAR containing the tessdata directory
-    URL url = RunTime.class.getResource("/" + TESSDATA_SX);
-    if (url == null || !"jar".equals(url.getProtocol())) {
-      LOG.error("tessdata directory not found in sikuliX JAR, OCR will malfunction");
-      return;
-    }
-    LOG.debug("Resource /tessdataSX found, URL is {}", url);
-    // Extract name of JAR file
-    String urlFile = url.getFile();
-    int p = urlFile.lastIndexOf("!");
-    if (!urlFile.startsWith("file:///") || p < 0) {
-      LOG.error("Resource /tessdataSX is not a file in a JAR, it should start with file:/// and have ! as separator: {}", urlFile);
-      return;
-    }
-    String jarFile = urlFile.substring(8, p);
-    // Open JAR file as zip
-    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(jarFile))) {
-      ZipEntry zipEntry;
-      while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-        String zipEntryName = zipEntry.getName();
-        if (!zipEntryName.startsWith(TESSDATA_SX + "/")) {
-          zipInputStream.closeEntry();
-          continue;
-        }
-        LOG.debug("Zip entry: {}", zipEntry);
-        File cachedFile = new File(cachedTessdataDirectory, zipEntryName.substring(TESSDATA_SX_SL.length()));
-        if (zipEntryName.endsWith("/")) {
-          LOG.debug("Cached element {} is a directory", cachedFile);
-          if (!cachedFile.exists()) {
-            LOG.debug("Cached directory {} doesn't exist, creating it", cachedFile);
-            if (!cachedFile.mkdirs()) {
-              LOG.error("Could not create directory {}; aborting tessdata copy", cachedFile);
-              return;
-            }
-          }
-          zipInputStream.closeEntry();
-          continue;
-        }
-        if (cachedFile.exists() && cachedFile.length() == zipEntry.getSize()) {
-          LOG.debug("Cached file {} exists, checked size against the zip entry's is OK", cachedFile);
-          zipInputStream.closeEntry();
-          continue;
-        }
-        if (cachedFile.exists()) {
-          LOG.debug("Cached file {} exists, deleting it before copy", cachedFile);
-          if (!cachedFile.delete()) {
-            LOG.error("Could not delete file {} before copy; aborting tessdata copy", cachedFile);
-            return;
-          }
-        }
-        LOG.debug("Copying file {}", cachedFile);
-        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(cachedFile))) {
-          zipInputStream.transferTo(outputStream);
-        }
-        zipInputStream.closeEntry();
-      }
-    }
-    catch (IOException e) {
-      LOG.error("Exception while unzipping {}. Exception is: {}", jarFile, e);
     }
   }
 

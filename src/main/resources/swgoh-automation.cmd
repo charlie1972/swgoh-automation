@@ -1,1 +1,1 @@
-start java-runtime\bin\javaw.exe --module-path lib -m swgoh.automation/com.charlie.swgoh.main.FXApp %*
+start java-runtime\bin\javaw.exe --module-path lib -Dlogback.configurationFile=logback.xml -m swgoh.automation/com.charlie.swgoh.main.FXApp %*
