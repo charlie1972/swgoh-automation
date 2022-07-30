@@ -6,8 +6,8 @@ A tool made for automating tedious tasks in Star Wars: Galaxy of Heroes
 * Windows 10
 * A screen resolution of at least 1920 x 1080
 * The latest version of Bluestacks: 4.280.0.1022
-* Bluestacks ***must*** run in the English language and with a resolution of 2560 x 1440 at 240 DPI
-* If you wish to build: Java version 11, Maven version 3.6.3 or later
+* Bluestacks ***must*** run in the English language and with a resolution of 1280 x 720 at 240 DPI
+* If you wish to build: Java version 17, Maven version 3.6.3 or later
 
 ## What it does
 * Collect your daily bronziums automatically
@@ -15,17 +15,18 @@ A tool made for automating tedious tasks in Star Wars: Galaxy of Heroes
 * Read your unequipped mods and inject them in the Mod Optimizer
 * Retrieve the Mod Optimizer's recommendations and move the mods accordingly
 * Revert the previous mod move
+* Revert *all* mod moves
 
 ## How to run it from the release
 * Get the archive at: https://github.com/charlie1972/swgoh-automation/releases
-* Extract it and run the executable
+* Extract it and run `swgoh-automation.cmd`
   
 ## How to build it from scratch
 * Clone the project from: https://github.com/charlie1972/swgoh-automation
 * Make sure the JAVA_HOME environment variable is set
 * Build the project: `mvn clean package`
 * Unzip the archive located in the target directory: swgoh-automation-<version>.zip
-* Run it: `swgoh-automation-<version>.exe` 
+* Run it: `swgoh-automation.cmd`
 
 ## IMPORTANT
 The first things the tool does when running are:
@@ -44,38 +45,40 @@ The tool works by "reading" the screen. There are lots of checks to minimize the
 
 You can tune the execution's speed. If the fastest setting creates desynchronizations, try slowing it down a little. Your mileage may vary. 
 
-### Bronzium Daily
+### Bronzium Tab
+#### Bronzium Daily
 This feature automatically collects your daily bronziums. You need to run it while the game is in the bronzium buying screen. It clicks on the "Free" button whenever it appears until there are no more free Bronziums to collect.
 
-It does not take any argument.
-
-### Bronzium Ally Points
+#### Bronzium Ally Points
 This feature spends your ally points by repeatedly buying bronziums. You need to run it while the game is in the bronzium buying screen.
+Its argument is the ally point threshold at which the execution stops. Numbers as displayed in the game are accepted (for example: 100K).
 
-There is one argument:
-* The ally point threshold at which the execution stops. Numbers as displayed in the game are accepted (for example: 100K).
+### Mods Tab
+#### Working directory
+This directory contains all files that are used for mods moving:
+* JSON progress files
+* HTML files that contain mods moves
+* Move mods tracking
+* Move mods reports
 
-### Read Unequipped Mods
-This feature enriches the mods retrieved by the Mod Optimizer. You need to run it while being in the mod screen of any of your characters.
+#### Progress file
+This file is obtained from the Mod Optimizer. After fetching your data, click on **Save my progress**. Your browser will save a file named **modsOptimizer-\<date\>.json**. Move it to the working directory and press **Refresh** to see it appear.
 
-Before running this feature, you must create a progress file by using **Save my progress** in the Mod Optimizer.
+#### Read Unequipped Mods
+This feature enriches the mods retrieved by the Mod Optimizer, that contain only equipped mods. You must have a valid progress file in the working directory. You also need to run it while being in the mod screen of any of your characters.
 
-There are two arguments:
-* The name of the aforementioned file containing your progress 
-* Your 9-digit ally code
-
-You can browse the file system to get the file. Pressing the **Load** button tries to load the file and retrieve all ally codes in the file. 
-
-This feature reads through all your mods, then enriches the progress file with the unequipped mods. It writes a new file with the prefix "enriched", in the same directory as the original file. It ignores mods that are not level 15, and ones that have 4 dots or lower.
+This feature reads through all your mods, then enriches the progress file with the unequipped mods. It writes a new file with the prefix "enriched", in the working directory. It only reads mods that are level 15 and have 5 or 6 dots.
 
 You should then import this new file in the Mod Optimizer by using **Restore my progress** in the Mod Optimizer. You can check the unequipped mods are loaded by exploring them in the Mod Optimizer.
 
 Performance: reading 300 unequipped mods takes approximately 10 minutes. 
 
-### Move Mods
+#### Move Mods
 This feature moves the mods according to the Mod Optimizer recommendations. You need to run it while being in the **Character Mods** screen (Home > Characters > Mods).
 
-Before running this feature, you must save the recommendations in a file:
+Before running this feature, you must make and save recommendations. For each recommendation:
+* Setup your mod configuration
+* Run **Optimize my mods!**
 * In the recommendation screen, make sure you have the default options:
   * Organize mods by: Assigned Character
   * Show mods as: Sets
@@ -84,12 +87,22 @@ Before running this feature, you must save the recommendations in a file:
 * In your browser, use **Save As...**
 * Choose **Complete web page**
 * Save
+* Move the resulting HTML file to the working directory. An accompanying directory will follow the file, it is OK, it will be ignored.
 
-There are two arguments:
-* The name of the HTML file that you just saved
-* A switch to do a dry run. If this is checked, the tool will do everything as planned, but will revert instead of confirming mods for each character.
+You may do as many recommendations as you wish. For example if you need to do 5 battles for TB, you can make 5 different recommendations.
 
-You can browse the file system to get the file. Pressing the **Check** button tries to load the file and check its format.
+After refreshing, you will see the recommendations in the list.
+To run the mods move:
+* Select the recommendation you want to apply
+* In the game, make sure you are in the **Character Mods** screen 
+* If you're unsure if this tool will work correctly, check **Dry Run**. Everything will be done as planned but the mods moves will be reverted instead of confirmed.
+* Click on **Move selected**
+
+***
+
+***TO BE COMPLETED***
+
+***
 
 Once run, this feature creates several report files so you can check what happened. These files are created in the same directory as the source HTML file:
 * **move-mods-processedCharacters.txt**: list of all characters that have been fully and correctly processed

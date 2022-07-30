@@ -11,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,18 +28,12 @@ public class CharacterModsScreen {
   private static final Pattern P_CHARACTERS_TAB = new Pattern("character_mods_screen_characters_tab.png");
   private static final Pattern P_MODS_CHECKED = new Pattern("character_mods_screen_mods_checked.png");
   private static final Pattern P_FILTER_TITLE_TEXT = new Pattern("character_mods_screen_filter_title.png");
-  private static final Pattern P_FILTER_TITLE_OK = new Pattern("character_mods_screen_filter_ok.png");
+  private static final Pattern P_FILTER_WHITE_SQUARE = new Pattern("character_mods_screen_filter_white_square.png");
 
   private static final List<String> NAME_PARTS = Arrays.asList(
           "Chirrut",
           "Amidala"
   );
-
-  private static final Map<String, String> NAME_SUBSTITUTION_MAP = new HashMap<>();
-  static {
-    NAME_SUBSTITUTION_MAP.put("Chirrut Îmwe", "Chirrut");
-    NAME_SUBSTITUTION_MAP.put("Padmé Amidala", "Amidala");
-  }
 
   private static final int MATCH_THRESHOLD = 90;
 
@@ -57,7 +49,7 @@ public class CharacterModsScreen {
   public static final Region R_CHARACTERS = new Region(22, 122, 155, 41);
   public static final Region R_MODS_CHECKED = new Region(835, 107, 50, 50);
   public static final Region R_FILTER_TITLE = new Region(552, 56, 177, 38);
-  public static final Region R_FILTER_OK = new Region(1227, 685, 24, 19);
+  public static final Region R_FILTER_WHITE_SQUARE = new Region(5, 715, 5, 5);
 
   public static boolean waitForCharactersTab() {
     return AutomationUtil.waitForPattern(R_CHARACTERS, P_CHARACTERS_TAB, "Waiting for characters tab");
@@ -71,8 +63,8 @@ public class CharacterModsScreen {
     return AutomationUtil.waitForPattern(R_FILTER_TITLE, P_FILTER_TITLE_TEXT, "Waiting for filter title text");
   }
 
-  public static boolean waitForCharacterModsFilterOK() {
-    return AutomationUtil.waitForPattern(R_FILTER_OK, P_FILTER_TITLE_OK, "Waiting for filter OK");
+  public static boolean waitForCharacterModsFilterWhiteSquare() {
+    return AutomationUtil.waitForPattern(R_FILTER_WHITE_SQUARE, P_FILTER_WHITE_SQUARE, "Waiting for white square");
   }
 
   public static void filterName(String name) {
@@ -91,9 +83,9 @@ public class CharacterModsScreen {
     }
     AutomationUtil.click(L_FILTER_ALL_CHECKBOX, "Clicking on ALL checkbox");
     AutomationUtil.click(L_FILTER_TEXT_ZONE, "Clicking on filter text zone");
-    if (!waitForCharacterModsFilterOK()) {
-      LOG.error("Character mod screen filter: OK button not found. Aborting.");
-      throw new ProcessException("Character mod screen filter: OK button not found. Aborting.");
+    if (!waitForCharacterModsFilterWhiteSquare()) {
+      LOG.error("Character mod screen filter: white square not found. Aborting.");
+      throw new ProcessException("Character mod screen filter: white square not found. Aborting.");
     }
     AutomationUtil.typeText(nameToFilter, "Pasting character name in filter");
     AutomationUtil.waitFor(250L);
