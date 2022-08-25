@@ -166,7 +166,7 @@ public class ModScreen {
   public static final Location L_CONFIRM_BUTTON = new Location(1050, 590);
 
   // Regions
-  public static final Region R_CHARACTER_NAME = new Region(172, 18, 500, 30);
+  public static final Region R_CHARACTER_NAME = new Region(172, 16, 500, 30);
   public static final Region R_CHARACTER_MOD_SET_AND_SLOT = new Region(793, 112, 370, 26);
   public static final Region R_CHARACTER_MOD_LEVEL_AND_TIER = new Region(870, 221, 48, 17);
   public static final Region R_CHARACTER_MOD_PRIMARY_STAT = new Region(991, 171, 200, 25);
@@ -225,6 +225,9 @@ public class ModScreen {
   public static final Region R_MOD_SCROLLBAR = new Region(471, 182, 4, 432);
   public static final Region R_DIALOG_BOX_OK = new Region(767, 439, 51, 43); // For dry-run
 
+  // Name match threshold
+  private static final int NAME_MATCH_THRESHOLD = 80;
+
   public static boolean waitForFilterAndSortButtons() {
     return AutomationUtil.waitForPattern(R_FILTER_AND_SORT_BUTTONS, P_FILTER_AND_SORT_BUTTONS, "Waiting for filter and sort buttons");
   }
@@ -240,7 +243,7 @@ public class ModScreen {
   public static boolean checkName(String name) {
     String readName = AutomationUtil.readLine(R_CHARACTER_NAME);
     int score = FuzzySearch.ratio(StringUtil.prepareForMatching(name), StringUtil.prepareForMatching(readName));
-    boolean isPassed = score > 85;
+    boolean isPassed = score >= NAME_MATCH_THRESHOLD;
     LOG.info("Checked name: {}. Read on screen: {}. Score: {}. Passed: {}", name, readName, score, isPassed);
     return isPassed;
   }

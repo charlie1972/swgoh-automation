@@ -35,7 +35,7 @@ public class CharacterModsScreen {
           "Amidala"
   );
 
-  private static final int MATCH_THRESHOLD = 90;
+  private static final int MATCH_THRESHOLD = 80;
 
   // Locations
   public static final Location L_FILTER_BUTTON = new Location(380, 130);
