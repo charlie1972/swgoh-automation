@@ -34,7 +34,7 @@ public enum ModStatUnit {
   public static ModStatUnit fromString(String text, InputType inputType) {
     // First, try strict matching
     for (ModStatUnit modStatUnit : ModStatUnit.values()) {
-      if (inputType.getModStatUnitText().apply(modStatUnit).equals(text)) {
+      if (inputType.getModStatUnitText().apply(modStatUnit).equalsIgnoreCase(text)) {
         return modStatUnit;
       }
     }

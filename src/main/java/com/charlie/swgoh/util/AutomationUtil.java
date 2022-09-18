@@ -23,6 +23,7 @@ public class AutomationUtil {
   private AutomationUtil() {}
 
   private static final Logger LOG = LoggerFactory.getLogger(AutomationUtil.class);
+  private static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
 
   public static final long DELAY = 1000L;
 
@@ -164,7 +165,9 @@ public class AutomationUtil {
     LOG.debug("BufferedImage preprocessing: {} ms", duration);
     if (Configuration.isDebug()) {
       try {
-        ImageIO.write(bufferedImage, "png", new File("D:/Temp/" + start + ".png"));
+        File imageFile = new File(TEMP_DIRECTORY, start + ".png");
+        LOG.debug("Writing processed image to: {}", imageFile);
+        ImageIO.write(bufferedImage, "png", imageFile);
       }
       catch (IOException e) {
         LOG.error("Exception while writing image file", e);

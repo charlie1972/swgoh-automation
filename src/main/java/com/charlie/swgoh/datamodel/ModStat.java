@@ -14,7 +14,7 @@ public class ModStat {
   private final ModStatUnit unit;
   private String text = null;
 
-  private static final Pattern PATTERN = Pattern.compile("(\\((\\d)\\))?(\\+?\\d+\\.?\\d*)(%?[A-Za-z]*).*?");
+  private static final Pattern PATTERN = Pattern.compile("(\\((\\d)\\))?[^0-9+.()]*?(\\+?\\d+\\.?\\d*)(%?[^0-9A-Za-z+.%]*?[A-Za-z]*).*?");
   private static final double TOLERANCE = 0.02;
 
   public ModStat(int rolls, double value, ModStatUnit unit) {
@@ -28,7 +28,7 @@ public class ModStat {
   }
 
   public ModStat(String str, InputType inputType) {
-    String str2 = StringUtil.stripSpaces(str);
+    String str2 = StringUtil.removeInvalidCharacters(str);
     Matcher matcher = PATTERN.matcher(str2);
     if (!matcher.matches()) {
       throw new IllegalArgumentException(str + " is an invalid mod stat");

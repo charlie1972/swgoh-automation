@@ -217,7 +217,7 @@ public class ModScreen {
   public static final Region R_REMOVE_BUTTON = new Region(673, 452, 119, 42);
   public static final Region R_ASSIGN_LOADOUT_BUTTON = new Region(659, 554, 94, 38);
   public static final Region R_REVERT_BUTTON = new Region(854, 568, 100, 36);
-  public static final Region R_MOD_SCROLLBAR = new Region(471, 182, 4, 432);
+  public static final Region R_MOD_SCROLLBAR = new Region(477, 186, 4, 432);
   public static final Region R_DIALOG_BOX_OK = new Region(767, 439, 51, 43); // For dry-run
 
   // Name match threshold
