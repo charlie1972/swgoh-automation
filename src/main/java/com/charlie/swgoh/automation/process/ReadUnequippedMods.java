@@ -47,23 +47,24 @@ public class ReadUnequippedMods extends AbstractProcess {
 
     handleKeys();
 
-    if (!ModScreen.waitForFilterAndSortButtons()) {
-      throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
+    if (!ModScreen.waitForSortButton()) {
+      throw new ProcessException("Mod screen: sort button not found. Aborting.");
     }
     String message = "Reading mods";
     LOG.info(message);
     setMessage(message);
 
     ModScreen.enterModFilter();
+    AutomationUtil.waitFor(250L);
     if (!ModScreenFilter.waitForTitle()) {
       throw new ProcessException("Mod screen filter: title not found. Aborting.");
     }
-    ModScreenFilter.ensureUnassignedIsChecked();
     ModScreenFilter.clickDefaultAndEnsureAnySlotIsOnTop();
+    ModScreenFilter.ensureUnassignedIsChecked();
     ModScreenFilter.confirm();
     AutomationUtil.waitFor(1000L);
-    if (!ModScreen.waitForFilterAndSortButtons()) {
-      throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
+    if (!ModScreen.waitForSortButton()) {
+      throw new ProcessException("Mod screen: sort button not found. Aborting.");
     }
     ModScreen.dragOtherModsToTop();
     AutomationUtil.waitFor(1000L);

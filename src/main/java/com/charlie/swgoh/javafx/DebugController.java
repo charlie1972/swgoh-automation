@@ -120,6 +120,7 @@ public class DebugController {
     }
     String read = AutomationUtil.readLine(debugRegion);
     readSelection.setText(read);
+    highlightRegion();
   }
 
   public void enumerateWindows() {

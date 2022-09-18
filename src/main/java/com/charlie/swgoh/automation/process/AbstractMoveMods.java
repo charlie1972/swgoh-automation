@@ -102,8 +102,8 @@ public abstract class AbstractMoveMods extends AbstractProcess {
       CharacterModsScreen.filterName(characterName);
       AutomationUtil.waitFor(250L);
       CharacterModsScreen.enterModScreen(characterName);
-      if (!ModScreen.waitForFilterAndSortButtons()) {
-        throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
+      if (!ModScreen.waitForSortButton()) {
+        throw new ProcessException("Mod screen: sort button not found. Aborting.");
       }
       if (!ModScreen.checkName(characterName)) {
         throw new ProcessException("Mod screen: name on screen doesn't match " + characterName + ". Aborting.");
@@ -121,8 +121,8 @@ public abstract class AbstractMoveMods extends AbstractProcess {
         ModProcessResult result = processMod(mod);
         LOG.info("Process mod: {}", result);
         AutomationUtil.waitFor(500L);
-        if (!ModScreen.waitForFilterAndSortButtons()) {
-          throw new ProcessException("Mod screen: filter and sort buttons not found. Aborting.");
+        if (!ModScreen.waitForSortButton()) {
+          throw new ProcessException("Mod screen: sort button not found. Aborting.");
         }
         allModsOk = allModsOk && (result == ModProcessResult.ALREADY_ASSIGNED || result == ModProcessResult.FOUND_AND_ASSIGNED);
         FileUtil.writeToFile(
@@ -218,7 +218,7 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     ModScreenFilter.filterForMod(mod);
     ModScreenFilter.confirm();
     AutomationUtil.waitFor(750L);
-    if (!ModScreen.waitForFilterAndSortButtons()) {
+    if (!ModScreen.waitForSortButton()) {
       throw new ProcessException("Mod screen: buttons not found. Aborting.");
     }
 

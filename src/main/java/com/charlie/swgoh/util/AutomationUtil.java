@@ -8,6 +8,8 @@ import org.sikuli.script.support.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -107,22 +109,67 @@ public class AutomationUtil {
     if (Configuration.isDebug()) {
       highlightTemporarily(region);
     }
+    String text = readLineFromBufferedImage(getShiftedRegion(region).getImage().get());
+    LOG.debug("Read line in {}: {}", region, text);
+    return text;
+  }
+
+  public static String readLineWithPreprocessing(Region region) {
+    if (Configuration.isDebug()) {
+      highlightTemporarily(region);
+    }
+    BufferedImage bufferedImage = getShiftedRegion(region).getImage().get();
+    preprocessBufferedImage(bufferedImage);
+    String text = readLineFromBufferedImage(bufferedImage);
+    LOG.debug("Read line in {}: {}", region, text);
+    return text;
+  }
+
+  private static String readLineFromBufferedImage(BufferedImage bufferedImage) {
     String text;
     try {
-      text = getShiftedRegion(region).textLine();
+      text = OCR.readLine(bufferedImage);
     }
     catch (SikuliXception e) {
       LOG.warn("OCR.textLine failed. Trying to do custom resource copy");
       initTessdata();
       try {
-        text = getShiftedRegion(region).textLine();
+        text = OCR.readLine(bufferedImage);
       }
       catch (SikuliXception ee) {
         throw new ProcessException("OCR.textLine failed, you need to restart the application");
       }
     }
-    LOG.debug("Read line in {}: {}", region, text);
     return text;
+  }
+
+  // Clean the buffered image by transforming the white and light gray pixels into black, and whiting the rest
+  private static void preprocessBufferedImage(BufferedImage bufferedImage) {
+    long start = System.currentTimeMillis();
+    for (int x = 0; x < bufferedImage.getWidth(); x++) {
+      for (int y = 0; y < bufferedImage.getHeight(); y++) {
+        int rgb = bufferedImage.getRGB(x, y);
+        int red = (rgb >> 16) & 0xFF;
+        int green = (rgb >> 8) & 0xFF;
+        int blue = rgb & 0xFF;
+        if ((red == green) && (red == blue) && (red > 200)) {
+          bufferedImage.setRGB(x, y, 0xFF000000); // black
+        }
+        else {
+          bufferedImage.setRGB(x, y, 0xFFFFFFFF); // white
+        }
+      }
+    }
+    long duration = System.currentTimeMillis() - start;
+    LOG.debug("BufferedImage preprocessing: {} ms", duration);
+    if (Configuration.isDebug()) {
+      try {
+        ImageIO.write(bufferedImage, "png", new File("D:/Temp/" + start + ".png"));
+      }
+      catch (IOException e) {
+        LOG.error("Exception while writing image file", e);
+      }
+    }
   }
 
   public static List<String> readLines(Region region) {

@@ -30,9 +30,8 @@ public class ModScreenFilter {
   private static final Pattern P_ANY_SLOT = new Pattern("mod_screen_filter_any_slot.png");
 
   // Locations
-  public static final Location L_UNASSIGNED_CHECKBOX = new Location(252, 151);
-  public static final Location L_CONFIRM = new Location(853, 634);
-  public static final Location L_DEFAULT = new Location(422, 634);
+  public static final Location L_DEFAULT = new Location(485, 640);
+  public static final Location L_CONFIRM = new Location(1060, 640);
   public static final Map<ModSlot, Location> LM_SLOTS = new LinkedHashMap<>();
   static {
     LM_SLOTS.put(ModSlot.SQUARE, new Location(405, 216));
@@ -84,9 +83,9 @@ public class ModScreenFilter {
   }
 
   // Regions
-  public static final Region R_TITLE = new Region(540, 51, 202, 48);
-  public static final Region R_UNASSIGNED_CHECKBOX = new Region(220, 120, 64, 64);
-  public static final Region R_ANY_SLOT = new Region(254, 199, 84, 37);
+  public static final Region R_TITLE = new Region(515, 45, 252, 41);
+  public static final Region R_UNASSIGNED_CHECKBOX = new Region(334, 121, 46, 46);
+  public static final Region R_ANY_SLOT = new Region(373, 232, 70, 32);
 
   public static boolean waitForTitle() {
     return AutomationUtil.waitForPattern(R_TITLE, P_TITLE, "Waiting for title");
@@ -95,14 +94,14 @@ public class ModScreenFilter {
   public static void ensureUnassignedIsUnchecked() {
     if (!AutomationUtil.checkForPattern(R_UNASSIGNED_CHECKBOX, P_UNASSIGNED_CHECKBOX_UNCHECKED, "Checking if the unassigned checkbox is unchecked")) {
       // If pattern not found => click on the checkbox
-      AutomationUtil.click(L_UNASSIGNED_CHECKBOX, "Unchecking the unassigned checkbox");
+      AutomationUtil.click(R_UNASSIGNED_CHECKBOX, "Unchecking the unassigned checkbox");
     }
   }
 
   public static void ensureUnassignedIsChecked() {
     if (AutomationUtil.checkForPattern(R_UNASSIGNED_CHECKBOX, P_UNASSIGNED_CHECKBOX_UNCHECKED, "Checking if the unassigned checkbox is checked")) {
       // If pattern found => click on the checkbox
-      AutomationUtil.click(L_UNASSIGNED_CHECKBOX, "Checking the unassigned checkbox");
+      AutomationUtil.click(R_UNASSIGNED_CHECKBOX, "Checking the unassigned checkbox");
     }
   }
 

@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class ModScreen {
@@ -131,7 +132,7 @@ public class ModScreen {
   static {
     Configuration.configureImagePath();
   }
-  private static final Pattern P_FILTER_AND_SORT_BUTTONS = new Pattern("mod_screen_filter_and_sort_buttons.png");
+  private static final Pattern P_SORT_BUTTON = new Pattern("mod_screen_sort_button.png");
   private static final Pattern P_MINUS_BUTTON = new Pattern("mod_screen_minus_button.png");
   private static final Pattern P_UNASSIGNED_LABEL = new Pattern("mod_screen_unassigned.png");
   private static final Pattern P_MOD_DOT = new Pattern("mod_dot.png");
@@ -167,15 +168,12 @@ public class ModScreen {
 
   // Regions
   public static final Region R_CHARACTER_NAME = new Region(172, 16, 500, 30);
-  public static final Region R_CHARACTER_MOD_SET_AND_SLOT = new Region(793, 112, 370, 26);
-  public static final Region R_CHARACTER_MOD_LEVEL_AND_TIER = new Region(870, 221, 48, 17);
-  public static final Region R_CHARACTER_MOD_PRIMARY_STAT = new Region(991, 171, 200, 25);
-  public static final List<Region> RL_CHARACTER_MOD_SECONDARY_STATS = Arrays.asList(
-          new Region(991, 224, 200, 25),
-          new Region(991, 247, 200, 25),
-          new Region(991, 271, 200, 25),
-          new Region(991, 295, 200, 25)
-  );
+  public static final Region R_CHARACTER_MOD_SET_AND_SLOT = new Region(793, 125, 370, 26);
+  public static final Region R_CHARACTER_MOD_LEVEL_AND_TIER = new Region(815, 261, 48, 17);
+  public static final Region R_CHARACTER_MOD_PRIMARY_STAT = new Region(880, 170, 180, 22);
+  public static final List<Region> RL_CHARACTER_MOD_SECONDARY_STATS = IntStream.range(0, 4)
+                  .mapToObj(i -> new Region(882, 212 + i * 26, 179, 20))
+                  .collect(Collectors.toList());
   public static final Supplier<DotsTierSetAndSlot> RS_CHARACTER_MOD_SET_AND_SLOT = () -> extractModDotsTierSetAndSlot(true);
   public static final Supplier<String> RS_CHARACTER_MOD_PRIMARY_STAT_STRING = () -> AutomationUtil.readLine(R_CHARACTER_MOD_PRIMARY_STAT);
   public static final List<Supplier<String>> RSL_CHARACTER_MOD_SECONDARY_STAT_STRINGS = RL_CHARACTER_MOD_SECONDARY_STATS
@@ -186,15 +184,12 @@ public class ModScreen {
                   )
           )
           .collect(Collectors.toList());
-  public static final Region R_OTHER_MOD_SET_AND_SLOT = new Region(793, 420, 424, 26);
-  public static final Region R_OTHER_MOD_LEVEL_AND_TIER = new Region(870, 529, 48, 17);
-  public static final Region R_OTHER_MOD_PRIMARY_STAT = new Region(991, 478, 200, 25);
-  public static final List<Region> RL_OTHER_MOD_SECONDARY_STATS = Arrays.asList(
-          new Region(991, 531, 200, 25),
-          new Region(991, 554, 200, 25),
-          new Region(991, 578, 200, 25),
-          new Region(991, 602, 200, 25)
-  );
+  public static final Region R_OTHER_MOD_SET_AND_SLOT = new Region(793, 427, 370, 26);
+  public static final Region R_OTHER_MOD_LEVEL_AND_TIER = new Region(815, 563, 48, 17);
+  public static final Region R_OTHER_MOD_PRIMARY_STAT = new Region(880, 473, 180, 22);
+  public static final List<Region> RL_OTHER_MOD_SECONDARY_STATS = IntStream.range(0, 4)
+          .mapToObj(i -> new Region(882, 514 + i * 26, 179, 20))
+          .collect(Collectors.toList());
   public static final Supplier<DotsTierSetAndSlot> RS_OTHER_MOD_SET_AND_SLOT = () -> extractModDotsTierSetAndSlot(false);
   public static final Supplier<String> RS_OTHER_MOD_PRIMARY_STAT_STRING = () -> AutomationUtil.readLine(R_OTHER_MOD_PRIMARY_STAT);
   public static final List<Supplier<String>> RSL_OTHER_MOD_SECONDARY_STAT_STRINGS = RL_OTHER_MOD_SECONDARY_STATS
@@ -205,7 +200,7 @@ public class ModScreen {
                   )
           )
           .collect(Collectors.toList());
-  public static final Region R_FILTER_AND_SORT_BUTTONS = new Region(50, 104, 443, 75);
+  public static final Region R_SORT_BUTTON = new Region(278, 127, 61, 33);
   public static final List<Region> RL_MOD_DOTS = new ArrayList<>(16);
   static {
     for (int iy = 0; iy < 4; iy++) {
@@ -228,8 +223,8 @@ public class ModScreen {
   // Name match threshold
   private static final int NAME_MATCH_THRESHOLD = 80;
 
-  public static boolean waitForFilterAndSortButtons() {
-    return AutomationUtil.waitForPattern(R_FILTER_AND_SORT_BUTTONS, P_FILTER_AND_SORT_BUTTONS, "Waiting for filter and sort buttons");
+  public static boolean waitForSortButton() {
+    return AutomationUtil.waitForPattern(R_SORT_BUTTON, P_SORT_BUTTON, "Waiting for sort button");
   }
 
   public static boolean waitForMinusButton() {
@@ -276,7 +271,7 @@ public class ModScreen {
         LOG.info("State: ASSIGN_LOADOUT_BUTTON");
         return StateAfterModMoveOrder.ASSIGN_LOADOUT_BUTTON;
       }
-      if (AutomationUtil.checkForPattern(R_FILTER_AND_SORT_BUTTONS, P_FILTER_AND_SORT_BUTTONS, "Checking for filter and sort buttons")) {
+      if (AutomationUtil.checkForPattern(R_SORT_BUTTON, P_SORT_BUTTON, "Checking for sort buttons")) {
         LOG.info("State: FILTER_AND_SORT_BUTTONS");
         return StateAfterModMoveOrder.FILTER_AND_SORT_BUTTONS;
       }
@@ -343,7 +338,7 @@ public class ModScreen {
   }
 
   public static DotsTierSetAndSlot extractModDotsTierSetAndSlot(boolean isCharacter) {
-    String text = AutomationUtil.readLine(isCharacter ? R_CHARACTER_MOD_SET_AND_SLOT : R_OTHER_MOD_SET_AND_SLOT);
+    String text = AutomationUtil.readLineWithPreprocessing(isCharacter ? R_CHARACTER_MOD_SET_AND_SLOT : R_OTHER_MOD_SET_AND_SLOT);
     Matcher matcher = REGEX_MOD_DESCRIPTION.matcher(text);
     if (!matcher.matches()) {
       LOG.warn("Unable to parse tier, set and slot from: {}", text);
