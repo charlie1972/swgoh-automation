@@ -29,6 +29,7 @@ public class AutomationUtil {
 
   private static final long DEBUG_DELAY = 100L;
   private static final double WAIT_FOR_IMAGE_DURATION = 5.0;
+  private static final int LUMINOSITY_THRESHOLD = 190;
 
   public static Location getShiftedLocation(Location location) {
     return new Location(
@@ -144,7 +145,9 @@ public class AutomationUtil {
     return text;
   }
 
-  // Clean the buffered image by transforming the white and light gray pixels into black, and whiting the rest
+  // Clean the buffered image:
+  // - convert to greyscale
+  // - transform the white and light grey pixels into black, and white the rest
   private static void preprocessBufferedImage(BufferedImage bufferedImage) {
     long start = System.currentTimeMillis();
     for (int x = 0; x < bufferedImage.getWidth(); x++) {
@@ -153,7 +156,8 @@ public class AutomationUtil {
         int red = (rgb >> 16) & 0xFF;
         int green = (rgb >> 8) & 0xFF;
         int blue = rgb & 0xFF;
-        if ((red == green) && (red == blue) && (red > 200)) {
+        int grey = (int)(0.3f * (float)red + 0.59f * (float)green + 0.11f * (float)blue);
+        if (grey > LUMINOSITY_THRESHOLD) {
           bufferedImage.setRGB(x, y, 0xFF000000); // black
         }
         else {

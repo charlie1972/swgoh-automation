@@ -184,7 +184,7 @@ public class ModScreen {
                   )
           )
           .collect(Collectors.toList());
-  public static final Region R_OTHER_MOD_SET_AND_SLOT = new Region(793, 427, 370, 26);
+  public static final Region R_OTHER_MOD_SET_AND_SLOT = new Region(793, 427, 430, 26);
   public static final Region R_OTHER_MOD_LEVEL_AND_TIER = new Region(815, 563, 48, 17);
   public static final Region R_OTHER_MOD_PRIMARY_STAT = new Region(880, 473, 180, 22);
   public static final List<Region> RL_OTHER_MOD_SECONDARY_STATS = IntStream.range(0, 4)
@@ -307,7 +307,7 @@ public class ModScreen {
 
     String primaryStatString = AutomationUtil.readLine(primaryStatRegion);
     List<String> secondaryStatStrings = secondaryStatRegions.stream()
-            .map(AutomationUtil::readLine)
+            .map(AutomationUtil::readLineWithPreprocessing)
             .filter(s -> !s.isEmpty())
             .collect(Collectors.toList());
     LOG.info("Extracted mod texts: {} / {}", primaryStatString, secondaryStatStrings);
