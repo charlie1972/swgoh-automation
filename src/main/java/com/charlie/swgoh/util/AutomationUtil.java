@@ -3,6 +3,7 @@ package com.charlie.swgoh.util;
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.window.EmulatorWindow;
+import org.sikuli.basics.Settings;
 import org.sikuli.script.*;
 import org.sikuli.script.support.RunTime;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -78,6 +80,8 @@ public class AutomationUtil {
   public static void dragDrop(Location fromLocation, Location toLocation, String description) {
     try {
       LOG.debug("Drag drop from={}, to={}: {}", fromLocation, toLocation, description);
+      Settings.DelayBeforeDrop = 0.1;
+      Settings.MoveMouseDelay = 0.5f;
       EmulatorWindow.INSTANCE.getWindow().dragDrop(getShiftedLocation(fromLocation), getShiftedLocation(toLocation));
     }
     catch (FindFailed ffe) {
@@ -116,11 +120,15 @@ public class AutomationUtil {
     return text;
   }
 
+  public static BufferedImage getBufferedImageFromRegion(Region region) {
+    return getShiftedRegion(region).getImage().get();
+  }
+
   public static String readLineWithPreprocessing(Region region) {
     if (Configuration.isDebug()) {
       highlightTemporarily(region);
     }
-    BufferedImage bufferedImage = getShiftedRegion(region).getImage().get();
+    BufferedImage bufferedImage = getBufferedImageFromRegion(region);
     preprocessBufferedImage(bufferedImage);
     String text = readLineFromBufferedImage(bufferedImage);
     LOG.debug("Read line in {}: {}", region, text);
@@ -152,12 +160,7 @@ public class AutomationUtil {
     long start = System.currentTimeMillis();
     for (int x = 0; x < bufferedImage.getWidth(); x++) {
       for (int y = 0; y < bufferedImage.getHeight(); y++) {
-        int rgb = bufferedImage.getRGB(x, y);
-        int red = (rgb >> 16) & 0xFF;
-        int green = (rgb >> 8) & 0xFF;
-        int blue = rgb & 0xFF;
-        int grey = (int)(0.3f * (float)red + 0.59f * (float)green + 0.11f * (float)blue);
-        if (grey > LUMINOSITY_THRESHOLD) {
+        if (getPixelLuminosity(bufferedImage, x, y) > LUMINOSITY_THRESHOLD) {
           bufferedImage.setRGB(x, y, 0xFF000000); // black
         }
         else {
@@ -177,6 +180,14 @@ public class AutomationUtil {
         LOG.error("Exception while writing image file", e);
       }
     }
+  }
+
+  public static int getPixelLuminosity(BufferedImage bufferedImage, int x, int y) {
+    int rgb = bufferedImage.getRGB(x, y);
+    int red = (rgb >> 16) & 0xFF;
+    int green = (rgb >> 8) & 0xFF;
+    int blue = rgb & 0xFF;
+    return (int)(0.3f * (float)red + 0.59f * (float)green + 0.11f * (float)blue);
   }
 
   public static List<String> readLines(Region region) {

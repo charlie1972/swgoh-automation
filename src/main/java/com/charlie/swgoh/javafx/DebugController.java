@@ -1,6 +1,7 @@
 package com.charlie.swgoh.javafx;
 
 import com.charlie.swgoh.automation.Configuration;
+import com.charlie.swgoh.screen.ModScreenFilter;
 import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.window.EmulatorWindow;
 import com.charlie.swgoh.window.Win32Util;
@@ -13,6 +14,11 @@ import javafx.stage.Stage;
 import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class DebugController {
 
@@ -33,6 +39,9 @@ public class DebugController {
 
   @FXML
   private Label readSelection;
+
+  @FXML
+  private Label regionPNGFilename;
 
   private Region debugRegion = new Region(600, 500, 200, 100);
 
@@ -128,6 +137,25 @@ public class DebugController {
       LOG.debug("Window: {}", win32Data);
       return true;
     });
+  }
+
+  public void saveRegionToPNG() {
+    if (debugRegion == null) {
+      return;
+    }
+    BufferedImage bufferedImage = AutomationUtil.getBufferedImageFromRegion(debugRegion);
+    File file = new File(screenshotDirectoryText.getText(), System.currentTimeMillis() + ".png");
+    try {
+      ImageIO.write(bufferedImage, "png", file);
+      regionPNGFilename.setText(file.getAbsolutePath());
+    }
+    catch (IOException e) {
+      LOG.error("Exception while writing image file", e);
+    }
+  }
+
+  public void modScreenFilterSecondaryStats() {
+    ModScreenFilter.dragUpToShowSecondaryStats();
   }
 
 }

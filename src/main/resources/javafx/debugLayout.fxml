@@ -5,9 +5,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.DebugController">
+<VBox xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.DebugController">
     <HBox spacing="20.0">
         <Button mnemonicParsing="false" onAction="#adjustWindow" text="Adjust window" />
+      <Button mnemonicParsing="false" onAction="#modScreenFilterSecondaryStats" text="MSF" />
         <Button mnemonicParsing="false" onAction="#takeScreenshot" text="Take screenshot" />
       <TextField fx:id="screenshotDirectoryText" prefWidth="225.0" />
       <opaqueInsets>
@@ -276,6 +277,15 @@
       <children>
            <Button mnemonicParsing="false" onAction="#readSelection" text="Read selection" />
          <Label fx:id="readSelection" />
+      </children>
+      <padding>
+         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+   </HBox>
+   <HBox spacing="20.0">
+      <children>
+         <Button mnemonicParsing="false" onAction="#saveRegionToPNG" text="Save selection as PNG" />
+         <Label fx:id="regionPNGFilename" />
       </children>
       <padding>
          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

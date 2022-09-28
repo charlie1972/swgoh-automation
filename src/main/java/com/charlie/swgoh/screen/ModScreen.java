@@ -11,6 +11,7 @@ import org.sikuli.script.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -139,7 +140,6 @@ public class ModScreen {
   private static final Pattern P_ASSIGN_MOD_REMOVE_BUTTON = new Pattern("mod_screen_assign_mod_remove.png");
   private static final Pattern P_ASSIGN_LOADOUT_ASSIGN_BUTTON = new Pattern("mod_screen_assign_loadout_assign.png");
   private static final Pattern P_REVERT_BUTTON = new Pattern("mod_screen_revert.png");
-  private static final Pattern P_SCROLL_BAR_SINGLE_LINE = new Pattern("mod_screen_single_line_scroll.png");
   private static final Pattern P_DIALOG_BOX_OK = new Pattern("mod_screen_dialog_box_ok.png"); // For dry-run
 
   // Locations
@@ -217,11 +217,14 @@ public class ModScreen {
   public static final Region R_REMOVE_BUTTON = new Region(673, 452, 119, 42);
   public static final Region R_ASSIGN_LOADOUT_BUTTON = new Region(659, 554, 94, 38);
   public static final Region R_REVERT_BUTTON = new Region(854, 568, 100, 36);
-  public static final Region R_MOD_SCROLLBAR = new Region(477, 186, 4, 432);
+  public static final Region R_MOD_SCROLLBAR = new Region(479, 186, 1, 432);
   public static final Region R_DIALOG_BOX_OK = new Region(767, 439, 51, 43); // For dry-run
 
   // Name match threshold
   private static final int NAME_MATCH_THRESHOLD = 80;
+
+  // Luminosity threshold for scrollbar
+  private static final int LUMINOSITY_THRESHOLD = 100;
 
   public static boolean waitForSortButton() {
     return AutomationUtil.waitForPattern(R_SORT_BUTTON, P_SORT_BUTTON, "Waiting for sort button");
@@ -416,19 +419,24 @@ public class ModScreen {
   }
 
   public static double computeModProgress() {
-    List<Match> matches = AutomationUtil.findAllPatterns(R_MOD_SCROLLBAR, P_SCROLL_BAR_SINGLE_LINE, "Finding lines in mod scroll bar")
-            .stream()
-            .sorted(Comparator.comparing(Match::getY))
-            .collect(Collectors.toList());
-    if (matches.size() < 2) {
+    BufferedImage bufferedImage = AutomationUtil.getBufferedImageFromRegion(R_MOD_SCROLLBAR);
+    int topHighlightY = 0;
+    while (topHighlightY < bufferedImage.getHeight() && AutomationUtil.getPixelLuminosity(bufferedImage, 0, topHighlightY) < LUMINOSITY_THRESHOLD) {
+      topHighlightY++;
+    }
+    if (topHighlightY >= bufferedImage.getHeight()) {
       return 1d;
     }
-    int topHighlightY = matches.get(0).getY();
-    int bottomHightlightY = matches.get(matches.size() - 1).getY();
+    int bottomHightlightY = topHighlightY;
+    while (bottomHightlightY < bufferedImage.getHeight() && AutomationUtil.getPixelLuminosity(bufferedImage, 0, bottomHightlightY) > LUMINOSITY_THRESHOLD) {
+      bottomHightlightY++;
+    }
+    if (bottomHightlightY >= bufferedImage.getHeight()) {
+      return 1d;
+    }
     int highlightedScrollHeight = bottomHightlightY - topHighlightY;
-    int effectiveScrollbarHeight = AutomationUtil.getShiftedRegion(R_MOD_SCROLLBAR).getH() - highlightedScrollHeight;
-    int effectiveHighlightPos = topHighlightY - AutomationUtil.getShiftedRegion(R_MOD_SCROLLBAR).getY();
-    return (double)effectiveHighlightPos / (double)effectiveScrollbarHeight;
+    int effectiveScrollbarHeight = bufferedImage.getHeight() - highlightedScrollHeight;
+    return (double)topHighlightY / (double)effectiveScrollbarHeight;
   }
 
   private static boolean fuzzyModStatTextMatch(ModStat referenceModStat, String otherModStatText) {

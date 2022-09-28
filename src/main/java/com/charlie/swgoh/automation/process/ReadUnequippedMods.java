@@ -55,11 +55,12 @@ public class ReadUnequippedMods extends AbstractProcess {
     setMessage(message);
 
     ModScreen.enterModFilter();
-    AutomationUtil.waitFor(250L);
+    AutomationUtil.waitFor(500L);
     if (!ModScreenFilter.waitForTitle()) {
       throw new ProcessException("Mod screen filter: title not found. Aborting.");
     }
     ModScreenFilter.clickDefaultAndEnsureAnySlotIsOnTop();
+    AutomationUtil.waitFor(1000L);
     ModScreenFilter.ensureUnassignedIsChecked();
     ModScreenFilter.confirm();
     AutomationUtil.waitFor(1000L);
