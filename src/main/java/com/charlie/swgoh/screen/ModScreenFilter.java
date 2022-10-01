@@ -3,13 +3,12 @@ package com.charlie.swgoh.screen;
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.datamodel.ModSet;
 import com.charlie.swgoh.datamodel.ModSlot;
+import com.charlie.swgoh.datamodel.ModStat;
 import com.charlie.swgoh.datamodel.ModStatUnit;
 import com.charlie.swgoh.datamodel.xml.Mod;
+import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
-import org.sikuli.script.Button;
-import org.sikuli.script.Location;
-import org.sikuli.script.Pattern;
-import org.sikuli.script.Region;
+import org.sikuli.script.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +31,10 @@ public class ModScreenFilter {
   private static final Pattern P_SECONDARY_STATS = new Pattern("mod_screen_filter_secondary_stats.png");
 
   // Locations
+  public static final Location L_CLOSE = new Location(1200, 60);
   public static final Location L_DEFAULT = new Location(485, 640);
   public static final Location L_CONFIRM = new Location(1060, 640);
   public static final Location L_BOTTOM_FOR_SCROLL = new Location(350, 547);
-  public static final Location L_MIDDLE_FOR_SCROLL = new Location(350, 447);
   public static final Location L_TOP_FOR_SCROLL = new Location(350, 121);
   public static final Map<ModSlot, Location> LM_SLOTS = new LinkedHashMap<>();
   static {
@@ -64,6 +63,7 @@ public class ModScreenFilter {
     LM_PRIMARY_STATS.put(ModStatUnit.CRIT_CHANCE_PCT, new Location(838, 490));
     LM_PRIMARY_STATS.put(ModStatUnit.CRIT_DAMAGE, new Location(982, 490));
     LM_PRIMARY_STATS.put(ModStatUnit.DEFENSE_PCT, new Location(1126, 490));
+
     LM_PRIMARY_STATS.put(ModStatUnit.HEALTH_PCT, new Location(406, 547));
     LM_PRIMARY_STATS.put(ModStatUnit.OFFENSE_PCT, new Location(550, 547));
     LM_PRIMARY_STATS.put(ModStatUnit.POTENCY, new Location(694, 547));
@@ -73,28 +73,29 @@ public class ModScreenFilter {
   }
 
   // Warning: these locations are relative to the top left of label "secondary stats (includes up to 4)" instead of window
-  // 339,225
   public static final Map<ModStatUnit, Location> LM_SECONDARY_STATS = new LinkedHashMap<>();
   static {
-    LM_SECONDARY_STATS.put(ModStatUnit.CRIT_CHANCE_PCT, new Location(433, 510));
-    LM_SECONDARY_STATS.put(ModStatUnit.OFFENSE_PCT, new Location(433, 565));
-    LM_SECONDARY_STATS.put(ModStatUnit.DEFENSE_FLAT, new Location(545, 510));
-    LM_SECONDARY_STATS.put(ModStatUnit.POTENCY, new Location(545, 565));
-    LM_SECONDARY_STATS.put(ModStatUnit.DEFENSE_PCT, new Location(657, 510));
-    LM_SECONDARY_STATS.put(ModStatUnit.PROTECTION_FLAT, new Location(657, 565));
-    LM_SECONDARY_STATS.put(ModStatUnit.HEALTH_FLAT, new Location(769, 510));
-    LM_SECONDARY_STATS.put(ModStatUnit.PROTECTION_PCT, new Location(769, 565));
-    LM_SECONDARY_STATS.put(ModStatUnit.HEALTH_PCT, new Location(881, 510));
-    LM_SECONDARY_STATS.put(ModStatUnit.SPEED, new Location(881, 565));
-    LM_SECONDARY_STATS.put(ModStatUnit.OFFENSE_FLAT, new Location(993, 510));
-    LM_SECONDARY_STATS.put(ModStatUnit.TENACITY, new Location(993, 565));
+    LM_SECONDARY_STATS.put(ModStatUnit.CRIT_CHANCE_PCT, new Location(214, 110));
+    LM_SECONDARY_STATS.put(ModStatUnit.DEFENSE_FLAT, new Location(358, 110));
+    LM_SECONDARY_STATS.put(ModStatUnit.DEFENSE_PCT, new Location(502, 110));
+    LM_SECONDARY_STATS.put(ModStatUnit.HEALTH_FLAT, new Location(646, 110));
+    LM_SECONDARY_STATS.put(ModStatUnit.HEALTH_PCT, new Location(790, 110));
+
+    LM_SECONDARY_STATS.put(ModStatUnit.OFFENSE_FLAT, new Location(70, 167));
+    LM_SECONDARY_STATS.put(ModStatUnit.OFFENSE_PCT, new Location(214, 167));
+    LM_SECONDARY_STATS.put(ModStatUnit.POTENCY, new Location(358, 167));
+    LM_SECONDARY_STATS.put(ModStatUnit.PROTECTION_FLAT, new Location(502, 167));
+    LM_SECONDARY_STATS.put(ModStatUnit.PROTECTION_PCT, new Location(646, 167));
+    LM_SECONDARY_STATS.put(ModStatUnit.SPEED, new Location(790, 167));
+
+    LM_SECONDARY_STATS.put(ModStatUnit.TENACITY, new Location(70, 224));
   }
 
   // Regions
   public static final Region R_TITLE = new Region(515, 45, 252, 41);
   public static final Region R_UNASSIGNED_CHECKBOX = new Region(334, 121, 46, 46);
   public static final Region R_ANY_SLOT = new Region(373, 232, 70, 32);
-  public static final Region R_SECONDARY_STATS = new Region(337, 108, 10, 493);
+  public static final Region R_SECONDARY_STATS = new Region(338, 108, 8, 493);
 
   public static boolean waitForTitle() {
     return AutomationUtil.waitForPattern(R_TITLE, P_TITLE, "Waiting for title");
@@ -121,24 +122,28 @@ public class ModScreenFilter {
     }
   }
 
-  public static void filterForModSlotAndSet(ModSlot slot, ModSet set) {
-    clickDefaultAndEnsureAnySlotIsOnTop();
-    AutomationUtil.click(LM_SLOTS.get(slot), "Clicking on slot: " + slot);
-    AutomationUtil.click(LM_SETS.get(set), "Clicking on set: " + set);
-  }
-
   public static void filterForMod(Mod mod) {
-    filterForModSlotAndSet(mod.getSlot(), mod.getSet());
+    AutomationUtil.click(LM_SLOTS.get(mod.getSlot()), "Clicking on slot: " + mod.getSlot());
+    AutomationUtil.click(LM_SETS.get(mod.getSet()), "Clicking on set: " + mod.getSet());
 
     ModStatUnit primaryStatUnit = mod.getPrimaryStat().getUnit();
     AutomationUtil.click(LM_PRIMARY_STATS.get(primaryStatUnit), "Clicking on primary stat: " + primaryStatUnit);
 
+    dragUpToShowSecondaryStats();
+    Location location = getTopLeftSecondaryStats();
+    if (location == null) {
+      throw new ProcessException("Could not locate the secondary stats label");
+    }
+
     mod.getSecondaryStats().stream()
-            .sorted((stat1, stat2) -> LM_SECONDARY_STATS.get(stat2.getUnit()).compareTo(LM_SECONDARY_STATS.get(stat1.getUnit())))
-            .forEach(modStat -> {
-                      ModStatUnit secondaryStatUnit = modStat.getUnit();
-                      AutomationUtil.click(LM_SECONDARY_STATS.get(secondaryStatUnit), "Clicking on secondary stat: " + secondaryStatUnit);
-            });
+            .map(ModStat::getUnit)
+            .map(LM_SECONDARY_STATS::get)
+            .sorted((loc1, loc2) -> -loc1.compareTo(loc2))
+            .forEach(loc -> AutomationUtil.click(new Location(location.x + loc.x, location.y + loc.y), "Secondary stat"));
+  }
+
+  public static void closeWithoutConfirm() {
+    AutomationUtil.click(L_CLOSE, "Clicking on close button");
   }
 
   public static void confirm() {
@@ -146,17 +151,18 @@ public class ModScreenFilter {
   }
 
   public static void dragUpToShowSecondaryStats() {
-/*
-    AutomationUtil.mouseMove(L_BOTTOM_FOR_SCROLL, "Position mouse to bottom of scrollable viewport");
-    AutomationUtil.mouseDown(Button.LEFT, "Start drag");
-    AutomationUtil.waitFor(100L);
-    AutomationUtil.mouseMove(L_MIDDLE_FOR_SCROLL, "Drag to middle of scrollable viewport");
-    AutomationUtil.waitFor(100L);
-    AutomationUtil.mouseMove(L_TOP_FOR_SCROLL, "Drag to top of scrollable viewport");
-    AutomationUtil.mouseUp("End drag");
-*/
-
+    AutomationUtil.mouseMove(L_BOTTOM_FOR_SCROLL, "Moving mouse to starting position");
     AutomationUtil.dragDrop(L_BOTTOM_FOR_SCROLL, L_TOP_FOR_SCROLL, "Drag");
+  }
+
+  public static Location getTopLeftSecondaryStats() {
+    Match match = AutomationUtil.findPattern(R_SECONDARY_STATS, P_SECONDARY_STATS, "Find Secondary Stats label");
+    if (match != null) {
+      return AutomationUtil.getReverseShiftedLocation(new Location(match.x, match.y));
+    }
+    else {
+      return null;
+    }
   }
 
 }

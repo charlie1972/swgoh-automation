@@ -41,7 +41,7 @@ public class FXApp extends Application {
       debugStage.setScene(debugScene);
       debugStage.setResizable(false);
       DebugController debugController = debugFxmlLoader.getController();
-      debugController.init(primaryStage, debugStage);
+      debugController.init(primaryStage, debugStage, mainController);
       debugStage.show();
     }
 

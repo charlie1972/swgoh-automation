@@ -1,6 +1,14 @@
 package com.charlie.swgoh.javafx;
 
 import com.charlie.swgoh.automation.Configuration;
+import com.charlie.swgoh.automation.IFeedback;
+import com.charlie.swgoh.datamodel.InputType;
+import com.charlie.swgoh.datamodel.ModSet;
+import com.charlie.swgoh.datamodel.ModSlot;
+import com.charlie.swgoh.datamodel.ModStat;
+import com.charlie.swgoh.datamodel.xml.Mod;
+import com.charlie.swgoh.exception.ProcessException;
+import com.charlie.swgoh.screen.ModScreen;
 import com.charlie.swgoh.screen.ModScreenFilter;
 import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.window.EmulatorWindow;
@@ -11,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.sikuli.script.Location;
 import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +28,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class DebugController {
-
-  @FXML
-  private TextField screenshotDirectoryText;
 
   @FXML
   private TextField xText;
@@ -37,19 +44,15 @@ public class DebugController {
   @FXML
   private TextField hText;
 
-  @FXML
-  private Label readSelection;
-
-  @FXML
-  private Label regionPNGFilename;
-
+  private IFeedback feedback;
   private Region debugRegion = new Region(600, 500, 200, 100);
 
   private static final Logger LOG = LoggerFactory.getLogger(DebugController.class);
 
-  public void init(Stage primaryStage, Stage debugStage) {
+  public void init(Stage primaryStage, Stage debugStage, IFeedback feedback) {
     debugStage.setX(primaryStage.getX());
     debugStage.setY(primaryStage.getY() + primaryStage.getHeight() + 20.0);
+    this.feedback = feedback;
   }
 
   public void adjustWindow() {
@@ -59,7 +62,7 @@ public class DebugController {
   }
 
   public void takeScreenshot() {
-    AutomationUtil.takeScreenshot(screenshotDirectoryText.getText());
+    feedback.setMessage("Screenshot: " + AutomationUtil.takeScreenshot());
   }
 
   public void changeRegion(ActionEvent actionEvent) {
@@ -127,8 +130,7 @@ public class DebugController {
     if (debugRegion == null) {
       return;
     }
-    String read = AutomationUtil.readLine(debugRegion);
-    readSelection.setText(read);
+    feedback.setMessage("Read selection: " + AutomationUtil.readLine(debugRegion));
     highlightRegion();
   }
 
@@ -144,10 +146,10 @@ public class DebugController {
       return;
     }
     BufferedImage bufferedImage = AutomationUtil.getBufferedImageFromRegion(debugRegion);
-    File file = new File(screenshotDirectoryText.getText(), System.currentTimeMillis() + ".png");
+    File file = new File(AutomationUtil.TEMP_DIRECTORY, System.currentTimeMillis() + ".png");
     try {
       ImageIO.write(bufferedImage, "png", file);
-      regionPNGFilename.setText(file.getAbsolutePath());
+      feedback.setMessage(file.getAbsolutePath());
     }
     catch (IOException e) {
       LOG.error("Exception while writing image file", e);
@@ -155,7 +157,29 @@ public class DebugController {
   }
 
   public void modScreenFilterSecondaryStats() {
-    ModScreenFilter.dragUpToShowSecondaryStats();
+    Mod mod = new Mod();
+    mod.setSlot(ModSlot.DIAMOND);
+    mod.setSet(ModSet.TENACITY);
+    mod.setPrimaryStat(new ModStat("42% CRIT DAMAGE", InputType.GAME));
+    mod.setSecondaryStats(Arrays.asList(
+            new ModStat("(1) +150 Health", InputType.GAME),
+            new ModStat("(2) +12 Speed", InputType.GAME),
+            new ModStat("(3) +4.5% Tenacity", InputType.GAME),
+            new ModStat("(4) +4 Defense", InputType.GAME)
+    ));
+
+    ModScreen.enterModFilter();
+    if (!ModScreenFilter.waitForTitle()) {
+      throw new ProcessException("Mod screen filter: title not found. Aborting.");
+    }
+    ModScreenFilter.clickDefaultAndEnsureAnySlotIsOnTop();
+    try {
+      ModScreenFilter.filterForMod(mod);
+    }
+    catch (ProcessException e) {
+      ModScreenFilter.closeWithoutConfirm();
+    }
+    //ModScreenFilter.confirm();
   }
 
 }

@@ -64,6 +64,7 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     MoveStatus moveStatus;
     if (FileUtil.exists(moveStatusFile)) {
       moveStatus = JsonConnector.readObjectFromFile(moveStatusFile, MoveStatus.class);
+      moveStatus.getAttention().clear();
     }
     else {
       moveStatus = new MoveStatus();
@@ -73,7 +74,6 @@ public abstract class AbstractMoveMods extends AbstractProcess {
       JsonConnector.writeObjectToFile(moveStatus, moveStatusFile);
     }
 
-//    List<String> alreadyProcessedCharacters = FileUtil.readFromFile(processedCharactersFile);
     List<String> alreadyProcessedCharacters = moveStatus.getDone();
     LOG.info("Characters already processed: {}", alreadyProcessedCharacters);
     alreadyProcessedCharacters.forEach(modMap.keySet()::remove);
@@ -179,12 +179,10 @@ public abstract class AbstractMoveMods extends AbstractProcess {
         moveStatus.getDone().add(characterName);
         moveStatus.getAttention().remove(characterName);
         moveStatus.getToProcess().remove(characterName);
-//        FileUtil.writeToFile(processedCharactersFile, characterName);
       }
       else {
         LOG.warn("End of processing character {}: may be incomplete, attention is required", characterName);
         moveStatus.getAttention().add(characterName);
-//        FileUtil.writeToFile(attentionCharactersFile, characterName);
       }
       JsonConnector.writeObjectToFile(moveStatus, moveStatusFile);
 
@@ -210,13 +208,27 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     }
 
     // Filter the mod
-    ModScreen.enterModFilter();
-    if (!ModScreenFilter.waitForTitle()) {
-      throw new ProcessException("Mod screen filter: title not found. Aborting.");
+    boolean ok = false;
+    for (int i = 0; i < 3; i++) {
+      ModScreen.enterModFilter();
+      if (!ModScreenFilter.waitForTitle()) {
+        throw new ProcessException("Mod screen filter: title not found. Aborting.");
+      }
+      ModScreenFilter.clickDefaultAndEnsureAnySlotIsOnTop();
+      try {
+        ModScreenFilter.filterForMod(mod);
+      }
+      catch (ProcessException e) {
+        ModScreenFilter.closeWithoutConfirm();
+        continue;
+      }
+      ModScreenFilter.confirm();
+      ok = true;
+      break;
     }
-    ModScreenFilter.ensureUnassignedIsUnchecked();
-    ModScreenFilter.filterForMod(mod);
-    ModScreenFilter.confirm();
+    if (!ok) {
+      throw new ProcessException("Mod screen filter: could not locate the secondary stats label after 3 attempts. Aborting.");
+    }
     AutomationUtil.waitFor(750L);
     if (!ModScreen.waitForSortButton()) {
       throw new ProcessException("Mod screen: buttons not found. Aborting.");

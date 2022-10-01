@@ -25,18 +25,25 @@ public class AutomationUtil {
   private AutomationUtil() {}
 
   private static final Logger LOG = LoggerFactory.getLogger(AutomationUtil.class);
-  private static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
-
-  public static final long DELAY = 1000L;
 
   private static final long DEBUG_DELAY = 100L;
   private static final double WAIT_FOR_IMAGE_DURATION = 5.0;
   private static final int LUMINOSITY_THRESHOLD = 190;
 
+  public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
+  public static final long DELAY = 1000L;
+
   public static Location getShiftedLocation(Location location) {
     return new Location(
             location.getX() + EmulatorWindow.INSTANCE.getWindow().getX(),
             location.getY() + EmulatorWindow.INSTANCE.getWindow().getY()
+    );
+  }
+
+  public static Location getReverseShiftedLocation(Location location) {
+    return new Location(
+            location.getX() - EmulatorWindow.INSTANCE.getWindow().getX(),
+            location.getY() - EmulatorWindow.INSTANCE.getWindow().getY()
     );
   }
 
@@ -80,9 +87,13 @@ public class AutomationUtil {
   public static void dragDrop(Location fromLocation, Location toLocation, String description) {
     try {
       LOG.debug("Drag drop from={}, to={}: {}", fromLocation, toLocation, description);
-      Settings.DelayBeforeDrop = 0.1;
+      float moveMouseDelay = Settings.MoveMouseDelay;
       Settings.MoveMouseDelay = 0.5f;
+      Settings.DelayBeforeMouseDown = 0f;
+      Settings.DelayBeforeDrag = 0f;
+      Settings.DelayAfterDrag = 0.2f;
       EmulatorWindow.INSTANCE.getWindow().dragDrop(getShiftedLocation(fromLocation), getShiftedLocation(toLocation));
+      Settings.MoveMouseDelay = moveMouseDelay;
     }
     catch (FindFailed ffe) {
       throw new ProcessException(description);
@@ -258,6 +269,21 @@ public class AutomationUtil {
     return getShiftedRegion(region).has(pattern, 0.1 * Configuration.getSpeed().getDelayMultiplier());
   }
 
+  public static Match findPattern(Region region, Pattern pattern, String description) {
+    LOG.debug(description);
+    if (Configuration.isDebug()) {
+      highlightTemporarily(region);
+    }
+    try {
+      Match match = getShiftedRegion(region).find(pattern);
+      LOG.debug("{}: match at {}", description, match);
+      return match;
+    } catch (FindFailed e) {
+      LOG.debug("{}: no match", description);
+      return null;
+    }
+  }
+
   public static List<Match> findAllPatterns(Region region, Pattern pattern, String description) {
     if (Configuration.isDebug()) {
       highlightTemporarily(region);
@@ -267,9 +293,9 @@ public class AutomationUtil {
     return result;
   }
 
-  public static String takeScreenshot(String directory) {
+  public static String takeScreenshot() {
     ScreenImage screenImage = Screen.getPrimaryScreen().capture(EmulatorWindow.INSTANCE.getWindow());
-    return screenImage.getFile(directory);
+    return screenImage.getFile(TEMP_DIRECTORY);
   }
 
   public static Location waitForMultiplePatternsAndGetLocation(Region region, List<Pattern> patterns, String description) {

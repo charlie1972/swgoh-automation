@@ -1,8 +1,10 @@
 package com.charlie.swgoh.datamodel;
 
-import com.charlie.swgoh.util.ModUtil;
 import com.charlie.swgoh.util.StringUtil;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +17,7 @@ public class ModStat {
   private String text = null;
 
   private static final Pattern PATTERN = Pattern.compile("(\\((\\d)\\))?(\\+?\\d+\\.?\\d*)(%?[A-Za-z]*).*?");
+  private static final DecimalFormat FORMAT = new DecimalFormat("####0.##", new DecimalFormatSymbols(Locale.US));
   private static final double TOLERANCE = 0.02;
 
   public ModStat(int rolls, double value, ModStatUnit unit) {
@@ -53,7 +56,7 @@ public class ModStat {
   @Override
   public String toString() {
     if (this.text == null) {
-      this.text = rolls == 0 ? ModUtil.FORMAT.format(value) + unit : "(" + rolls + ") " + ModUtil.FORMAT.format(value) + unit;
+      this.text = rolls == 0 ? FORMAT.format(value) + unit : "(" + rolls + ") " + FORMAT.format(value) + unit;
     }
     return text;
   }

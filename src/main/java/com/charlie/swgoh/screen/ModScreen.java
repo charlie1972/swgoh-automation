@@ -440,8 +440,8 @@ public class ModScreen {
   }
 
   private static boolean fuzzyModStatTextMatch(ModStat referenceModStat, String otherModStatText) {
-    String referenceModStatString = StringUtil.stripSpaces(referenceModStat.toString());
-    String otherModStatTextStripped = StringUtil.stripSpaces(otherModStatText);
+    String referenceModStatString = StringUtil.stripSpaces(referenceModStat.toString()).toUpperCase();
+    String otherModStatTextStripped = StringUtil.stripSpaces(otherModStatText).toUpperCase();
     int score = FuzzySearch.ratio(referenceModStatString, otherModStatTextStripped);
     boolean result = (score >= StringUtil.MOD_STAT_MATCH_THRESHOLD);
     LOG.debug("Matching mod: {} with text: \"{}\", score:{}, result: {}", referenceModStat, otherModStatText, score, result);
