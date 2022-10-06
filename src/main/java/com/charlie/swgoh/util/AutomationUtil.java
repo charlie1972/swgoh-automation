@@ -28,7 +28,7 @@ public class AutomationUtil {
 
   private static final long DEBUG_DELAY = 100L;
   private static final double WAIT_FOR_IMAGE_DURATION = 5.0;
-  private static final int LUMINOSITY_THRESHOLD = 190;
+  private static final int LUMINOSITY_THRESHOLD = 170;
 
   public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
   public static final long DELAY = 1000L;
@@ -168,7 +168,6 @@ public class AutomationUtil {
   // - convert to greyscale
   // - transform the white and light grey pixels into black, and white the rest
   private static void preprocessBufferedImage(BufferedImage bufferedImage) {
-    long start = System.currentTimeMillis();
     for (int x = 0; x < bufferedImage.getWidth(); x++) {
       for (int y = 0; y < bufferedImage.getHeight(); y++) {
         if (getPixelLuminosity(bufferedImage, x, y) > LUMINOSITY_THRESHOLD) {
@@ -179,11 +178,9 @@ public class AutomationUtil {
         }
       }
     }
-    long duration = System.currentTimeMillis() - start;
-    LOG.debug("BufferedImage preprocessing: {} ms", duration);
     if (Configuration.isDebug()) {
       try {
-        File imageFile = new File(TEMP_DIRECTORY, start + ".png");
+        File imageFile = new File(TEMP_DIRECTORY, System.currentTimeMillis() + ".png");
         LOG.debug("Writing processed image to: {}", imageFile);
         ImageIO.write(bufferedImage, "png", imageFile);
       }

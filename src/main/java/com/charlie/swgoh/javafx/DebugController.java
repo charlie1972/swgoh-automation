@@ -28,7 +28,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class DebugController {
 
@@ -43,6 +47,9 @@ public class DebugController {
 
   @FXML
   private TextField hText;
+
+  @FXML
+  private TextField thresholdText;
 
   private IFeedback feedback;
   private Region debugRegion = new Region(600, 500, 200, 100);
@@ -156,30 +163,56 @@ public class DebugController {
     }
   }
 
-  public void modScreenFilterSecondaryStats() {
-    Mod mod = new Mod();
-    mod.setSlot(ModSlot.DIAMOND);
-    mod.setSet(ModSet.TENACITY);
-    mod.setPrimaryStat(new ModStat("42% CRIT DAMAGE", InputType.GAME));
-    mod.setSecondaryStats(Arrays.asList(
-            new ModStat("(1) +150 Health", InputType.GAME),
-            new ModStat("(2) +12 Speed", InputType.GAME),
-            new ModStat("(3) +4.5% Tenacity", InputType.GAME),
-            new ModStat("(4) +4 Defense", InputType.GAME)
-    ));
+  public void testPreprocess() {
+    int threshold = Integer.parseInt(thresholdText.getText());
+    try (Stream<Path> stream = Files.list(Paths.get(AutomationUtil.TEMP_DIRECTORY))) {
+      stream
+              .filter(path -> path.toString().endsWith(".png"))
+              .forEach(path -> {
+                BufferedImage bufferedImage = readImageFile(path.toFile());
+                preprocessBufferedImage(bufferedImage, threshold);
+                saveImageFile(bufferedImage, threshold + "-" + path.getFileName().toString());
+              });
+    }
+    catch (IOException e) {
+      LOG.error("Exception while listing files", e);
+    }
+  }
 
-    ModScreen.enterModFilter();
-    if (!ModScreenFilter.waitForTitle()) {
-      throw new ProcessException("Mod screen filter: title not found. Aborting.");
-    }
-    ModScreenFilter.clickDefaultAndEnsureAnySlotIsOnTop();
+  private BufferedImage readImageFile(File imageFile) {
     try {
-      ModScreenFilter.filterForMod(mod);
+      return ImageIO.read(imageFile);
     }
-    catch (ProcessException e) {
-      ModScreenFilter.closeWithoutConfirm();
+    catch (IOException e) {
+      LOG.error("Exception while reading image file", e);
+      throw new ProcessException("Read image file: " + imageFile + " / " + e);
     }
-    //ModScreenFilter.confirm();
+  }
+
+  private void saveImageFile(BufferedImage bufferedImage, String imageFileName) {
+    try {
+      File imageFile = new File(AutomationUtil.TEMP_DIRECTORY, imageFileName);
+      ImageIO.write(bufferedImage, "png", imageFile);
+    }
+    catch (IOException e) {
+      LOG.error("Exception while writing image file", e);
+    }
+  }
+
+  private void preprocessBufferedImage(BufferedImage bufferedImage, int threshold) {
+    long start = System.currentTimeMillis();
+    for (int x = 0; x < bufferedImage.getWidth(); x++) {
+      for (int y = 0; y < bufferedImage.getHeight(); y++) {
+        if (AutomationUtil.getPixelLuminosity(bufferedImage, x, y) > threshold) {
+          bufferedImage.setRGB(x, y, 0xFF000000); // black
+        }
+        else {
+          bufferedImage.setRGB(x, y, 0xFFFFFFFF); // white
+        }
+      }
+    }
+    long duration = System.currentTimeMillis() - start;
+    System.out.println("BufferedImage preprocessing: " + duration);
   }
 
 }

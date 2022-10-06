@@ -428,7 +428,7 @@ public class ModScreen {
       return 1d;
     }
     int bottomHightlightY = topHighlightY;
-    while (bottomHightlightY < bufferedImage.getHeight() && AutomationUtil.getPixelLuminosity(bufferedImage, 0, bottomHightlightY) > LUMINOSITY_THRESHOLD) {
+    while (bottomHightlightY < bufferedImage.getHeight() && AutomationUtil.getPixelLuminosity(bufferedImage, 0, bottomHightlightY) >= LUMINOSITY_THRESHOLD) {
       bottomHightlightY++;
     }
     if (bottomHightlightY >= bufferedImage.getHeight()) {

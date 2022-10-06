@@ -35,7 +35,7 @@ public class ModScreenFilter {
   public static final Location L_DEFAULT = new Location(485, 640);
   public static final Location L_CONFIRM = new Location(1060, 640);
   public static final Location L_BOTTOM_FOR_SCROLL = new Location(350, 547);
-  public static final Location L_TOP_FOR_SCROLL = new Location(350, 121);
+  public static final Location L_TOP_FOR_SCROLL = new Location(320, 121);
   public static final Map<ModSlot, Location> LM_SLOTS = new LinkedHashMap<>();
   static {
     LM_SLOTS.put(ModSlot.SQUARE, new Location(519, 246));
