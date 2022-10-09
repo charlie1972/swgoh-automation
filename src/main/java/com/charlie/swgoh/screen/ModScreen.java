@@ -213,7 +213,7 @@ public class ModScreen {
   }
   public static final Region R_BELOW_FIRST_MOD_DOT = new Region(76, 205, 13, 22);
   public static final Region R_MINUS_BUTTON = new Region(1161, 92, 85, 84);
-  public static final Region R_UNASSIGNED_LABEL = new Region(793, 110, 155, 30);
+  public static final Region R_UNASSIGNED_LABEL = new Region(795, 125, 149, 25);
   public static final Region R_REMOVE_BUTTON = new Region(673, 452, 119, 42);
   public static final Region R_ASSIGN_LOADOUT_BUTTON = new Region(659, 554, 94, 38);
   public static final Region R_REVERT_BUTTON = new Region(854, 568, 100, 36);

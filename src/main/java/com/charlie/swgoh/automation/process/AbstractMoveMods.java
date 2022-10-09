@@ -219,6 +219,7 @@ public abstract class AbstractMoveMods extends AbstractProcess {
         ModScreenFilter.filterForMod(mod);
       }
       catch (ProcessException e) {
+        ModScreenFilter.clickDefault();
         ModScreenFilter.closeWithoutConfirm();
         continue;
       }

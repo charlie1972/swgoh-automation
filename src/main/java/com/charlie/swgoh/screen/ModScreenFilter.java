@@ -20,6 +20,7 @@ public class ModScreenFilter {
   private ModScreenFilter() {}
 
   private static final Logger LOG = LoggerFactory.getLogger(ModScreenFilter.class);
+  private static final int MAX_SECONDARY_STATS_Y = 370;
 
   // Image patterns
   static {
@@ -34,7 +35,8 @@ public class ModScreenFilter {
   public static final Location L_CLOSE = new Location(1200, 60);
   public static final Location L_DEFAULT = new Location(485, 640);
   public static final Location L_CONFIRM = new Location(1060, 640);
-  public static final Location L_BOTTOM_FOR_SCROLL = new Location(350, 547);
+  public static final Location L_BOTTOM_FOR_SCROLL = new Location(400, 547);
+  public static final Location L_MIDDLE_FOR_SCROLL = new Location(400, 270);
   public static final Location L_TOP_FOR_SCROLL = new Location(320, 121);
   public static final Map<ModSlot, Location> LM_SLOTS = new LinkedHashMap<>();
   static {
@@ -115,10 +117,14 @@ public class ModScreenFilter {
     }
   }
 
-  public static void clickDefaultAndEnsureAnySlotIsOnTop() {
+  public static void clickDefault() {
     AutomationUtil.click(L_DEFAULT, "Clicking on default button");
+  }
+
+  public static void clickDefaultAndEnsureAnySlotIsOnTop() {
+    clickDefault();
     if (!AutomationUtil.checkForPattern(R_ANY_SLOT, P_ANY_SLOT, "Checking if Any Slot button is visible")) {
-      AutomationUtil.dragDrop(LM_SLOTS.get(ModSlot.SQUARE), LM_SECONDARY_STATS.get(ModStatUnit.OFFENSE_PCT), "Drag & drop to make the Any Slot button visible");
+      AutomationUtil.dragDrop(LM_SLOTS.get(ModSlot.SQUARE), LM_PRIMARY_STATS.get(ModStatUnit.OFFENSE_PCT), "Drag & drop to make the Any Slot button visible");
     }
   }
 
@@ -129,16 +135,12 @@ public class ModScreenFilter {
     ModStatUnit primaryStatUnit = mod.getPrimaryStat().getUnit();
     AutomationUtil.click(LM_PRIMARY_STATS.get(primaryStatUnit), "Clicking on primary stat: " + primaryStatUnit);
 
-    dragUpToShowSecondaryStats();
-    Location location = getTopLeftSecondaryStats();
-    if (location == null) {
-      throw new ProcessException("Could not locate the secondary stats label");
-    }
+    Location location = scrollAndGetTopLeftSecondaryStats();
 
     mod.getSecondaryStats().stream()
             .map(ModStat::getUnit)
             .map(LM_SECONDARY_STATS::get)
-            .sorted((loc1, loc2) -> -loc1.compareTo(loc2))
+            .sorted((loc1, loc2) -> - loc1.compareTo(loc2))
             .forEach(loc -> AutomationUtil.click(new Location(location.x + loc.x, location.y + loc.y), "Secondary stat"));
   }
 
@@ -150,12 +152,33 @@ public class ModScreenFilter {
     AutomationUtil.click(L_CONFIRM, "Clicking on confirm button");
   }
 
-  public static void dragUpToShowSecondaryStats() {
-    AutomationUtil.mouseMove(L_BOTTOM_FOR_SCROLL, "Moving mouse to starting position");
-    AutomationUtil.dragDrop(L_BOTTOM_FOR_SCROLL, L_TOP_FOR_SCROLL, "Drag");
+  public static Location scrollAndGetTopLeftSecondaryStats() {
+    bigDragUpToShowSecondaryStats();
+    Location location = null;
+    for (int i = 0; i < 3; i++) {
+      location = searchTopLeftSecondaryStats();
+      if (location != null && location.y < MAX_SECONDARY_STATS_Y) {
+        break;
+      }
+      smallDragUpToShowSecondaryStats();
+    }
+    if (location == null) {
+      throw new ProcessException("Could not locate the secondary stats label");
+    }
+    return location;
   }
 
-  public static Location getTopLeftSecondaryStats() {
+  public static void bigDragUpToShowSecondaryStats() {
+    AutomationUtil.mouseMove(L_BOTTOM_FOR_SCROLL, "Moving mouse to starting position (big drag)");
+    AutomationUtil.dragDrop(L_BOTTOM_FOR_SCROLL, L_TOP_FOR_SCROLL, "Drag (big)");
+  }
+
+  public static void smallDragUpToShowSecondaryStats() {
+    AutomationUtil.mouseMove(L_MIDDLE_FOR_SCROLL, "Moving mouse to starting position (small drag)");
+    AutomationUtil.dragDrop(L_MIDDLE_FOR_SCROLL, L_TOP_FOR_SCROLL, "Drag (small)");
+  }
+
+  public static Location searchTopLeftSecondaryStats() {
     Match match = AutomationUtil.findPattern(R_SECONDARY_STATS, P_SECONDARY_STATS, "Find Secondary Stats label");
     if (match != null) {
       return AutomationUtil.getReverseShiftedLocation(new Location(match.x, match.y));

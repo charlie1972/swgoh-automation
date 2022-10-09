@@ -3,6 +3,8 @@ package com.charlie.swgoh.connector;
 import com.charlie.swgoh.datamodel.xml.Mod;
 import com.charlie.swgoh.datamodel.xml.Mods;
 import com.charlie.swgoh.exception.ProcessException;
+import com.charlie.swgoh.util.AutomationUtil;
+import com.charlie.swgoh.util.FileUtil;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
 
@@ -29,11 +31,20 @@ public class HtmlConnector {
   private HtmlConnector() {}
 
   public static List<Mod> getModsFromHTML(String fileName, boolean useAllSlots) {
+    FileUtil.FileComponents components = FileUtil.getFileComponents(fileName);
+    String xmlFileName = components.withExtension("xml").toString();
+    String xmlContent;
     try {
-      String html = Files.readString(new File(fileName).toPath());
-      String xmlFromHtml = convertHTMLToXML(html);
-      String transformedXML = transformXML(xmlFromHtml);
-      List<Mod> mods = unmarshallXML(transformedXML).getMods();
+      if (new File(xmlFileName).exists()) {
+        xmlContent = FileUtil.readFromFile(xmlFileName);
+      }
+      else {
+        String html = FileUtil.readFromFile(fileName);
+        String xmlFromHtml = convertHTMLToXML(html);
+        xmlContent = transformXML(xmlFromHtml);
+        FileUtil.writeToFile(xmlFileName, xmlContent);
+      }
+      List<Mod> mods = unmarshallXML(xmlContent).getMods();
       if (useAllSlots) {
         return mods;
       }

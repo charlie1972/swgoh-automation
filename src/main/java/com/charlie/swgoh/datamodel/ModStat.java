@@ -31,7 +31,7 @@ public class ModStat {
   }
 
   public ModStat(String str, InputType inputType) {
-    String str2 = StringUtil.removeInvalidCharacters(str);
+    String str2 = StringUtil.prepareModStatForParsing(str);
     Matcher matcher = PATTERN.matcher(str2);
     if (!matcher.matches()) {
       throw new IllegalArgumentException(str + " is an invalid mod stat");

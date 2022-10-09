@@ -15,8 +15,9 @@ public class StringUtil {
     return s.replace(" ", "");
   }
 
-  public static String removeInvalidCharacters(String s) {
-    return INVALID_CHARACTERS.matcher(s).replaceAll("");
+  public static String prepareModStatForParsing(String s) {
+    String temp = s.replace('{', '(').replace('}', ')');
+    return INVALID_CHARACTERS.matcher(temp).replaceAll("");
   }
 
   public static String prepareForMatching(String s) {
