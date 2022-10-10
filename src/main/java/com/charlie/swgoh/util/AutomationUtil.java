@@ -59,7 +59,7 @@ public class AutomationUtil {
   public static void mouseMove(Location location, String description) {
     try {
       LOG.debug( "{}: moving to {}", description, location);
-      if (Configuration.isDebug()) {
+      if (Configuration.isHighlight()) {
         highlightTemporarily(location);
       }
       EmulatorWindow.INSTANCE.getWindow().mouseMove(getShiftedLocation(location));
@@ -103,7 +103,7 @@ public class AutomationUtil {
   public static void click(Location location, String description) {
     try {
       LOG.debug( "{}: clicking on {}", description, location);
-      if (Configuration.isDebug()) {
+      if (Configuration.isHighlight()) {
         highlightTemporarily(location);
       }
       EmulatorWindow.INSTANCE.getWindow().click(getShiftedLocation(location));
@@ -123,7 +123,7 @@ public class AutomationUtil {
   }
 
   public static String readLine(Region region) {
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     String text = readLineFromBufferedImage(getShiftedRegion(region).getImage().get());
@@ -136,7 +136,7 @@ public class AutomationUtil {
   }
 
   public static String readLineWithPreprocessing(Region region) {
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     BufferedImage bufferedImage = getBufferedImageFromRegion(region);
@@ -178,7 +178,8 @@ public class AutomationUtil {
         }
       }
     }
-    if (Configuration.isDebug()) {
+/*
+    if (Configuration.isHighlight()) {
       try {
         File imageFile = new File(TEMP_DIRECTORY, System.currentTimeMillis() + ".png");
         LOG.debug("Writing processed image to: {}", imageFile);
@@ -188,6 +189,7 @@ public class AutomationUtil {
         LOG.error("Exception while writing image file", e);
       }
     }
+*/
   }
 
   public static int getPixelLuminosity(BufferedImage bufferedImage, int x, int y) {
@@ -199,7 +201,7 @@ public class AutomationUtil {
   }
 
   public static List<String> readLines(Region region) {
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     List<String> lines;
@@ -244,7 +246,7 @@ public class AutomationUtil {
 
   public static boolean waitForPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     return getShiftedRegion(region).has(pattern, WAIT_FOR_IMAGE_DURATION);
@@ -252,7 +254,7 @@ public class AutomationUtil {
 
   public static boolean waitForPatternVanish(Region region, Pattern pattern, String description) {
     LOG.debug(description);
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     return getShiftedRegion(region).waitVanish(pattern, WAIT_FOR_IMAGE_DURATION);
@@ -260,7 +262,7 @@ public class AutomationUtil {
 
   public static boolean checkForPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     return getShiftedRegion(region).has(pattern, 0.1 * Configuration.getSpeed().getDelayMultiplier());
@@ -268,7 +270,7 @@ public class AutomationUtil {
 
   public static Match findPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     try {
@@ -282,7 +284,7 @@ public class AutomationUtil {
   }
 
   public static List<Match> findAllPatterns(Region region, Pattern pattern, String description) {
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     List<Match> result = getShiftedRegion(region).findAllList(pattern);

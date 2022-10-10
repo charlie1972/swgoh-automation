@@ -2,24 +2,17 @@ package com.charlie.swgoh.javafx;
 
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.automation.IFeedback;
-import com.charlie.swgoh.datamodel.InputType;
-import com.charlie.swgoh.datamodel.ModSet;
-import com.charlie.swgoh.datamodel.ModSlot;
-import com.charlie.swgoh.datamodel.ModStat;
-import com.charlie.swgoh.datamodel.xml.Mod;
+import com.charlie.swgoh.automation.process.debug.Extract;
 import com.charlie.swgoh.exception.ProcessException;
-import com.charlie.swgoh.screen.ModScreen;
-import com.charlie.swgoh.screen.ModScreenFilter;
 import com.charlie.swgoh.util.AutomationUtil;
 import com.charlie.swgoh.window.EmulatorWindow;
 import com.charlie.swgoh.window.Win32Util;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.sikuli.script.Location;
 import org.sikuli.script.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +24,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class DebugController {
@@ -50,6 +42,9 @@ public class DebugController {
 
   @FXML
   private TextField thresholdText;
+
+  @FXML
+  private CheckBox highlightChk;
 
   private IFeedback feedback;
   private Region debugRegion = new Region(600, 500, 200, 100);
@@ -163,6 +158,10 @@ public class DebugController {
     }
   }
 
+  public void setHighlight() {
+    Configuration.setHighlight(highlightChk.isSelected());
+  }
+
   public void testPreprocess() {
     int threshold = Integer.parseInt(thresholdText.getText());
     try (Stream<Path> stream = Files.list(Paths.get(AutomationUtil.TEMP_DIRECTORY))) {
@@ -213,6 +212,10 @@ public class DebugController {
     }
     long duration = System.currentTimeMillis() - start;
     System.out.println("BufferedImage preprocessing: " + duration);
+  }
+
+  public void saveAllModSecondaryStats() {
+    new Extract().process();
   }
 
 }

@@ -10,6 +10,7 @@
         <Button mnemonicParsing="false" onAction="#adjustWindow" text="Adjust window" />
         <Button mnemonicParsing="false" onAction="#takeScreenshot" text="Take screenshot" />
       <Button mnemonicParsing="false" onAction="#testPreprocess" text="Preprocess" />
+      <Button mnemonicParsing="false" onAction="#saveAllModSecondaryStats" text="Extract" />
       <TextField fx:id="thresholdText" />
       <opaqueInsets>
          <Insets />
@@ -17,6 +18,12 @@
       <padding>
          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
       </padding>
+    </HBox>
+    <HBox spacing="20.0">
+      <CheckBox fx:id="highlightChk" mnemonicParsing="false" onAction="#setHighlight" text="Highlight" />
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        </padding>
     </HBox>
    <HBox alignment="CENTER_LEFT" spacing="20.0">
       <children>
