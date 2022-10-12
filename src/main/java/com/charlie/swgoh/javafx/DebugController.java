@@ -3,8 +3,12 @@ package com.charlie.swgoh.javafx;
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.automation.process.debug.Extract;
+import com.charlie.swgoh.datamodel.InputType;
+import com.charlie.swgoh.datamodel.ModStat;
+import com.charlie.swgoh.datamodel.ModStatUnit;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
+import com.charlie.swgoh.util.FileUtil;
 import com.charlie.swgoh.window.EmulatorWindow;
 import com.charlie.swgoh.window.Win32Util;
 import javafx.event.ActionEvent;
@@ -24,6 +28,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DebugController {
@@ -164,13 +170,37 @@ public class DebugController {
 
   public void testPreprocess() {
     int threshold = Integer.parseInt(thresholdText.getText());
-    try (Stream<Path> stream = Files.list(Paths.get(AutomationUtil.TEMP_DIRECTORY))) {
+    Path sourceDirectory = Paths.get(AutomationUtil.TEMP_DIRECTORY, "extract");
+    Path targetDirectory = Paths.get(AutomationUtil.TEMP_DIRECTORY, "process", String.valueOf(threshold));
+    targetDirectory.toFile().mkdirs();
+    String reportFile = new File(targetDirectory.toString(), "report.csv").toString();
+    try (Stream<Path> stream = Files.list(sourceDirectory)) {
       stream
               .filter(path -> path.toString().endsWith(".png"))
               .forEach(path -> {
                 BufferedImage bufferedImage = readImageFile(path.toFile());
+                long ts1 = System.currentTimeMillis();
                 preprocessBufferedImage(bufferedImage, threshold);
-                saveImageFile(bufferedImage, threshold + "-" + path.getFileName().toString());
+                long ts2 = System.currentTimeMillis();
+                String line = AutomationUtil.readLineFromBufferedImage(bufferedImage);
+                long ts3 = System.currentTimeMillis();
+                ModStat modStat = new ModStat(line, InputType.GAME);
+                boolean ok = checkModStat(modStat);
+                try {
+                  FileUtil.writeToFile(reportFile,
+                          Stream.of(
+                                  path.getFileName(),
+                                  ts2 - ts1,
+                                  ts3 - ts2,
+                                  line,
+                                  modStat,
+                                  ok
+                          ).map(Objects::toString).collect(Collectors.joining(";"))
+                  );
+                } catch (IOException e) {
+                  LOG.error("Exception while writing file", e);
+                }
+                saveImageFile(bufferedImage, targetDirectory.toString() + File.separatorChar + path.getFileName().toString());
               });
     }
     catch (IOException e) {
@@ -190,7 +220,7 @@ public class DebugController {
 
   private void saveImageFile(BufferedImage bufferedImage, String imageFileName) {
     try {
-      File imageFile = new File(AutomationUtil.TEMP_DIRECTORY, imageFileName);
+      File imageFile = new File(imageFileName);
       ImageIO.write(bufferedImage, "png", imageFile);
     }
     catch (IOException e) {
@@ -216,6 +246,21 @@ public class DebugController {
 
   public void saveAllModSecondaryStats() {
     new Extract().process();
+  }
+
+  private boolean checkModStat(ModStat modStat) {
+    if (modStat == null) {
+      return false;
+    }
+    ModStatUnit unit = modStat.getUnit();
+    double value = modStat.getValue();
+    if (
+            (unit == ModStatUnit.DEFENSE_FLAT || unit == ModStatUnit.OFFENSE_FLAT || unit == ModStatUnit.HEALTH_FLAT || unit == ModStatUnit.PROTECTION_FLAT)
+            && (value != Math.floor(value))
+    ) {
+      return false;
+    }
+    return true;
   }
 
 }

@@ -20,7 +20,7 @@ public class Extract extends AbstractProcess {
 
     @Override
     protected void doProcess() throws Exception {
-        NumberFormat format = new DecimalFormat("000");
+        NumberFormat format = new DecimalFormat("0000");
         int modNumber = 0;
         for (Integer index : ModScreen.readOtherModLocations()) {
             handleKeys();

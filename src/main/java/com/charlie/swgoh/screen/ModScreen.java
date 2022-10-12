@@ -223,8 +223,10 @@ public class ModScreen {
   // Name match threshold
   private static final int NAME_MATCH_THRESHOLD = 80;
 
-  // Luminosity threshold for scrollbar
-  private static final int LUMINOSITY_THRESHOLD = 100;
+  // Luminosity thresholds
+  private static final int LUMINOSITY_SCROLLBAR_THRESHOLD = 100;
+  private static final int LUMINOSITY_MOD_DOT_TIER_SET_SLOT_THRESHOLD = 170;
+  private static final int LUMINOSITY_MOD_SECONDARY_STAT_THRESHOLD = 100;
 
   public static boolean waitForSortButton() {
     return AutomationUtil.waitForPattern(R_SORT_BUTTON, P_SORT_BUTTON, "Waiting for sort button");
@@ -310,7 +312,7 @@ public class ModScreen {
 
     String primaryStatString = AutomationUtil.readLine(primaryStatRegion);
     List<String> secondaryStatStrings = secondaryStatRegions.stream()
-            .map(AutomationUtil::readLineWithPreprocessing)
+            .map(region -> AutomationUtil.readLineWithPreprocessing(region, LUMINOSITY_MOD_SECONDARY_STAT_THRESHOLD))
             .filter(s -> !s.isEmpty())
             .collect(Collectors.toList());
     LOG.info("Extracted mod texts: {} / {}", primaryStatString, secondaryStatStrings);
@@ -341,7 +343,7 @@ public class ModScreen {
   }
 
   public static DotsTierSetAndSlot extractModDotsTierSetAndSlot(boolean isCharacter) {
-    String text = AutomationUtil.readLineWithPreprocessing(isCharacter ? R_CHARACTER_MOD_SET_AND_SLOT : R_OTHER_MOD_SET_AND_SLOT);
+    String text = AutomationUtil.readLineWithPreprocessing(isCharacter ? R_CHARACTER_MOD_SET_AND_SLOT : R_OTHER_MOD_SET_AND_SLOT, LUMINOSITY_MOD_DOT_TIER_SET_SLOT_THRESHOLD);
     Matcher matcher = REGEX_MOD_DESCRIPTION.matcher(text);
     if (!matcher.matches()) {
       LOG.warn("Unable to parse tier, set and slot from: {}", text);
@@ -421,14 +423,14 @@ public class ModScreen {
   public static double computeModProgress() {
     BufferedImage bufferedImage = AutomationUtil.getBufferedImageFromRegion(R_MOD_SCROLLBAR);
     int topHighlightY = 0;
-    while (topHighlightY < bufferedImage.getHeight() && AutomationUtil.getPixelLuminosity(bufferedImage, 0, topHighlightY) < LUMINOSITY_THRESHOLD) {
+    while (topHighlightY < bufferedImage.getHeight() && AutomationUtil.getPixelLuminosity(bufferedImage, 0, topHighlightY) < LUMINOSITY_SCROLLBAR_THRESHOLD) {
       topHighlightY++;
     }
     if (topHighlightY >= bufferedImage.getHeight()) {
       return 1d;
     }
     int bottomHightlightY = topHighlightY;
-    while (bottomHightlightY < bufferedImage.getHeight() && AutomationUtil.getPixelLuminosity(bufferedImage, 0, bottomHightlightY) >= LUMINOSITY_THRESHOLD) {
+    while (bottomHightlightY < bufferedImage.getHeight() && AutomationUtil.getPixelLuminosity(bufferedImage, 0, bottomHightlightY) >= LUMINOSITY_SCROLLBAR_THRESHOLD) {
       bottomHightlightY++;
     }
     if (bottomHightlightY >= bufferedImage.getHeight()) {

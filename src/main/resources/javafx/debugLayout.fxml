@@ -9,8 +9,8 @@
     <HBox spacing="20.0">
         <Button mnemonicParsing="false" onAction="#adjustWindow" text="Adjust window" />
         <Button mnemonicParsing="false" onAction="#takeScreenshot" text="Take screenshot" />
-      <Button mnemonicParsing="false" onAction="#testPreprocess" text="Preprocess" />
       <Button mnemonicParsing="false" onAction="#saveAllModSecondaryStats" text="Extract" />
+      <Button mnemonicParsing="false" onAction="#testPreprocess" text="Preprocess" />
       <TextField fx:id="thresholdText" />
       <opaqueInsets>
          <Insets />

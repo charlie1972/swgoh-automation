@@ -9,14 +9,12 @@ import org.sikuli.script.support.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,7 +26,6 @@ public class AutomationUtil {
 
   private static final long DEBUG_DELAY = 100L;
   private static final double WAIT_FOR_IMAGE_DURATION = 5.0;
-  private static final int LUMINOSITY_THRESHOLD = 170;
 
   public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
   public static final long DELAY = 1000L;
@@ -135,18 +132,18 @@ public class AutomationUtil {
     return getShiftedRegion(region).getImage().get();
   }
 
-  public static String readLineWithPreprocessing(Region region) {
+  public static String readLineWithPreprocessing(Region region, int threshold) {
     if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     BufferedImage bufferedImage = getBufferedImageFromRegion(region);
-    preprocessBufferedImage(bufferedImage);
+    preprocessBufferedImage(bufferedImage, threshold);
     String text = readLineFromBufferedImage(bufferedImage);
     LOG.debug("Read line in {}: {}", region, text);
     return text;
   }
 
-  private static String readLineFromBufferedImage(BufferedImage bufferedImage) {
+  public static String readLineFromBufferedImage(BufferedImage bufferedImage) {
     String text;
     try {
       text = OCR.readLine(bufferedImage);
@@ -167,10 +164,10 @@ public class AutomationUtil {
   // Clean the buffered image:
   // - convert to greyscale
   // - transform the white and light grey pixels into black, and white the rest
-  private static void preprocessBufferedImage(BufferedImage bufferedImage) {
+  private static void preprocessBufferedImage(BufferedImage bufferedImage, int threshold) {
     for (int x = 0; x < bufferedImage.getWidth(); x++) {
       for (int y = 0; y < bufferedImage.getHeight(); y++) {
-        if (getPixelLuminosity(bufferedImage, x, y) > LUMINOSITY_THRESHOLD) {
+        if (getPixelLuminosity(bufferedImage, x, y) > threshold) {
           bufferedImage.setRGB(x, y, 0xFF000000); // black
         }
         else {
