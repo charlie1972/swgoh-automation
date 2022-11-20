@@ -25,7 +25,7 @@ public class AutomationUtil {
   private static final Logger LOG = LoggerFactory.getLogger(AutomationUtil.class);
 
   private static final long DEBUG_DELAY = 100L;
-  private static final double WAIT_FOR_IMAGE_DURATION = 5.0;
+  private static final double WAIT_FOR_IMAGE_DURATION = 10.0;
 
   public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
   public static final long DELAY = 1000L;

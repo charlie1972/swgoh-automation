@@ -101,8 +101,11 @@
                                 <CheckBox fx:id="modsDryRun" HBox.hgrow="ALWAYS" />
                                 <Label prefWidth="200.0" text="Dry run" HBox.hgrow="ALWAYS" />
                             </HBox>
+                            <HBox spacing="10.0">
+                                <CheckBox fx:id="startImmediately" HBox.hgrow="ALWAYS" />
+                                <Label prefWidth="200.0" text="No wait" HBox.hgrow="ALWAYS" />
+                            </HBox>
                             <Button fx:id="modsBtnMoveSelected" onAction="#modsMoveSelected" prefWidth="100.0" text="Move selected" />
-                            <Button fx:id="modsBtnRevertSelected" onAction="#modsRevertSelected" prefWidth="100.0" text="Revert selected" />
                             <Button fx:id="modsBtnRevertAll" onAction="#modsRevertAll" prefWidth="100.0" text="Revert all" />
                             <padding>
                                 <Insets top="20.0" />

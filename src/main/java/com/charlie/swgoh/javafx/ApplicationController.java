@@ -72,6 +72,9 @@ public class ApplicationController implements IFeedback {
   public CheckBox modsDryRun;
 
   @FXML
+  public CheckBox startImmediately;
+
+  @FXML
   public Button modsBtnReadUnequippedMods;
 
   @FXML
@@ -317,34 +320,12 @@ public class ApplicationController implements IFeedback {
               String fileName = !selectedItems.isEmpty() ? selectedItems.get(0).getFileComponents().toString() : null;
               boolean bUseAllSlots = allItems.size() > 1;
               boolean bDryRun = modsDryRun.isSelected();
+              boolean bStartImmediately = startImmediately.isSelected();
 
-              return new MoveMods(fileName, bUseAllSlots, bDryRun);
+              return new MoveMods(fileName, bUseAllSlots, bDryRun, bStartImmediately);
             },
             this::modsRefresh,
             modsBtnMoveSelected
-    );
-  }
-
-  public void modsRevertSelected() {
-    runProcess(
-            () -> {
-              ObservableList<MoveFile> selectedItems = modsMoveFiles.getSelectionModel().getSelectedItems();
-
-              List<String> moveModsFileNames = !selectedItems.isEmpty() ? Collections.singletonList(selectedItems.get(0).getFileComponents().toString()) : Collections.emptyList();
-              String progressFileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
-              String revertAlly = modsAllyCode.getValue();
-              boolean bRevertDryRun = modsDryRun.isSelected();
-
-              return new RevertMoveMods(
-                      moveModsFileNames,
-                      progressFileName,
-                      revertAlly,
-                      bRevertDryRun
-              );
-
-            },
-            this::modsRefresh,
-            modsBtnRevertSelected
     );
   }
 
@@ -356,12 +337,14 @@ public class ApplicationController implements IFeedback {
               String progressFileName = modsWorkingDirectory.getText() + File.separatorChar + modsProgressFile.getText();
               String revertAlly = modsAllyCode.getValue();
               boolean bRevertDryRun = modsDryRun.isSelected();
+              boolean bStartImmediately = startImmediately.isSelected();
 
               return new RevertMoveMods(
                       allItems.stream().map(MoveFile::getFileComponents).map(Object::toString).collect(Collectors.toList()),
                       progressFileName,
                       revertAlly,
-                      bRevertDryRun
+                      bRevertDryRun,
+                      bStartImmediately
               );
             },
             this::modsRefresh,
