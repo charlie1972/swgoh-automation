@@ -98,12 +98,12 @@ public class FileUtil {
     return Files.exists(new File(fileName).toPath());
   }
 
-  public static List<String> readFromFile(String fileName) throws IOException {
+  public static String readFromFile(String fileName) throws IOException {
     File file = new File(fileName);
     if (!file.exists()) {
-      return Collections.emptyList();
+      return "";
     }
-    return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+    return Files.readString(file.toPath(), StandardCharsets.UTF_8);
   }
 
   public static FileComponents getFileComponents(String fullFileName) {

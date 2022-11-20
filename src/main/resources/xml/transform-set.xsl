@@ -27,7 +27,11 @@
         </primary-stat>
         <xsl:for-each select=".//div[@class='mod-stats']/ul[2]/li">
           <secondary-stat>
-            <xsl:value-of select="normalize-space(.)"/>
+            <xsl:value-of select="./span[@class='rolls']" />
+            <xsl:text> </xsl:text>
+            <xsl:for-each select="text()">
+              <xsl:value-of select="normalize-space(.)"/>
+            </xsl:for-each>
           </secondary-stat>
         </xsl:for-each>
       </mod>

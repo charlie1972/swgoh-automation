@@ -32,6 +32,7 @@ public class Configuration {
   private static EmulatorType emulatorType;
 
   private static boolean debug = false;
+  private static boolean highlight = false;
 
   private static boolean isInitialized = false;
 
@@ -108,6 +109,14 @@ public class Configuration {
 
   public static void setDebug(boolean debug) {
     Configuration.debug = debug;
+  }
+
+  public static boolean isHighlight() {
+    return highlight;
+  }
+
+  public static void setHighlight(boolean highlight) {
+    Configuration.highlight = highlight;
   }
 
   public static void loadProperties() {

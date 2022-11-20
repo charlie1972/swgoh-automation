@@ -5,11 +5,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.DebugController">
+<VBox xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.charlie.swgoh.javafx.DebugController">
     <HBox spacing="20.0">
         <Button mnemonicParsing="false" onAction="#adjustWindow" text="Adjust window" />
         <Button mnemonicParsing="false" onAction="#takeScreenshot" text="Take screenshot" />
-      <TextField fx:id="screenshotDirectoryText" prefWidth="225.0" />
+      <Button mnemonicParsing="false" onAction="#saveAllModSecondaryStats" text="Extract" />
+      <Button mnemonicParsing="false" onAction="#testPreprocess" text="Preprocess" />
+      <TextField fx:id="thresholdText" />
       <opaqueInsets>
          <Insets />
       </opaqueInsets>
@@ -17,6 +19,22 @@
          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
       </padding>
     </HBox>
+    <HBox spacing="20.0">
+      <CheckBox fx:id="highlightChk" mnemonicParsing="false" onAction="#setHighlight" text="Highlight" />
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        </padding>
+    </HBox>
+   <HBox alignment="CENTER_LEFT" spacing="20.0">
+      <children>
+            <Button mnemonicParsing="false" onAction="#enumerateWindows" text="Enumerate windows" />
+           <Button mnemonicParsing="false" onAction="#readSelection" text="Read selection" />
+         <Button mnemonicParsing="false" onAction="#saveRegionToPNG" text="Save selection as PNG" />
+      </children>
+      <padding>
+         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+   </HBox>
     <HBox>
         <GridPane alignment="CENTER">
             <columnConstraints>
@@ -272,22 +290,4 @@
          <Insets right="20.0" />
       </VBox.margin>
    </HBox>
-   <HBox alignment="CENTER_LEFT" spacing="20.0">
-      <children>
-           <Button mnemonicParsing="false" onAction="#readSelection" text="Read selection" />
-         <Label fx:id="readSelection" />
-      </children>
-      <padding>
-         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-      </padding>
-   </HBox>
-    <HBox alignment="CENTER_LEFT" spacing="20.0">
-        <children>
-            <Button mnemonicParsing="false" onAction="#enumerateWindows" text="Enumerate windows" />
-            <Label fx:id="enumerateWindows" />
-        </children>
-        <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-        </padding>
-    </HBox>
 </VBox>

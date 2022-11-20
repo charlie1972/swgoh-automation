@@ -3,11 +3,13 @@ package com.charlie.swgoh.util;
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.window.EmulatorWindow;
+import org.sikuli.basics.Settings;
 import org.sikuli.script.*;
 import org.sikuli.script.support.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,15 +24,23 @@ public class AutomationUtil {
 
   private static final Logger LOG = LoggerFactory.getLogger(AutomationUtil.class);
 
-  public static final long DELAY = 1000L;
-
   private static final long DEBUG_DELAY = 100L;
   private static final double WAIT_FOR_IMAGE_DURATION = 5.0;
+
+  public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
+  public static final long DELAY = 1000L;
 
   public static Location getShiftedLocation(Location location) {
     return new Location(
             location.getX() + EmulatorWindow.INSTANCE.getWindow().getX(),
             location.getY() + EmulatorWindow.INSTANCE.getWindow().getY()
+    );
+  }
+
+  public static Location getReverseShiftedLocation(Location location) {
+    return new Location(
+            location.getX() - EmulatorWindow.INSTANCE.getWindow().getX(),
+            location.getY() - EmulatorWindow.INSTANCE.getWindow().getY()
     );
   }
 
@@ -46,7 +56,7 @@ public class AutomationUtil {
   public static void mouseMove(Location location, String description) {
     try {
       LOG.debug( "{}: moving to {}", description, location);
-      if (Configuration.isDebug()) {
+      if (Configuration.isHighlight()) {
         highlightTemporarily(location);
       }
       EmulatorWindow.INSTANCE.getWindow().mouseMove(getShiftedLocation(location));
@@ -74,7 +84,13 @@ public class AutomationUtil {
   public static void dragDrop(Location fromLocation, Location toLocation, String description) {
     try {
       LOG.debug("Drag drop from={}, to={}: {}", fromLocation, toLocation, description);
+      float moveMouseDelay = Settings.MoveMouseDelay;
+      Settings.MoveMouseDelay = 0.5f;
+      Settings.DelayBeforeMouseDown = 0f;
+      Settings.DelayBeforeDrag = 0f;
+      Settings.DelayAfterDrag = 0.2f;
       EmulatorWindow.INSTANCE.getWindow().dragDrop(getShiftedLocation(fromLocation), getShiftedLocation(toLocation));
+      Settings.MoveMouseDelay = moveMouseDelay;
     }
     catch (FindFailed ffe) {
       throw new ProcessException(description);
@@ -84,7 +100,7 @@ public class AutomationUtil {
   public static void click(Location location, String description) {
     try {
       LOG.debug( "{}: clicking on {}", description, location);
-      if (Configuration.isDebug()) {
+      if (Configuration.isHighlight()) {
         highlightTemporarily(location);
       }
       EmulatorWindow.INSTANCE.getWindow().click(getShiftedLocation(location));
@@ -104,29 +120,85 @@ public class AutomationUtil {
   }
 
   public static String readLine(Region region) {
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
+    String text = readLineFromBufferedImage(getShiftedRegion(region).getImage().get());
+    LOG.debug("Read line in {}: {}", region, text);
+    return text;
+  }
+
+  public static BufferedImage getBufferedImageFromRegion(Region region) {
+    return getShiftedRegion(region).getImage().get();
+  }
+
+  public static String readLineWithPreprocessing(Region region, int threshold) {
+    if (Configuration.isHighlight()) {
+      highlightTemporarily(region);
+    }
+    BufferedImage bufferedImage = getBufferedImageFromRegion(region);
+    preprocessBufferedImage(bufferedImage, threshold);
+    String text = readLineFromBufferedImage(bufferedImage);
+    LOG.debug("Read line in {}: {}", region, text);
+    return text;
+  }
+
+  public static String readLineFromBufferedImage(BufferedImage bufferedImage) {
     String text;
     try {
-      text = getShiftedRegion(region).textLine();
+      text = OCR.readLine(bufferedImage);
     }
     catch (SikuliXception e) {
       LOG.warn("OCR.textLine failed. Trying to do custom resource copy");
       initTessdata();
       try {
-        text = getShiftedRegion(region).textLine();
+        text = OCR.readLine(bufferedImage);
       }
       catch (SikuliXception ee) {
         throw new ProcessException("OCR.textLine failed, you need to restart the application");
       }
     }
-    LOG.debug("Read line in {}: {}", region, text);
     return text;
   }
 
+  // Clean the buffered image:
+  // - convert to greyscale
+  // - transform the white and light grey pixels into black, and white the rest
+  private static void preprocessBufferedImage(BufferedImage bufferedImage, int threshold) {
+    for (int x = 0; x < bufferedImage.getWidth(); x++) {
+      for (int y = 0; y < bufferedImage.getHeight(); y++) {
+        if (getPixelLuminosity(bufferedImage, x, y) > threshold) {
+          bufferedImage.setRGB(x, y, 0xFF000000); // black
+        }
+        else {
+          bufferedImage.setRGB(x, y, 0xFFFFFFFF); // white
+        }
+      }
+    }
+/*
+    if (Configuration.isHighlight()) {
+      try {
+        File imageFile = new File(TEMP_DIRECTORY, System.currentTimeMillis() + ".png");
+        LOG.debug("Writing processed image to: {}", imageFile);
+        ImageIO.write(bufferedImage, "png", imageFile);
+      }
+      catch (IOException e) {
+        LOG.error("Exception while writing image file", e);
+      }
+    }
+*/
+  }
+
+  public static int getPixelLuminosity(BufferedImage bufferedImage, int x, int y) {
+    int rgb = bufferedImage.getRGB(x, y);
+    int red = (rgb >> 16) & 0xFF;
+    int green = (rgb >> 8) & 0xFF;
+    int blue = rgb & 0xFF;
+    return (int)(0.3f * (float)red + 0.59f * (float)green + 0.11f * (float)blue);
+  }
+
   public static List<String> readLines(Region region) {
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     List<String> lines;
@@ -171,7 +243,7 @@ public class AutomationUtil {
 
   public static boolean waitForPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     return getShiftedRegion(region).has(pattern, WAIT_FOR_IMAGE_DURATION);
@@ -179,7 +251,7 @@ public class AutomationUtil {
 
   public static boolean waitForPatternVanish(Region region, Pattern pattern, String description) {
     LOG.debug(description);
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     return getShiftedRegion(region).waitVanish(pattern, WAIT_FOR_IMAGE_DURATION);
@@ -187,14 +259,29 @@ public class AutomationUtil {
 
   public static boolean checkForPattern(Region region, Pattern pattern, String description) {
     LOG.debug(description);
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     return getShiftedRegion(region).has(pattern, 0.1 * Configuration.getSpeed().getDelayMultiplier());
   }
 
+  public static Match findPattern(Region region, Pattern pattern, String description) {
+    LOG.debug(description);
+    if (Configuration.isHighlight()) {
+      highlightTemporarily(region);
+    }
+    try {
+      Match match = getShiftedRegion(region).find(pattern);
+      LOG.debug("{}: match at {}", description, match);
+      return match;
+    } catch (FindFailed e) {
+      LOG.debug("{}: no match", description);
+      return null;
+    }
+  }
+
   public static List<Match> findAllPatterns(Region region, Pattern pattern, String description) {
-    if (Configuration.isDebug()) {
+    if (Configuration.isHighlight()) {
       highlightTemporarily(region);
     }
     List<Match> result = getShiftedRegion(region).findAllList(pattern);
@@ -202,9 +289,9 @@ public class AutomationUtil {
     return result;
   }
 
-  public static String takeScreenshot(String directory) {
+  public static String takeScreenshot() {
     ScreenImage screenImage = Screen.getPrimaryScreen().capture(EmulatorWindow.INSTANCE.getWindow());
-    return screenImage.getFile(directory);
+    return screenImage.getFile(TEMP_DIRECTORY);
   }
 
   public static Location waitForMultiplePatternsAndGetLocation(Region region, List<Pattern> patterns, String description) {

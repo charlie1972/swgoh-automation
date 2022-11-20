@@ -20,8 +20,7 @@ public class ModUtil {
 
   private static final Logger LOG = LoggerFactory.getLogger(ModUtil.class);
 
-  public static final DecimalFormat FORMAT = new DecimalFormat("+####0.##", new DecimalFormatSymbols(Locale.US));
-
+  private static final DecimalFormat FORMAT = new DecimalFormat("+####0.##", new DecimalFormatSymbols(Locale.US));
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   public static Mod convertToJsonMod(com.charlie.swgoh.datamodel.xml.Mod xmlMod) {
