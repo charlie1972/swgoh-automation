@@ -16,7 +16,8 @@ public class MoveMods extends AbstractMoveMods {
   private final boolean useAllSlots;
   private final boolean isDryRun;
 
-  public MoveMods(String fileName, boolean useAllSlots, boolean isDryRun) {
+  public MoveMods(String fileName, boolean useAllSlots, boolean isDryRun, boolean startImmediately) {
+    super(startImmediately);
     if (fileName == null) {
       throw new ProcessException("No mods move file selected");
     }

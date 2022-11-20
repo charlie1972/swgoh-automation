@@ -22,12 +22,18 @@ import java.util.stream.Stream;
 
 public abstract class AbstractMoveMods extends AbstractProcess {
 
+  private final boolean startImmediately;
+
   private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
   private enum ModProcessResult {
     ALREADY_ASSIGNED,
     FOUND_AND_ASSIGNED,
     NOT_FOUND
+  }
+
+  protected AbstractMoveMods(boolean startImmediately) {
+    this.startImmediately = startImmediately;
   }
 
   protected abstract String getFileNameSuffix();
@@ -43,10 +49,15 @@ public abstract class AbstractMoveMods extends AbstractProcess {
     }
     else {
       LOG.info("LIVE RUN");
-      for (int countdown = 10; countdown > 0; countdown--) {
-        setMessage("WARNING: LIVE RUN. If you wish to abort, type Ctrl-Shift-Q. Starting in " + countdown + "s");
+      if (startImmediately) {
         AutomationUtil.waitForFixed(1000L);
-        handleKeys();
+      }
+      else {
+        for (int countdown = 10; countdown > 0; countdown--) {
+          setMessage("WARNING: LIVE RUN. If you wish to abort, type Ctrl-Shift-Q. Starting in " + countdown + "s");
+          AutomationUtil.waitForFixed(1000L);
+          handleKeys();
+        }
       }
     }
 

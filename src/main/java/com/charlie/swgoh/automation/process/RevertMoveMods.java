@@ -26,7 +26,8 @@ public class RevertMoveMods extends AbstractMoveMods {
   private final String allyCode;
   private final boolean isDryRun;
 
-  public RevertMoveMods(List<String> moveModsFileNames, String progressFileName, String allyCode, boolean isDryRun) {
+  public RevertMoveMods(List<String> moveModsFileNames, String progressFileName, String allyCode, boolean isDryRun, boolean startImmediately) {
+    super(startImmediately);
     if (moveModsFileNames.isEmpty()) {
       throw new ProcessException("No mods move file");
     }
