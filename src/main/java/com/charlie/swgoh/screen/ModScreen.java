@@ -221,7 +221,7 @@ public class ModScreen {
   public static final Region R_DIALOG_BOX_OK = new Region(767, 439, 51, 43); // For dry-run
 
   // Name match threshold
-  private static final int NAME_MATCH_THRESHOLD = 80;
+  private static final int NAME_MATCH_THRESHOLD = 90;
 
   // Luminosity thresholds
   private static final int LUMINOSITY_SCROLLBAR_THRESHOLD = 100;
