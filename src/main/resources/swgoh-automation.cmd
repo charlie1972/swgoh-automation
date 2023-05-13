@@ -1,1 +1,1 @@
-start java-runtime\bin\javaw.exe --module-path lib -Dlogback.configurationFile=logback.xml -m swgoh.automation/com.charlie.swgoh.main.FXApp %*
+start %JAVA_HOME%\bin\javaw.exe --module-path lib\javafx-base-11.0.2-win.jar;lib\javafx-base-11.0.2.jar;lib\javafx-controls-11.0.2-win.jar;lib\javafx-controls-11.0.2.jar;lib\javafx-fxml-11.0.2-win.jar;lib\javafx-fxml-11.0.2.jar;lib\javafx-graphics-11.0.2-win.jar;lib\javafx-graphics-11.0.2.jar --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics -Dfile.encoding=UTF-8 -jar swgoh-automation.jar %*
