@@ -39,8 +39,8 @@ public class CharacterModsScreen {
 
   // Locations
   public static final Location L_FILTER_BUTTON = new Location(380, 130);
-  public static final Location L_FILTER_ALL_CHECKBOX = new Location(470, 225);
-  public static final Location L_FILTER_TEXT_ZONE = new Location(640, 150);
+  public static final Location L_FILTER_ALL_CHECKBOX = new Location(97, 153);
+  public static final Location L_FILTER_TEXT_ZONE = new Location(97, 640);
 
   // Regions
   public static final List<Region> RL_CHARACTER_NAMES = IntStream.range(0, 5)
@@ -48,7 +48,7 @@ public class CharacterModsScreen {
           .collect(Collectors.toList());
   public static final Region R_CHARACTERS = new Region(22, 122, 155, 41);
   public static final Region R_MODS_CHECKED = new Region(835, 107, 50, 50);
-  public static final Region R_FILTER_TITLE = new Region(552, 56, 177, 38);
+  public static final Region R_FILTER_TITLE = new Region(534, 48, 215, 33);
   public static final Region R_FILTER_WHITE_SQUARE = new Region(5, 715, 5, 5);
 
   public static boolean waitForCharactersTab() {
