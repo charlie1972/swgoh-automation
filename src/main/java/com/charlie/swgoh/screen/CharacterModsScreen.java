@@ -77,11 +77,13 @@ public class CharacterModsScreen {
     }
 
     AutomationUtil.click(L_FILTER_BUTTON, "Clicking on filter button");
+    AutomationUtil.waitFor(250L);
     if (!waitForCharacterModsFilterTitle()) {
       LOG.error("Character mod screen filter: title text not found. Aborting.");
       throw new ProcessException("Character mod screen filter: title text not found. Aborting.");
     }
     AutomationUtil.click(L_FILTER_ALL_CHECKBOX, "Clicking on ALL checkbox");
+    AutomationUtil.waitFor(250L);
     AutomationUtil.click(L_FILTER_TEXT_ZONE, "Clicking on filter text zone");
     if (!waitForCharacterModsFilterWhiteSquare()) {
       LOG.error("Character mod screen filter: white square not found. Aborting.");
