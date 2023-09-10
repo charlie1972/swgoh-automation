@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,10 +32,12 @@ public class CharacterModsScreen {
   private static final Pattern P_FILTER_TITLE_TEXT = new Pattern("character_mods_screen_filter_title.png");
   private static final Pattern P_FILTER_WHITE_SQUARE = new Pattern("character_mods_screen_filter_white_square.png");
 
-  private static final List<String> NAME_PARTS = Arrays.asList(
-          "Chirrut",
-          "Amidala"
-  );
+  private static final Map<String, String> NAMES_MAP = new HashMap<>();
+  static {
+    NAMES_MAP.put("Chirrut Îmwe", "Chirrut");
+    NAMES_MAP.put("Padmé Amidala", "Amidala");
+    NAMES_MAP.put("Hunter", "Bad Batch");
+  }
 
   private static final int MATCH_THRESHOLD = 90;
 
@@ -68,13 +72,7 @@ public class CharacterModsScreen {
   }
 
   public static void filterName(String name) {
-    String nameToFilter = name;
-    for (String n : NAME_PARTS) {
-      if (name.contains(n)) {
-        nameToFilter = n;
-        break;
-      }
-    }
+    String nameToFilter = NAMES_MAP.getOrDefault(name, name);
 
     AutomationUtil.click(L_FILTER_BUTTON, "Clicking on filter button");
     AutomationUtil.waitFor(250L);
