@@ -3,6 +3,7 @@ package com.charlie.swgoh.javafx;
 import com.charlie.swgoh.automation.Configuration;
 import com.charlie.swgoh.automation.IFeedback;
 import com.charlie.swgoh.automation.process.debug.Extract;
+import com.charlie.swgoh.automation.process.debug.GCLoop;
 import com.charlie.swgoh.datamodel.InputType;
 import com.charlie.swgoh.datamodel.ModStat;
 import com.charlie.swgoh.datamodel.ModStatUnit;
@@ -246,6 +247,10 @@ public class DebugController {
 
   public void saveAllModSecondaryStats() {
     new Extract().process();
+  }
+
+  public void gcLoop() {
+    new GCLoop().process();
   }
 
   private boolean checkModStat(ModStat modStat) {
