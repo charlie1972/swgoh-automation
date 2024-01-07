@@ -22,64 +22,65 @@ public class BronziumAllyPoints extends AbstractProcess {
 
     // Check initial state
     BronziumScreen.State state = BronziumScreen.readState();
-
     if (state != BronziumScreen.State.TITLE_BUY && state != BronziumScreen.State.TITLE_FREE && state != BronziumScreen.State.TITLE_WAITING) {
       throw new ProcessException("Starting screen is not the bronzium one");
     }
+    int startAllyPoints = BronziumScreen.readTitleAllyPoints();
+    LOG.info("Starting ally points: {}", startAllyPoints);
+    if (startAllyPoints <= targetAllyPoints) {
+      String msg = "Target already reached";
+      LOG.info(msg);
+      setMessage(msg);
+      return;
+    }
 
-    int startAllyPoints = -1;
+    int numberOfBronziumsToOpen = 1 + (startAllyPoints - targetAllyPoints) / 250;
+    int numberOfBronziumsLeftToOpen = numberOfBronziumsToOpen;
+
     while (true) {
       handleKeys();
 
       AutomationUtil.mouseMove(BronziumScreen.L_IDLE, "Move mouse to idle position");
       state = BronziumScreen.readState();
       LOG.info("Read state: {}", state);
-      if (state == BronziumScreen.State.TITLE_BUY || state == BronziumScreen.State.TITLE_FREE || state == BronziumScreen.State.TITLE_WAITING) {
-        int allyPoints = BronziumScreen.readTitleAllyPoints();
-        if (allyPoints >= 0) {
-          if (startAllyPoints < 0) {
-            startAllyPoints = allyPoints;
-          }
-          if (feedbackAndCheckAllyPoints(allyPoints, startAllyPoints)) {
-            return;
-          }
+
+      switch (state) {
+        case TITLE_BUY:
+        case TITLE_FREE:
+        case TITLE_WAITING:
           AutomationUtil.click(BronziumScreen.L_BRONZIUM_BUY_BUTTON, "Clicking on BUY button");
-        }
-      }
-      else if (state == BronziumScreen.State.OPEN_SKIP) {
-        AutomationUtil.click(BronziumScreen.L_SKIP_BUTTON, "Click SKIP button");
-      }
-      else if (state == BronziumScreen.State.OPEN_CONTINUE) {
-        AutomationUtil.click(BronziumScreen.L_CONTINUE_BUTTON, "Click CONTINUE button");
-      }
-      else if (state == BronziumScreen.State.OPEN_BUY_AGAIN_FINISH) {
-        int allyPoints = BronziumScreen.readOpenAllyPoints();
-        if (allyPoints >= 0) {
-          if (startAllyPoints < 0) {
-            startAllyPoints = allyPoints;
-          }
-          if (feedbackAndCheckAllyPoints(allyPoints, startAllyPoints)) {
+          numberOfBronziumsLeftToOpen--;
+          feedback(numberOfBronziumsLeftToOpen, numberOfBronziumsToOpen);
+          break;
+        case OPEN_SKIP:
+          AutomationUtil.click(BronziumScreen.L_SKIP_BUTTON, "Click SKIP button");
+          break;
+        case OPEN_CONTINUE:
+          AutomationUtil.click(BronziumScreen.L_CONTINUE_BUTTON, "Click CONTINUE button");
+          break;
+        case OPEN_BUY_AGAIN_FINISH:
+          if (numberOfBronziumsLeftToOpen == 0) {
             AutomationUtil.click(BronziumScreen.L_FINISH_BUTTON, "Click FINISH button");
             return;
           }
-          AutomationUtil.click(BronziumScreen.L_BUY_AGAIN_BUTTON, "Click BUY AGAIN button");
-        }
+          else {
+            AutomationUtil.click(BronziumScreen.L_BUY_AGAIN_BUTTON, "Click BUY AGAIN button");
+            numberOfBronziumsLeftToOpen--;
+            feedback(numberOfBronziumsLeftToOpen, numberOfBronziumsToOpen);
+          }
+          break;
+        case UNKNOWN:
+          break;
       }
+
       AutomationUtil.waitFor(500L);
     }
   }
 
-  // True: finished
-  // False: not finished
-  private boolean feedbackAndCheckAllyPoints(int allyPoints, int startAllyPoints) {
-    setMessage("Current Ally Points: " + allyPoints);
-    progress = (double)(startAllyPoints - allyPoints) / (double)(startAllyPoints - targetAllyPoints);
+  private void feedback(int numberLeft, int totalNumber) {
+    setMessage("Number of bronziums left to open: " + numberLeft);
+    progress = (double)(totalNumber - numberLeft) / (double)(totalNumber);
     updateProgressAndETA();
-    if (allyPoints < targetAllyPoints) {
-      LOG.info("Target reached: {}", targetAllyPoints);
-      return true;
-    }
-    return false;
   }
 
 }

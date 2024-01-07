@@ -1,7 +1,6 @@
 package com.charlie.swgoh.screen;
 
 import com.charlie.swgoh.automation.Configuration;
-import com.charlie.swgoh.exception.ProcessException;
 import com.charlie.swgoh.util.AutomationUtil;
 import org.sikuli.script.Location;
 import org.sikuli.script.Pattern;
@@ -61,7 +60,6 @@ public class BronziumScreen {
   public static final Region R_CONTINUE = new Region(1070, 653, 125, 35);
   public static final Region R_FINISH = new Region(1089, 653, 86, 35);
   public static final Region R_TITLE_ALLY_POINTS = new Region(827, 31, 82, 26);
-  public static final Region R_OPEN_ALLY_POINTS = new Region(1149, 26, 129, 34);
 
   public static State readState() {
     if (AutomationUtil.checkForPattern(R_TITLE, P_TITLE, "Checking for title")) {
@@ -87,10 +85,6 @@ public class BronziumScreen {
 
   public static int readTitleAllyPoints() {
     return returnParseAllyPointsAfterRetries(() -> parseAllyPoints(AutomationUtil.readLine(R_TITLE_ALLY_POINTS)));
-  }
-
-  public static int readOpenAllyPoints() {
-    return returnParseAllyPointsAfterRetries(() -> parseAllyPoints(AutomationUtil.readLine(R_OPEN_ALLY_POINTS)));
   }
 
   private static int returnParseAllyPointsAfterRetries(Supplier<Integer> supplier) {
