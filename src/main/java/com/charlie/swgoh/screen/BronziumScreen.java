@@ -106,6 +106,7 @@ public class BronziumScreen {
   }
 
   public static int parseAllyPoints(String str) {
+    LOG.info("Read ally points (raw): {}", str);
     Matcher matcher = REGEX_ALLY_POINTS.matcher(str.toUpperCase(Locale.ROOT));
     if (!matcher.matches()) {
       LOG.warn("Unable to parse value: {}", str);
