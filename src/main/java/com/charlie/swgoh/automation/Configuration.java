@@ -59,6 +59,10 @@ public class Configuration {
     Settings.MoveMouseDelay = 0.12F * (float) Configuration.getSpeed().getDelayMultiplier();
   }
 
+  public static String getVersion() {
+    return Configuration.class.getPackage().getImplementationVersion();
+  }
+
   public static void setFeedback(IFeedback feedback) {
     Configuration.feedback = feedback;
   }

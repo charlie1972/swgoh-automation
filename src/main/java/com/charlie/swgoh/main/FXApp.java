@@ -22,7 +22,10 @@ public class FXApp extends Application {
     VBox mainVbox = mainFxmlLoader.load();
     ApplicationController mainController = mainFxmlLoader.getController();
 
-    primaryStage.setTitle("Automation tool for Star Wars: Galaxy of Heroes");
+    String version = Configuration.getVersion();
+    primaryStage.setTitle(
+            "Automation tool for Star Wars: Galaxy of Heroes - " + (version != null ? "v" + version : "Dev mode")
+    );
     Scene mainScene = new Scene(mainVbox);
     primaryStage.setScene(mainScene);
     primaryStage.setResizable(false);
